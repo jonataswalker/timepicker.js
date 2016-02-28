@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <title>Timepicker.js &mdash; Example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="../build/timepicker.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.2.0/styles/default.min.css">
+    <script src="//cdn.jsdelivr.net/highlight.js/9.2.0/highlight.min.js"></script>
+    <link href='//fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet'>
+    <style type="text/css">
+      body {
+        font: 1em/1.3 'Roboto', sans-serif;
+        color: #222;
+        font-weight: 400;
+      }
+      h1 {
+        font-size: 250%;
+        text-align: center;
+        margin: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Timepicker.js &mdash; Example</h1>
+    <div>
+      <input type="text" id="time">
+    </div>
+    <div style="margin: 60px 0">
+      <input type="text" id="time2"><a href="#" id="link">Click to choose</a>
+    </div>
+    <div>
+      <pre><code class="javascript">
+        var time2 = document.getElementById('time2');
+
+        var timepicker = new TimePicker(['time', 'link'], {
+          lang: 'pt'
+        });
+        timepicker.on('open', function(evt){
+          
+          console.info('opened');
+          console.info(evt);
+          
+        });
+        timepicker.on('close', function(evt){
+          
+          console.info('closed');
+          console.info(evt);
+          
+        });
+        timepicker.on('change', function(evt){
+          
+          console.info('change');
+          console.info(evt);
+          
+          var value = '' + (evt.hour || '00') + ':' + (evt.minute || '00');
+          
+          if (evt.element.id == 'link') {
+            time2.value = value;
+          } else {
+            evt.element.value = value;
+          }
+        });
+      </code></pre>
+    </div>
+    
+    <script src="../build/timepicker.js"></script>
+    <script src="example.js"></script>
+</body>
+</html>

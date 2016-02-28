@@ -1,0 +1,27 @@
+{
+  "name": "timepicker.js",
+  "version": "1.0.0",
+  "description": "Yet Another (framework free) Timepicker.",
+  "main": "build/timepicker.min.js",
+  "browser": "build/timepicker.min.js",
+  "author": "Jonatas Walker",
+  "homepage": "https://github.com/jonataswalker/timepicker.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jonataswalker/timepicker.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jonataswalker/timepicker.js/issues"
+  },
+  "devDependencies": {
+    "jshint": "latest",
+    "js-beautify": "latest",
+    "uglify-js": "latest",
+    "clean-css": "latest",
+    "autoprefixer": "latest",
+    "postcss-cli": "latest",
+    "nodemon": "latest",
+    "parallelshell": "latest"
+  }
+}
