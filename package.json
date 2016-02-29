@@ -1,5 +1,5 @@
 {
-  "name": "TimePicker.js",
+  "name": "timepicker.js",
   "version": "1.0.1",
   "description": "Yet Another (framework free) TimePicker.",
   "main": "build/timepicker.min.js",
