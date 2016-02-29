@@ -21,7 +21,7 @@ Download [latest release](https://github.com/jonataswalker/timepicker.js/release
 ##### Instantiate with some options and listen to changes
 ```javascript
 var timepicker = new TimePicker(['field1', 'field2'], {
-  lang: 'pt'
+  lang: 'pt' // 'en', 'pt' for now
 });
 timepicker.on('change', function(evt){
   console.info(evt);
@@ -41,7 +41,7 @@ timepicker.on('change', function(evt){
 `{String|Array<String>|Element|Array<Element>}` String or array of string, DOM node or array of nodes.
 
 ###### `options` is an object with the following possible properties:
-* `lang`: `'en'`; Header language
+* `lang`: `'en'`; Header language ('en', 'pt' for now)
 
 ## Methods
 
