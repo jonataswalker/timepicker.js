@@ -53,8 +53,20 @@
       ], html.join(''));
       
       container.style.zIndex = utils.getMaxZIndex() + 10;
-      container.style.display = 'none';
+      container.style.visibility = 'hidden';
       doc.body.appendChild(container);
+      
+      // store container dimensions
+      var offset = utils.offset(container);
+      this.Picker.container_size = {
+        width: offset.width,
+        height: offset.height
+      };
+
+      // hide it completely
+      container.style.display = 'none';
+      container.style.visibility = 'visible';
+      
       TimePicker.elements = {
         container: container,
         drag_handle: container.querySelector('.' + constants.header_class)

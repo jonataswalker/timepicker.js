@@ -31,11 +31,25 @@
     },
     show: function(id){
       var target = this.targets[id].element;
-      var offset = utils.offset(target);
-      var top = offset.top + offset.height + 5;
-      TimePicker.elements.container.style.top = top + 'px';
-      TimePicker.elements.container.style.left = offset.left + 'px';
-      utils.fadeIn(TimePicker.elements.container);
+      var container = TimePicker.elements.container;
+      var target_offset = utils.offset(target);
+      var container_offset = this.Picker.container_size;
+      var top = target_offset.top + target_offset.height + 5;
+      
+      console.info('target_offset', target_offset);
+      console.info('container_offset', this.Picker.container_size);
+      console.info('getWindowSize', utils.getWindowSize());
+      
+      if (target_offset.left + container_offset.width > utils.getWindowSize().width) {
+        container.style.left = '';
+        container.style.right = '5px';
+      } else {
+        container.style.right = '';
+        container.style.left = target_offset.left + 'px';
+      }
+        
+      container.style.top = top + 'px';
+      utils.fadeIn(container);
       
       this.Picker.dispatchEvent({
         type: TimePicker.EventType.open,
