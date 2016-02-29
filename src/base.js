@@ -50,7 +50,6 @@ TimePicker.prototype = {
   hide: function() {
     _TimePicker.hide();
   }
-  
 };
 
 
