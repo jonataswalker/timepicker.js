@@ -6,7 +6,7 @@ hljs.initHighlightingOnLoad();
 var time2 = document.getElementById('time2');
 
 var timepicker = new TimePicker(['time', 'link'], {
-  lang: 'pt'
+  lang: 'en'
 });
 timepicker.on('open', function(evt){
   
