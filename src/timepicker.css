@@ -1,5 +1,17 @@
+._jw-timepicker div,
+._jw-timepicker ol,
+._jw-timepicker li,
+._jw-timepicker a,
+._jw-timepicker span {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  vertical-align: baseline;
+}
 ._jw-timepicker {
   position: absolute;
+  display: block;
   width: 250px;
   height: 140px;
   padding: 0;
@@ -13,6 +25,9 @@
   border-radius: 3px;
   box-shadow: #262626 0 0 0 1px inset;
   box-sizing: border-box;
+}
+._jw-timepicker div {
+  display: block;
 }
 ._jw-timepicker *, ._jw-timepicker *::before, ._jw-timepicker *::after {
   box-sizing: inherit;
