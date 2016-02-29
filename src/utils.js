@@ -228,6 +228,16 @@
         height: element.offsetHeight
       };
     },
+    getWindowSize: function(){
+      return {
+        width:
+          win.innerWidth ||
+          doc.documentElement.clientWidth || doc.body.clientWidth,
+        height:
+          win.innerHeight ||
+          doc.documentElement.clientHeight || doc.body.clientHeight
+      };
+    },
     fadeIn: function(elem, interval) {
       if (+elem.style.opacity < 1) {
         interval = interval || 16;

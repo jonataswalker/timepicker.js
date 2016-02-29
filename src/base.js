@@ -15,6 +15,11 @@ var TimePicker = function(target, opt_options) {
   this.options = utils.deepExtend(defaultOptions, opt_options);
   this.target = target;
   
+  // container size
+  this.container_size = {
+    width: 0, height: 0
+  };
+  
   var $html = new TimePicker.Html(this);
   var container = $html.createPicker();
   var $drag = new TimePicker.Drag();
@@ -45,7 +50,6 @@ TimePicker.prototype = {
   hide: function() {
     _TimePicker.hide();
   }
-  
 };
 
 

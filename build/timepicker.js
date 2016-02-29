@@ -1,7 +1,7 @@
 // Yet Another (framework free) Timepicker.
 // https://github.com/jonataswalker/timepicker.js
 // Version: v1.0.0
-// Built: 2016-02-28T13:00:33-0300
+// Built: 2016-02-29T14:24:27-0300
 
 (function(win, doc) {
   'use strict';
@@ -24,6 +24,12 @@
         var defaultOptions = utils.deepExtend({}, TimePicker.defaultOptions);
         this.options = utils.deepExtend(defaultOptions, opt_options);
         this.target = target;
+
+        // container size
+        this.container_size = {
+          width: 0,
+          height: 0
+        };
 
         var $html = new TimePicker.Html(this);
         var container = $html.createPicker();
@@ -55,7 +61,6 @@
         hide: function() {
           _TimePicker.hide();
         }
-
       };
 
 
@@ -126,11 +131,21 @@
           },
           show: function(id) {
             var target = this.targets[id].element;
-            var offset = utils.offset(target);
-            var top = offset.top + offset.height + 5;
-            TimePicker.elements.container.style.top = top + 'px';
-            TimePicker.elements.container.style.left = offset.left + 'px';
-            utils.fadeIn(TimePicker.elements.container);
+            var container = TimePicker.elements.container;
+            var target_offset = utils.offset(target);
+            var container_offset = this.Picker.container_size;
+            var top = target_offset.top + target_offset.height + 5;
+
+            if (target_offset.left + container_offset.width > utils.getWindowSize().width) {
+              container.style.left = '';
+              container.style.right = '5px';
+            } else {
+              container.style.right = '';
+              container.style.left = target_offset.left + 'px';
+            }
+
+            container.style.top = top + 'px';
+            utils.fadeIn(container);
 
             this.Picker.dispatchEvent({
               type: TimePicker.EventType.open,
@@ -351,8 +366,20 @@
             ], html.join(''));
 
             container.style.zIndex = utils.getMaxZIndex() + 10;
-            container.style.display = 'none';
+            container.style.visibility = 'hidden';
             doc.body.appendChild(container);
+
+            // store container dimensions
+            var offset = utils.offset(container);
+            this.Picker.container_size = {
+              width: offset.width,
+              height: offset.height
+            };
+
+            // hide it completely
+            container.style.display = 'none';
+            container.style.visibility = 'visible';
+
             TimePicker.elements = {
               container: container,
               drag_handle: container.querySelector('.' + constants.header_class)
@@ -667,6 +694,14 @@
               top: rect.top + win.pageYOffset - docEl.clientTop,
               width: element.offsetWidth,
               height: element.offsetHeight
+            };
+          },
+          getWindowSize: function() {
+            return {
+              width: win.innerWidth ||
+                doc.documentElement.clientWidth || doc.body.clientWidth,
+              height: win.innerHeight ||
+                doc.documentElement.clientHeight || doc.body.clientHeight
             };
           },
           fadeIn: function(elem, interval) {
