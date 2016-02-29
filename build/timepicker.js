@@ -1,7 +1,7 @@
 // Yet Another (framework free) Timepicker.
 // https://github.com/jonataswalker/timepicker.js
 // Version: v1.0.0
-// Built: 2016-02-29T13:58:04-0300
+// Built: 2016-02-29T14:24:27-0300
 
 (function(win, doc) {
   'use strict';
@@ -61,7 +61,6 @@
         hide: function() {
           _TimePicker.hide();
         }
-
       };
 
 
@@ -136,10 +135,6 @@
             var target_offset = utils.offset(target);
             var container_offset = this.Picker.container_size;
             var top = target_offset.top + target_offset.height + 5;
-
-            console.info('target_offset', target_offset);
-            console.info('container_offset', this.Picker.container_size);
-            console.info('getWindowSize', utils.getWindowSize());
 
             if (target_offset.left + container_offset.width > utils.getWindowSize().width) {
               container.style.left = '';
