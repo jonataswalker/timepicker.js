@@ -1,7 +1,7 @@
 // Yet Another (framework free) TimePicker.
 // https://github.com/jonataswalker/timepicker.js
-// Version: v1.0.1
-// Built: 2016-02-29T14:44:10-0300
+// Version: v1.0.2
+// Built: 2016-02-29T15:03:00-0300
 
 (function(win, doc) {
   'use strict';
