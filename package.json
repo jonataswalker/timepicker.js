@@ -1,7 +1,7 @@
 {
-  "name": "timepicker.js",
-  "version": "1.0.0",
-  "description": "Yet Another (framework free) Timepicker.",
+  "name": "TimePicker.js",
+  "version": "1.0.1",
+  "description": "Yet Another (framework free) TimePicker.",
   "main": "build/timepicker.min.js",
   "browser": "build/timepicker.min.js",
   "author": "Jonatas Walker",
