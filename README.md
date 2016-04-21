@@ -1,7 +1,7 @@
 # Timepicker.js
 A lightweight, customizable, TimePicker. Zero dependencies.
 
-Because `<input type="time">` is not yet present in major browsers.
+Because `<input type="time">` is not yet supported in major browsers (MS Edge and Chrome only).
 
 
 ![Timepicker anim](https://raw.githubusercontent.com/jonataswalker/timepicker.js/screenshot/images/anim.gif)
