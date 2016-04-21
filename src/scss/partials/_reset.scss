@@ -1,0 +1,6 @@
+@import "../vendor/_utilities";
+
+
+.#{$namespace}#{$container_class} {
+	@include nested-reset;
+}

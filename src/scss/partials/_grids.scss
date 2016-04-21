@@ -1,0 +1,82 @@
+.#{$namespace}#{$container_class} {
+	position: absolute;
+	width: $container-width;
+	height: $container-height;
+	padding: 0;
+	background: #fff;
+	font-family: inherit;
+	font-weight: $font-weight-regular;
+	overflow: hidden;
+	border-radius: 3px;
+	box-sizing: border-box;
+	@include container;
+	@include line-height(16);
+	@include font-size(16);
+	@include border-box-sizing;
+
+	*,
+	*:hover,
+	*:focus,
+	*.active {
+	  text-decoration: none;
+	  outline: none;
+	}
+	
+	.#{$namespace}#{$header_class} {
+		position: relative;
+		font-weight: $font-weight-bold;
+		text-align: center;
+		cursor: grab;
+		@include line-height(30);
+		@include clearfix;
+	}
+
+	&.#{$namespace}#{$dragging_class} {
+		opacity: .85 !important;
+		.#{$namespace}#{$header_class} {
+			cursor: grabbing;
+		}
+	}
+
+	.#{$namespace}#{$body_class} {
+		padding: 2px 0;
+		@include clearfix;
+	}
+
+	.#{$namespace}#{$hour_class} {
+		@include span(6.5);
+	}
+
+	.#{$namespace}#{$minute_class} {
+		@include span(3.5 last);
+	}
+
+	ol {
+		text-align: center;
+		list-style-type: none;
+
+		> li {
+			display: inline-block;
+
+			> a {
+				display: inline-block;
+				padding: 3px 0;
+				width: 25px;
+				color: inherit;
+				border-radius: 3px;
+				border: 1px solid transparent;
+				@include font-size(14);
+
+				&:not(.#{$namespace}#{$selected_class}):hover {
+					cursor: pointer;
+					border: 1px solid #ccc;
+					border-right: 1px solid #aaa;
+					border-bottom: 1px solid #aaa;
+					background: rgb(245,245,245);
+					background: linear-gradient(rgb(230,230,230), rgb(245,245,245));
+					box-shadow: 0 2px 3px rgba(220,220,220,.8);
+				}
+			}
+		}
+	}
+}

@@ -1,5 +1,7 @@
 # Timepicker.js
-Yet Another (framework free) Timepicker.
+A lightweight, customizable, TimePicker. Zero dependencies.
+
+Because `<input type="time">` is not yet present in major browsers.
 
 
 ![Timepicker anim](https://raw.githubusercontent.com/jonataswalker/timepicker.js/screenshot/images/anim.gif)
@@ -21,12 +23,13 @@ Download [latest release](https://github.com/jonataswalker/timepicker.js/release
 ##### Instantiate with some options and listen to changes
 ```javascript
 var timepicker = new TimePicker(['field1', 'field2'], {
+  theme: 'dark', // or 'blue-grey'
   lang: 'pt' // 'en', 'pt' for now
 });
 timepicker.on('change', function(evt){
   console.info(evt);
   
-  var value = '' + (evt.hour || '00') + ':' + (evt.minute || '00');
+  var value = (evt.hour || '00') + ':' + (evt.minute || '00');
   evt.element.value = value;
 });
 ```
@@ -41,6 +44,7 @@ timepicker.on('change', function(evt){
 `{String|Array<String>|Element|Array<Element>}` String or array of string, DOM node or array of nodes.
 
 ###### `options` is an object with the following possible properties:
+* `theme`: `'dark'`; Theme color ('dark', 'blue-grey' for now)
 * `lang`: `'en'`; Header language ('en', 'pt' for now)
 
 ## Methods
