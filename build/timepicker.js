@@ -1,912 +1,985 @@
-// Yet Another (framework free) TimePicker.
-// https://github.com/jonataswalker/timepicker.js
-// Version: v1.0.2
-// Built: 2016-02-29T15:03:00-0300
-
-(function(win, doc) {
-  'use strict';
-
-  var TimePicker = (function() {
-
-      // internal
-      var _TimePicker;
-
-      /**
-       * @constructor
-       * @param {String|Array<String>|Element|Array<Element>} target String or 
-       * array of string, DOM node or array of nodes.
-       * @param {Object|undefined} opt_options Options.
-       */
-      var TimePicker = function(target, opt_options) {
-        utils.assert(Array.isArray(target) || utils.typeOf(target) == 'string',
-          '@param `target` should be String or Array.');
-
-        var defaultOptions = utils.deepExtend({}, TimePicker.defaultOptions);
-        this.options = utils.deepExtend(defaultOptions, opt_options);
-        this.target = target;
-
-        // container size
-        this.container_size = {
-          width: 0,
-          height: 0
-        };
-
-        var $html = new TimePicker.Html(this);
-        var container = $html.createPicker();
-        var $drag = new TimePicker.Drag();
-        _TimePicker = new TimePicker.Internal(this);
-
-        $drag.when({
-          start: function() {
-            container.style.opacity = '';
-            utils.addClass(container, 'dragging');
-          },
-          move: function() {
-            container.style.left = this.x + 'px';
-            container.style.top = this.y + 'px';
-          },
-          end: function() {
-            utils.removeClass(container, 'dragging');
-            if (this.y < 0) container.style.top = 0;
-          }
-        });
-
-        _TimePicker.init();
-      };
-
-      TimePicker.prototype = {
-        show: function(target) {
-          _TimePicker.show(utils.evaluate(target));
-        },
-        hide: function() {
-          _TimePicker.hide();
-        }
-      };
-
-
-      TimePicker.EventType = {
-        open: 'open',
-        close: 'close',
-        change: 'change'
-      };
-
-      TimePicker.defaultOptions = {
-        lang: 'en'
-      };
-
-      TimePicker.lang = {
-        en: {
-          hour: 'Hour',
-          minute: 'Minute'
-        },
-        pt: {
-          hour: 'Hora',
-          minute: 'Minuto'
-        }
-      };
-
-      TimePicker.constants = {
-        container_class: '_jw-timepicker',
-        selected_class: 'selected',
-        header_class: '_jw-timepicker-header',
-        hour_attr: 'data-hour',
-        minute_attr: 'data-minute',
-        hour_list_id: 'hour_list_id',
-        minute_list_id: 'minute_list_id'
-      };
-      TimePicker.elements = {};
-      (function(TimePicker, win, doc) {
-
-        TimePicker.Internal = function(picker) {
-          this.Picker = picker;
-
-          // ready to close when both are chosen
-          this.closeWhen = {
-            hour: false,
-            minute: false
-          };
-
-          // increment internal ids
-          this._ids = 0;
-
-          // active picker
-          this.id_active = undefined;
-
-          // is it selecting?
-          this.selecting = false;
-
-          // these are targets we're working on
-          this.targets = [];
-
-          // this will cache DOM <a> hours (and minutes) array among others
-          this.collection = {
-            hours: [],
-            minutes: []
-          };
-        };
-        TimePicker.Internal.prototype = {
-          init: function() {
-            this.setFocusListener(this.Picker.target);
-            this.setSelectListener();
-          },
-          show: function(id) {
-            var target = this.targets[id].element;
-            var container = TimePicker.elements.container;
-            var target_offset = utils.offset(target);
-            var container_offset = this.Picker.container_size;
-            var top = target_offset.top + target_offset.height + 5;
-
-            if (target_offset.left + container_offset.width > utils.getWindowSize().width) {
-              container.style.left = '';
-              container.style.right = '5px';
-            } else {
-              container.style.right = '';
-              container.style.left = target_offset.left + 'px';
-            }
-
-            container.style.top = top + 'px';
-            utils.fadeIn(container);
-
-            this.Picker.dispatchEvent({
-              type: TimePicker.EventType.open,
-              element: target
-            });
-
-            this.handleOpen(id);
-          },
-          hide: function() {
-            this.selecting = false;
-            utils.fadeOut(TimePicker.elements.container);
-            this.Picker.dispatchEvent({
-              type: TimePicker.EventType.close,
-              element: this.targets[this.id_active].element
-            });
-          },
-          handleOpen: function(id) {
-            var this_ = this;
-            var value;
-            var sel_class = TimePicker.constants.selected_class;
-
-            utils.removeClass(this.collection.hours, sel_class);
-            utils.removeClass(this.collection.minutes, sel_class);
-
-            var hour = this.targets[id].hour;
-            var minute = this.targets[id].minute;
-            if (hour && minute) {
-              this.collection.hours.forEach(function(element) {
-                value = this_.getHour(element);
-                if (value == hour) {
-                  utils.addClass(element, sel_class);
-                  return;
-                }
-              });
-
-              this.collection.minutes.forEach(function(element) {
-                value = this_.getMinute(element);
-                if (value == minute) {
-                  utils.addClass(element, sel_class);
-                  return;
-                }
-              });
-            }
-
-            //one-time fire
-            doc.addEventListener('mousedown', {
-              handleEvent: function(evt) {
-                if (TimePicker.elements.container.contains(evt.target)) return;
-                if (this_.selecting) this_.hide();
-                doc.removeEventListener(evt.type, this, false);
-              }
-            }, false);
-
-            this.selecting = true;
-            this.id_active = id;
-            this.closeWhen = {
-              hour: false,
-              minute: false
-            };
-          },
-          handleClose: function() {
-            if (this.closeWhen.hour && this.closeWhen.minute) {
-              this.hide();
-            }
-          },
-          getHour: function(element) {
-            return element.getAttribute(TimePicker.constants.hour_attr);
-          },
-          getMinute: function(element) {
-            return element.getAttribute(TimePicker.constants.minute_attr);
-          },
-          setSelectListener: function() {
-            var this_ = this;
-            var constants = TimePicker.constants;
-            var hour_list = utils.$(constants.hour_list_id);
-            var minute_list = utils.$(constants.minute_list_id);
-
-            this.collection.hours = utils.getAllChildren(hour_list, 'a');
-            this.collection.minutes = utils.getAllChildren(minute_list, 'a');
-
-            var selectHour = function(evt) {
-              evt.preventDefault();
-              var active = this_.targets[this_.id_active];
-
-              active.hour = this_.getHour(evt.target);
-              this_.Picker.dispatchEvent({
-                type: TimePicker.EventType.change,
-                element: active.element,
-                hour: active.hour,
-                minute: active.minute
-              });
-
-              utils.removeClass(this_.collection.hours, constants.selected_class);
-              utils.addClass(evt.target, constants.selected_class);
-              this_.closeWhen.hour = true;
-              this_.handleClose();
-            };
-            var selectMinute = function(evt) {
-              evt.preventDefault();
-              var active = this_.targets[this_.id_active];
-
-              active.minute = this_.getMinute(evt.target);
-              this_.Picker.dispatchEvent({
-                type: TimePicker.EventType.change,
-                element: active.element,
-                hour: active.hour,
-                minute: active.minute
-              });
-
-              utils.removeClass(this_.collection.minutes, constants.selected_class);
-              utils.addClass(evt.target, constants.selected_class);
-              this_.closeWhen.minute = true;
-              this_.handleClose();
-            };
-
-            this.collection.hours.forEach(function(hour) {
-              hour.addEventListener('click', selectHour);
-            });
-            this.collection.minutes.forEach(function(minute) {
-              minute.addEventListener('click', selectMinute);
-            });
-
-          },
-          setFocusListener: function(target) {
-            var this_ = this;
-            var triggerShow = function(evt) {
-              evt.preventDefault();
-              utils.cancelFadeOut();
-              this_.show(evt.target._id);
-            };
-
-            var ar_target = [],
-              element;
-            // to array if string
-            target = Array.isArray(target) ? target : [target];
-            // merge
-            Array.prototype.push.apply(ar_target, target);
-
-            ar_target.forEach(function(el, i) {
-              element = utils.evaluate(el);
-
-              if (!element) return;
-
-              var id = this_._ids++;
-              element._id = id;
-              this_.targets[id] = {
-                element: element
-              };
-
-              if (utils.focusable.test(element.nodeName)) {
-                element.addEventListener('focus', triggerShow, true);
-              } else if (utils.clickable.test(element.nodeName)) {
-                element.addEventListener('click', triggerShow, true);
-              }
-            });
-          }
-        };
-
-      })(TimePicker, win, doc);
-      (function(TimePicker, win, doc) {
-
-        TimePicker.Html = function(picker) {
-          this.Picker = picker;
-        };
-        TimePicker.Html.prototype = {
-          createPicker: function() {
-            var options = this.Picker.options;
-            var constants = TimePicker.constants;
-            var replace = TimePicker.Html.replace;
-            var html = TimePicker.Html.picker;
-            var index_hour = html.indexOf(replace.hour_list);
-            var index_minute = html.indexOf(replace.minute_list);
-            var index_hour_title = html.indexOf(replace.hour_title);
-            var index_minute_title = html.indexOf(replace.minute_title);
-            var hours_html = [],
-              minutes_html = [];
-            var minute_zero;
-
-            var i = 0,
-              ii, v = 6;
-
-            /** hours **/
-            for (var u = 0; u < 4; u++) {
-              ii = i + v;
-              hours_html.push('<ol>');
-              for (; i < ii; i++) {
-                hours_html.push('<li><a href="javascript:void(0)" ' + constants.hour_attr +
-                  '="' + i + '">' + i + '</a></li>');
-              }
-              hours_html.push('</ol>');
-            }
-
-            /** minutes **/
-            i = 0;
-            ii = 0;
-            v = 15;
-            for (u = 0; u < 4; u++) {
-              ii = i + v;
-              minutes_html.push('<ol>');
-              for (; i < ii; i += 5) {
-                minute_zero = (i < 10) ? minute_zero = '0' + i : i;
-                minutes_html.push('<li><a href="javascript:void(0)" ' +
-                  constants.minute_attr + '="' + minute_zero + '">' + minute_zero + '</a></li>');
-              }
-              minutes_html.push('</ol>');
-            }
-
-            html[index_hour] = hours_html.join('');
-            html[index_minute] = minutes_html.join('');
-            html[index_hour_title] = TimePicker.lang[options.lang].hour;
-            html[index_minute_title] = TimePicker.lang[options.lang].minute;
-
-
-            var container = utils.createElement([
-              'div', {
-                classname: constants.container_class
-              }
-            ], html.join(''));
-
-            container.style.zIndex = utils.getMaxZIndex() + 10;
-            container.style.visibility = 'hidden';
-            doc.body.appendChild(container);
-
-            // store container dimensions
-            var offset = utils.offset(container);
-            this.Picker.container_size = {
-              width: offset.width,
-              height: offset.height
-            };
-
-            // hide it completely
-            container.style.display = 'none';
-            container.style.visibility = 'visible';
-
-            TimePicker.elements = {
-              container: container,
-              drag_handle: container.querySelector('.' + constants.header_class)
-            };
-            return container;
-          }
-        };
-
-        TimePicker.Html.replace = {
-          hour_list: '__hour-list__',
-          minute_list: '__minute-list__',
-          hour_title: '__hour-title__',
-          minute_title: '__minute-title__'
-        };
-
-        TimePicker.Html.picker = [
-          '<div class="' + TimePicker.constants.header_class + ' _jw-timepicker-clearfix">',
-          '<div class="_jw-timepicker-hour">',
-          TimePicker.Html.replace.hour_title,
-          '</div>',
-          '<div class="_jw-timepicker-minute">',
-          TimePicker.Html.replace.minute_title,
-          '</div>',
-          '</div>',
-          '<div class="_jw-timepicker-body _jw-timepicker-clearfix">',
-          '<div id="' + TimePicker.constants.hour_list_id + '" class="_jw-timepicker-hour">',
-          TimePicker.Html.replace.hour_list,
-          '</div>',
-          '<div id="' + TimePicker.constants.minute_list_id + '" class="_jw-timepicker-minute">',
-          TimePicker.Html.replace.minute_list,
-          '</div>',
-          '</div>'
-        ];
-      })(TimePicker, win, doc);
-      (function(TimePicker, win, doc) {
-
-        TimePicker.Drag = function() {
-          var
-            container = TimePicker.elements.container,
-            handle = TimePicker.elements.drag_handle || container,
-            lastX, lastY, currentX, currentY, startX, startY, x, y,
-            when = {},
-            start = function(evt) {
-              if (evt.button !== 0) return;
-              lastX = evt.clientX;
-              lastY = evt.clientY;
-              when.start.call({
-                target: container
-              });
-              doc.addEventListener('mousemove', dragging, false);
-              doc.addEventListener('mouseup', stopDragging, false);
-            },
-            dragging = function(evt) {
-              /* jshint -W030 */
-              evt.preventDefault && evt.preventDefault();
-
-              currentX = parseInt(container.style.left, 10) || 0;
-              currentY = parseInt(container.style.top, 10) || 0;
-
-              x = currentX + (evt.clientX - lastX);
-              y = currentY + (evt.clientY - lastY);
-
-              when.move.call({
-                target: container,
-                x: x,
-                y: y
-              });
-              lastX = evt.clientX;
-              lastY = evt.clientY;
-            },
-            stopDragging = function(evt) {
-              doc.removeEventListener('mousemove', dragging, false);
-              doc.removeEventListener('mouseup', stop, false);
-
-              when.end.call({
-                target: container,
-                x: x,
-                y: y
-              });
-            };
-          handle.addEventListener('mousedown', start, false);
-          return {
-            when: function(obj) {
-              when.start = obj.start;
-              when.move = obj.move;
-              when.end = obj.end;
-            }
-          };
-        };
-      })(TimePicker, win, doc);
-      (function(TimePicker, win, doc) {
-
-        TimePicker.Utils = {
-          whiteSpaceRegex: /\s+/,
-          focusable: /^(?:input|select|textarea|button|object)$/i,
-          clickable: /^(?:a|area)$/i,
-          classRegex: function(classname) {
-            return new RegExp('(^|\\s+)' + classname + '(\\s+|$)');
-          },
-          /**
-           * @param {Element|Array<Element>} element DOM node or array of nodes.
-           * @param {String|Array<String>} classname Class or array of classes.
-           * For example: 'class1 class2' or ['class1', 'class2']
-           * @param {Number|undefined} timeout Timeout to remove a class.
-           */
-          addClass: function(element, classname, timeout) {
-            if (Array.isArray(element)) {
-              element.forEach(function(each) {
-                utils.addClass(each, classname);
-              });
-              return;
-            }
-
-            var
-              array = (Array.isArray(classname)) ? classname : classname.split(/\s+/),
-              i = array.length;
-            while (i--) {
-              if (!utils.hasClass(element, array[i])) {
-                utils._addClass(element, array[i], timeout);
-              }
-            }
-          },
-          _addClass: function(el, c, timeout) {
-            // use native if available
-            if (el.classList) {
-              el.classList.add(c);
-            } else {
-              el.className = (el.className + ' ' + c).trim();
-            }
-
-            if (timeout && utils.isNumeric(timeout)) {
-              win.setTimeout(function() {
-                utils._removeClass(el, c);
-              }, timeout);
-            }
-          },
-          /**
-           * @param {Element|Array<Element>} element DOM node or array of nodes.
-           * @param {String|Array<String>} classname Class or array of classes.
-           * For example: 'class1 class2' or ['class1', 'class2']
-           * @param {Number|undefined} timeout Timeout to add a class.
-           */
-          removeClass: function(element, classname, timeout) {
-            if (Array.isArray(element)) {
-              element.forEach(function(each) {
-                utils.removeClass(each, classname, timeout);
-              });
-              return;
-            }
-
-            var
-              array = (Array.isArray(classname)) ? classname : classname.split(/\s+/),
-              i = array.length;
-            while (i--) {
-              if (utils.hasClass(element, array[i])) {
-                utils._removeClass(element, array[i], timeout);
-              }
-            }
-          },
-          _removeClass: function(el, c, timeout) {
-            if (el.classList) {
-              el.classList.remove(c);
-            } else {
-              el.className = (el.className.replace(utils.classRegex(c), ' ')).trim();
-            }
-            if (timeout && utils.isNumeric(timeout)) {
-              win.setTimeout(function() {
-                utils._addClass(el, c);
-              }, timeout);
-            }
-          },
-          /**
-           * @param {Element} element DOM node.
-           * @param {String} classname Classname.
-           * @return {Boolean}
-           */
-          hasClass: function(element, c) {
-            // use native if available
-            return (element.classList) ?
-              element.classList.contains(c) : utils.classRegex(c).test(element.className);
-          },
-          /**
-           * @param {Element|Array<Element>} element DOM node or array of nodes.
-           * @param {String} classname Classe.
-           */
-          toggleClass: function(element, classname) {
-            if (Array.isArray(element)) {
-              element.forEach(function(each) {
-                utils.toggleClass(each, classname);
-              });
-              return;
-            }
-
-            // use native if available
-            if (element.classList) {
-              element.classList.toggle(classname);
-            } else {
-              if (utils.hasClass(element, classname)) {
-                utils._removeClass(element, classname);
-              } else {
-                utils._addClass(element, classname);
-              }
-            }
-          },
-          $: function(id) {
-            id = (id[0] === '#') ? id.substr(1, id.length) : id;
-            return doc.getElementById(id);
-          },
-          isElement: function(obj) {
-            // DOM, Level2
-            if ("HTMLElement" in win) {
-              return (!!obj && obj instanceof HTMLElement);
-            }
-            // Older browsers
-            return (!!obj && typeof obj === "object" &&
-              obj.nodeType === 1 && !!obj.nodeName);
-          },
-          getAllChildren: function(node, tag) {
-            return [].slice.call(node.getElementsByTagName(tag));
-          },
-          getMaxZIndex: function() {
-            var zIndex,
-              max = 0,
-              all = utils.find('*', doc, true),
-              len = all.length,
-              i = -1;
-            while (++i < len) {
-              zIndex = parseInt(win.getComputedStyle(all[i]).zIndex, 10);
-              max = (zIndex) ? Math.max(max, zIndex) : max;
-            }
-            return max;
-          },
-          deepExtend: function(destination, source) {
-            var property, propertyValue;
-
-            for (property in source)
-              if (source.hasOwnProperty(property)) {
-                propertyValue = source[property];
-                if (propertyValue !== undefined && propertyValue !== null &&
-                  propertyValue.constructor !== undefined &&
-                  propertyValue.constructor === Object) {
-                  destination[property] = destination[property] || {};
-                  utils.deepExtend(destination[property], propertyValue);
-                } else {
-                  destination[property] = propertyValue;
-                }
-              }
-            return destination;
-          },
-          createElement: function(node, html) {
-            var elem;
-            if (Array.isArray(node)) {
-              elem = doc.createElement(node[0]);
-
-              if (node[1].id) elem.id = node[1].id;
-              if (node[1].classname) elem.className = node[1].classname;
-
-              if (node[1].attr) {
-                var attr = node[1].attr;
-                if (Array.isArray(attr)) {
-                  var i = -1;
-                  while (++i < attr.length) {
-                    elem.setAttribute(attr[i].name, attr[i].value);
-                  }
-                } else {
-                  elem.setAttribute(attr.name, attr.value);
-                }
-              }
-            } else {
-              elem = doc.createElement(node);
-            }
-            elem.innerHTML = html;
-            var frag = doc.createDocumentFragment();
-
-            while (elem.childNodes[0]) {
-              frag.appendChild(elem.childNodes[0]);
-            }
-            elem.appendChild(frag);
-            return elem;
-          },
-          find: function(selector, context, find_all) {
-            var simpleRe = /^(#?[\w-]+|\.[\w-.]+)$/,
-              periodRe = /\./g,
-              slice = [].slice,
-              matches = [];
-            if (simpleRe.test(selector)) {
-              switch (selector[0]) {
-                case '#':
-                  matches = [utils.$(selector.substr(1))];
-                  break;
-                case '.':
-                  matches = slice.call(context.getElementsByClassName(
-                    selector.substr(1).replace(periodRe, ' ')));
-                  break;
-                default:
-                  matches = slice.call(context.getElementsByTagName(selector));
-              }
-            } else {
-              // If not a simple selector, query the DOM as usual 
-              // and return an array for easier usage
-              matches = slice.call(context.querySelectorAll(selector));
-            }
-
-            return (find_all) ? matches : matches[0];
-          },
-          offset: function(element) {
-            var
-              rect = element.getBoundingClientRect(),
-              docEl = doc.documentElement;
-            return {
-              left: rect.left + win.pageXOffset - docEl.clientLeft,
-              top: rect.top + win.pageYOffset - docEl.clientTop,
-              width: element.offsetWidth,
-              height: element.offsetHeight
-            };
-          },
-          getWindowSize: function() {
-            return {
-              width: win.innerWidth ||
-                doc.documentElement.clientWidth || doc.body.clientWidth,
-              height: win.innerHeight ||
-                doc.documentElement.clientHeight || doc.body.clientHeight
-            };
-          },
-          fadeIn: function(elem, interval) {
-            if (+elem.style.opacity < 1) {
-              interval = interval || 16;
-              elem.style.opacity = 0;
-              elem.style.display = 'block';
-              var last = +new Date();
-              var tick = function() {
-                elem.style.opacity = +elem.style.opacity + (new Date() - last) / 100;
-                last = +new Date();
-
-                if (+elem.style.opacity < 1) {
-                  win.setTimeout(tick, interval);
-                }
-              };
-              tick();
-            }
-            elem.style.display = 'block';
-          },
-          timeoutID: undefined,
-          cancelFadeOut: function() {
-            win.clearTimeout(utils.timeoutID);
-          },
-          fadeOut: function(elem, interval) {
-            interval = interval || 16;
-            elem.style.opacity = 1;
-            var last = +new Date();
-            var tick = function() {
-              elem.style.opacity = +elem.style.opacity - (new Date() - last) / 100;
-              last = +new Date();
-
-              if (+elem.style.opacity > 0) {
-                utils.timeoutID = win.setTimeout(tick, interval);
-              } else {
-                elem.style.display = 'none';
-              }
-            };
-            tick();
-          },
-          evaluate: function(element) {
-            var el;
-            switch (utils.toType(element)) {
-              case 'window':
-              case 'htmldocument':
-              case 'element':
-                el = element;
-                break;
-              case 'string':
-                el = utils.$(element);
-                break;
-            }
-            utils.assert(el, "Can't evaluate: @param " + element);
-            return el;
-          },
-          toType: function(obj) {
-            if (obj == win && obj.doc && obj.location) {
-              return 'window';
-            } else if (obj == doc) {
-              return 'htmldocument';
-            } else if (typeof obj === 'string') {
-              return 'string';
-            } else if (utils.isElement(obj)) {
-              return 'element';
-            }
-          },
-          typeOf: function(obj) {
-            return ({}).toString.call(obj)
-              .match(/\s([a-zA-Z]+)/)[1].toLowerCase();
-          },
-          assert: function(condition, message) {
-            if (!condition) {
-              message = message || "Assertion failed";
-              if (typeof Error !== "undefined") {
-                throw new Error(message);
-              }
-              throw message; // Fallback
-            }
-          }
-        };
-
-        /**
-         * @author mrdoob / https://github.com/mrdoob/eventdispatcher.js
-         */
-
-        TimePicker.EventDispatcher = function() {};
-
-        TimePicker.EventDispatcher.prototype = {
-
-          constructor: TimePicker.EventDispatcher,
-
-          apply: function(object) {
-
-            object.addEventListener = object.on =
-              TimePicker.EventDispatcher.prototype.addEventListener;
-            object.hasEventListener =
-              TimePicker.EventDispatcher.prototype.hasEventListener;
-            object.removeEventListener = object.un =
-              TimePicker.EventDispatcher.prototype.removeEventListener;
-            object.dispatchEvent = TimePicker.EventDispatcher.prototype.dispatchEvent;
-
-          },
-
-          addEventListener: function(type, listener) {
-
-            if (this._listeners === undefined) this._listeners = {};
-
-            var listeners = this._listeners;
-
-            if (listeners[type] === undefined) {
-
-              listeners[type] = [];
-
-            }
-
-            if (listeners[type].indexOf(listener) === -1) {
-
-              listeners[type].push(listener);
-
-            }
-
-          },
-
-          hasEventListener: function(type, listener) {
-
-            if (this._listeners === undefined) return false;
-
-            var listeners = this._listeners;
-
-            if (listeners[type] !== undefined && listeners[type].indexOf(listener) !== -1) {
-
-              return true;
-
-            }
-
-            return false;
-
-          },
-
-          removeEventListener: function(type, listener) {
-
-            if (this._listeners === undefined) return;
-
-            var listeners = this._listeners;
-            var listenerArray = listeners[type];
-
-            if (listenerArray !== undefined) {
-
-              var index = listenerArray.indexOf(listener);
-
-              if (index !== -1) {
-
-                listenerArray.splice(index, 1);
-
-              }
-
-            }
-
-          },
-
-          dispatchEvent: function(event) {
-
-            if (this._listeners === undefined) return;
-
-            var listeners = this._listeners;
-            var listenerArray = listeners[event.type];
-
-            if (listenerArray !== undefined) {
-
-              event.target = this;
-
-              var array = [];
-              var length = listenerArray.length;
-
-              for (var i = 0; i < length; i++) {
-
-                array[i] = listenerArray[i];
-
-              }
-
-              for (i = 0; i < length; i++) {
-
-                array[i].call(this, event);
-
-              }
-
-            }
-
-          }
-
-        };
-      })(TimePicker, win, doc);
-      return TimePicker;
-    })(),
-    utils = TimePicker.Utils;
-
-  TimePicker.EventDispatcher.prototype.apply(TimePicker.prototype);
-
-  if (typeof define === 'function' && define.amd) {
-    define(function() {
-      return TimePicker;
-    });
-  } else if (typeof module !== 'undefined' && module.exports) {
-    module.exports = TimePicker;
-  } else if (typeof this !== 'undefined') {
-    this.TimePicker = TimePicker;
-  }
-}).call(this, window, document);
+/**
+ * A lightweight, customizable, TimePicker. Zero dependencies.
+ * https://github.com/jonataswalker/timepicker.js
+ * Version: v2.0.0
+ * Built: 2016-04-20T22:20:15-0300
+ */
+
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+	typeof define === 'function' && define.amd ? define(factory) :
+	(global.TimePicker = factory());
+}(this, function () { 'use strict';
+
+	var eventType = {
+	  open: 'open',
+	  close: 'close',
+	  change: 'change',
+	  start_fade_in: 'start-fade-in',
+	  end_fade_in: 'end-fade-in',
+	  start_fade_out: 'start-fade-out',
+	  end_fade_out: 'end-fade-out'
+	};
+
+	var defaultOptions = {
+	  lang: 'en',
+	  theme: 'dark'
+	};
+
+	var lang = {
+	  en: {
+	    hour: 'Hour',
+	    minute: 'Minute'
+	  },
+	  pt: {
+	    hour: 'Hora',
+	    minute: 'Minuto'
+	  }
+	};
+
+	/**
+	 * @module utils
+	 * All the helper functions needed in this project
+	 */
+	var utils = {
+	  focusable: /^(?:input|select|textarea|button|object)$/i,
+	  clickable: /^(?:a|area)$/i,
+	  classRegex: function classRegex(classname) {
+	    return new RegExp(("(^|\\s+) " + classname + " (\\s+|$)"));
+	  },
+	  /**
+	   * @param {Element|Array<Element>} element DOM node or array of nodes.
+	   * @param {String|Array<String>} classname Class or array of classes.
+	   * For example: 'class1 class2' or ['class1', 'class2']
+	   * @param {Number|undefined} timeout Timeout to remove a class.
+	   */
+	  addClass: function addClass(element, classname, timeout) {
+	    var this$1 = this;
+
+	    if (Array.isArray(element)) {
+	      element.forEach(function ( each ) { this$1.addClass(each, classname) });
+	      return;
+	    }
+	    
+	    var array = (Array.isArray(classname)) ? classname : classname.split(/\s+/);
+	    var i = array.length;
+	    
+	    while(i--) {
+	      if (!this$1.hasClass(element, array[i])) {
+	        this$1._addClass(element, array[i], timeout);
+	      }
+	    }
+	  },
+	  _addClass: function _addClass(el, c, timeout) {
+	    // use native if available
+	    var this$1 = this;
+
+	    if (el.classList) {
+	      el.classList.add(c);
+	    } else {
+	      el.className = (el.className +' '+ c).trim();
+	    }
+	    
+	    if (timeout && this.isNumeric(timeout)) {
+	      window.setTimeout(function () { this$1._removeClass(el, c) }, timeout);
+	    }
+	  },
+	  /**
+	   * @param {Element|Array<Element>} element DOM node or array of nodes.
+	   * @param {String|Array<String>} classname Class or array of classes.
+	   * For example: 'class1 class2' or ['class1', 'class2']
+	   * @param {Number|undefined} timeout Timeout to add a class.
+	   */
+	  removeClass: function removeClass(element, classname, timeout) {
+	    var this$1 = this;
+
+	    if (Array.isArray(element)) {
+	      element.forEach(function ( each ) { this$1.removeClass(each, classname, timeout) });
+	      return;
+	    }
+	    
+	    var array = (Array.isArray(classname)) ? classname : classname.split(/\s+/);
+	    var i = array.length;
+	    
+	    while(i--) {
+	      if (this$1.hasClass(element, array[i])) {
+	        this$1._removeClass(element, array[i], timeout);
+	      }
+	    }
+	  },
+	  _removeClass: function _removeClass(el, c, timeout) {
+	    var this$1 = this;
+
+	    if (el.classList) {
+	      el.classList.remove(c);
+	    } else {
+	      el.className = (el.className.replace(this.classRegex(c), ' ')).trim();
+	    }
+	    if (timeout && this.isNumeric(timeout)) {
+	      window.setTimeout(function () {
+	        this$1._addClass(el, c);
+	      }, timeout);
+	    }
+	  },
+	  /**
+	   * @param {Element} element DOM node.
+	   * @param {String} classname Classname.
+	   * @return {Boolean}
+	   */
+	  hasClass: function hasClass(element, c) {
+	    // use native if available
+	    return (element.classList) ?
+	      element.classList.contains(c) : this.classRegex(c).test(element.className);
+	  },
+	  /**
+	   * @param {Element|Array<Element>} element DOM node or array of nodes.
+	   * @param {String} classname Classe.
+	   */
+	  toggleClass: function toggleClass(element, classname) {
+	    var this$1 = this;
+
+	    if (Array.isArray(element)) {
+	      element.forEach(function ( each ) { this$1.toggleClass(each, classname) });
+	      return;
+	    }
+	    
+	    // use native if available
+	    if (element.classList) {
+	      element.classList.toggle(classname);
+	    } else {
+	      if (this.hasClass(element, classname)) {
+	        this._removeClass(element, classname);
+	      } else {
+	        this._addClass(element, classname);
+	      }
+	    }
+	  },
+	  $: function $(id) {
+	    id = (id[0] === '#') ? id.substr(1, id.length) : id;
+	    return document.getElementById(id);
+	  },
+	  isElement: function isElement(obj) {
+	    // DOM, Level2
+	    if ('HTMLElement' in window) {
+	      return (!!obj && obj instanceof HTMLElement);
+	    }
+	    // Older browsers
+	    return (!!obj && typeof obj === 'object' && 
+	        obj.nodeType === 1 && !!obj.nodeName);
+	  },
+	  getAllChildren: function getAllChildren(node, tag) {
+	    return [].slice.call(node.getElementsByTagName(tag));
+	  },
+	  getMaxZIndex: function getMaxZIndex(zIndex, max, i) {
+	    if ( max === void 0 ) max = 0;
+	    if ( i === void 0 ) i = -1;
+
+	    var all = this.find('*', document, true);
+	    var len = all.length;
+
+	    while(++i < len) {
+	      zIndex = parseInt(window.getComputedStyle(all[i]).zIndex, 10);
+	      max = (zIndex) ? Math.max(max, zIndex) : max;
+	    }
+	    return max;
+	  },
+	  /**
+	   * Overwrites obj1's values with obj2's and adds 
+	   * obj2's if non existent in obj1
+	   * @returns {Object} a new object based on obj1 and obj2
+	   */
+	  mergeOptions: function mergeOptions(obj1, obj2) {
+	    var obj3 = {};
+	    for (var attr1 in obj1) { obj3[attr1] = obj1[attr1]; }
+	    for (var attr2 in obj2) { obj3[attr2] = obj2[attr2]; }
+	    return obj3;
+	  },
+	  createElement: function createElement(node, html) {
+	    var elem;
+	    if (Array.isArray(node)) {
+	      elem = document.createElement(node[0]);
+	      
+	      if (node[1].id) elem.id = node[1].id;
+	      if (node[1].classname) elem.className = node[1].classname;
+	      
+	      if (node[1].attr) {
+	        var attr = node[1].attr;
+	        if (Array.isArray(attr)) {
+	          var i = -1;
+	          while(++i < attr.length) {
+	            elem.setAttribute(attr[i].name, attr[i].value);
+	          }
+	        } else {
+	          elem.setAttribute(attr.name, attr.value);
+	        }
+	      }
+	    } else {
+	      elem = document.createElement(node);
+	    }
+	    elem.innerHTML = html;
+	    var frag = document.createDocumentFragment();
+	    
+	    while (elem.childNodes[0]) {
+	      frag.appendChild(elem.childNodes[0]);
+	    }
+	    elem.appendChild(frag);
+	    return elem;
+	  },
+	  find: function find(selector, context, find_all) {
+	    var simpleRe = /^(#?[\w-]+|\.[\w-.]+)$/, 
+	        periodRe = /\./g, 
+	        slice = [].slice,
+	        matches = [];
+	    if (simpleRe.test(selector)) {
+	      switch(selector[0]) {
+	        case '#':
+	          matches = [this.$(selector.substr(1))];
+	          break;
+	        case '.':
+	          matches = slice.call(context.getElementsByClassName(
+	              selector.substr(1).replace(periodRe, ' ')));
+	          break;
+	        default:
+	          matches = slice.call(context.getElementsByTagName(selector));
+	      }
+	    } else{
+	      // If not a simple selector, query the DOM as usual 
+	      // and return an array for easier usage
+	      matches = slice.call(context.querySelectorAll(selector));
+	    }
+	    
+	    return (find_all) ? matches : matches[0];
+	  },
+	  offset: function offset(element) {
+	    var rect = element.getBoundingClientRect();
+	    var docEl = document.documentElement;
+	    return {
+	      left: rect.left + window.pageXOffset - docEl.clientLeft,
+	      top: rect.top + window.pageYOffset - docEl.clientTop,
+	      width: element.offsetWidth,
+	      height: element.offsetHeight
+	    };
+	  },
+	  getWindowSize: function getWindowSize() {
+	    return {
+	      width:
+	        window.innerWidth ||
+	        document.documentElement.clientWidth || document.body.clientWidth,
+	      height:
+	        window.innerHeight ||
+	        document.documentElement.clientHeight || document.body.clientHeight
+	    };
+	  },
+	  evaluate: function evaluate(element) {
+	    var el;
+	    switch (this.toType(element)) {
+	      case 'window':
+	      case 'htmldocument':
+	      case 'element':
+	        el = element;
+	        break;
+	      case 'string':
+	        el = this.$(element);
+	        break;
+	    }
+	    this.assert(el, 'Can\'t evaluate: @param ' + element);
+	    return el;
+	  },
+	  toType: function toType(obj) {
+	    if (obj == window && obj.document && obj.location) {
+	      return 'window';
+	    } else if (obj == document) {
+	      return 'htmldocument';
+	    } else if (typeof obj === 'string') {
+	      return 'string';
+	    } else if (this.isElement(obj)) {
+	      return 'element';
+	    }
+	  },
+	  typeOf: function typeOf(obj) {
+	    return ({}).toString.call(obj)
+	      .match(/\s([a-zA-Z]+)/)[1].toLowerCase();
+	  },
+	  /**
+	   * Pub/Sub
+	   */
+	  events: function events() {
+	    var topics = {};
+	    var hOP = topics.hasOwnProperty;
+	    
+	    return {
+	      subscribe: function(topic, listener) {
+	        // Create the topic's object if not yet created
+	        if(!hOP.call(topics, topic)) topics[topic] = [];
+
+	        // Add the listener to queue
+	        var index = topics[topic].push(listener) -1;
+	        
+	        // Provide handle back for removal of topic
+	        return {
+	          remove: function() {
+	            delete topics[topic][index];
+	          }
+	        };
+	      },
+	      publish: function(topic, info) {
+	        // If the topic doesn't exist, or there's no listeners
+	        // in queue, just leave
+	        if(!hOP.call(topics, topic)) return;
+	      
+	        // Cycle through topics queue, fire!
+	        topics[topic].forEach(function(item) {
+	          item(info !== undefined ? info : {});
+	        });
+	      }
+	    };
+	  },
+	  /**
+	   * @param {Function} publisher instanceof this.events().
+	   * @param {Element} element DOM node.
+	   * @param {String} action 'in' or 'out'.
+	   * @param {Number|undefined} time ms.
+	   */
+	  fade: function fade(publisher, element, time, action) {
+	    if ( time === void 0 ) time = 300;
+	    if ( action === void 0 ) action = 'in';
+
+	    var opacity;
+	    var start = null, finished = false;
+	    var request_id;
+	    
+	    var event_start = action == 'in' ? 
+	      eventType.start_fade_in : eventType.start_fade_out;
+	    
+	    var event_end = action == 'in' ? 
+	      eventType.end_fade_in : eventType.end_fade_out;
+	    
+	    var tick = function ( timestamp ) {
+	      if (!start) {
+	        publisher.publish(event_start, {
+	          target: element
+	        });
+	        
+	        start = timestamp;
+	      }
+	      
+	      if (action == 'in') {
+	        opacity = +element.style.opacity + (timestamp - start) / time;
+	        finished = opacity >= 1;
+	      } else {
+	        opacity = +element.style.opacity - (timestamp - start) / time;
+	        finished = opacity <= 0;
+	      }
+	      
+	      element.style.opacity = opacity;
+	      
+	      if (finished) {
+	        publisher.publish(event_end, {
+	          target: element
+	        });
+	      } else {
+	        request_id = window.requestAnimationFrame(tick);
+	      }
+	    };
+	    
+	    request_id = window.requestAnimationFrame(tick);
+	    
+	    return request_id;
+	  },
+	  assert: function assert(condition, message) {
+	    if (!condition) {
+	      message = message || 'Assertion failed';
+	      if (typeof Error !== 'undefined') {
+	        throw new Error(message);
+	      }
+	      throw message; // Fallback
+	    }
+	  }
+	}
+
+	var namespace = "_jw-tpk";
+	var container_class = "-container";
+	var header_class = "-header";
+	var body_class = "-body";
+	var hour_class = "-hour";
+	var minute_class = "-minute";
+	var selected_class = "-selected";
+	var dragging_class = "-dragging";
+	var attr = {"hour":"data-hour","minute":"data-minute"};
+	var ids = {"hour_list":"hour_list_id","minute_list":"minute_list_id"};
+
+	/**
+	 * @class Html
+	 */
+	var Html = function Html(base) {
+	  this.Base = base;
+	};
+	  
+	Html.prototype.createPicker = function createPicker() {
+	  var options = this.Base.options;
+	  var index_hour = Html.picker.indexOf(Html.replace.hour_list);
+	  var index_minute = Html.picker.indexOf(Html.replace.minute_list);
+	  var index_hour_title = Html.picker.indexOf(Html.replace.hour_title);
+	  var index_minute_title = Html.picker.indexOf(Html.replace.minute_title);
+	  var hours_html = [], minutes_html = [];
+	  var minute_zero;
+	    
+	  var i = 0, ii, v = 6, u = 0;
+	    
+	  /** hours **/
+	  for (; u < 4; u++) {
+	    ii = i + v;
+	    hours_html.push('<ol>');
+	    for (; i < ii; i++) {
+	      hours_html.push([
+	        '<li><a ',
+	        attr.hour,
+	        '="',
+	        i,
+	        '">',
+	        i,
+	        '</a></li>'
+	      ].join(''));
+	    }
+	    hours_html.push('</ol>');
+	  }
+	    
+	  /** minutes **/
+	  i = 0; ii = 0; v = 15;
+	  for (u = 0; u < 4; u++) {
+	    ii = i + v;
+	    minutes_html.push('<ol>');
+	    for (; i < ii; i += 5) {
+	      minute_zero = (i < 10) ? minute_zero = '0' + i : i;
+	      minutes_html.push([
+	        '<li><a ',
+	        attr.minute,
+	        '="',
+	        minute_zero,
+	        '">',
+	        minute_zero,
+	        '</a></li>'
+	      ].join(''));
+	    }
+	    minutes_html.push('</ol>');
+	  }
+	    
+	  Html.picker[index_hour] = hours_html.join('');
+	  Html.picker[index_minute] = minutes_html.join('');
+	  Html.picker[index_hour_title] = lang[options.lang].hour;
+	  Html.picker[index_minute_title] = lang[options.lang].minute;
+
+	  var container = utils.createElement([
+	    'div',
+	    { 
+	      classname: namespace + container_class + ' ' +
+	        namespace + '-' + options.theme
+	    }
+	  ], Html.picker.join(''));
+	    
+	  container.style.zIndex = utils.getMaxZIndex() + 10;
+	  container.style.visibility = 'hidden';
+	  document.body.appendChild(container);
+	    
+	  var offset = utils.offset(container);
+	    
+	  // store element container and dimensions
+	  this.Base.container = {
+	    size: {
+	      width: offset.width,
+	      height: offset.height
+	    },
+	    element: container,
+	    drag_handle: container.querySelector(("." + (namespace+header_class)))
+	  };
+
+	  container.style.visibility = '';
+	  container.style.display = 'none';
+	    
+	  return container;
+	};
+
+	Html.replace = {
+	  hour_list: '__hour-list__',
+	  minute_list: '__minute-list__',
+	  hour_title: '__hour-title__',
+	  minute_title: '__minute-title__'
+	};
+
+	Html.picker = [
+	  ("<div class=\"" + (namespace+header_class) + "\">"),
+	    ("<div class=\"" + (namespace+hour_class) + "\">"),
+	      Html.replace.hour_title,
+	    '</div>',
+	    ("<div class=\"" + (namespace+minute_class) + "\">"),
+	      Html.replace.minute_title,
+	    '</div>',
+	  '</div>',
+	  ("<div class=\"" + (namespace+body_class) + "\">"),
+	    ("<div id=\"" + (ids.hour_list) + "\" class=\"" + (namespace+hour_class) + "\">"),
+	      Html.replace.hour_list,
+	    '</div>',
+	    ("<div id=\"" + (ids.minute_list) + "\" class=\"" + (namespace+minute_class) + "\">"),
+	      Html.replace.minute_list,
+	    '</div>',
+	  '</div>'
+	];
+
+	/**
+	 * @class Drag
+	 */
+	var Drag = function Drag(base) {
+	    
+	  var container = base.container.element,
+	      lastX, lastY, currentX, currentY, x, y,
+	      when = {},
+	      dragging = function (evt) {
+	        evt.preventDefault && evt.preventDefault();
+	          
+	        currentX = parseInt(container.style.left, 10) || 0;
+	        currentY = parseInt(container.style.top, 10) || 0;
+	          
+	        x = currentX + (evt.clientX - lastX);
+	        y = currentY + (evt.clientY - lastY);
+	          
+	        when.move.call(undefined, {
+	          target: container,
+	          x: x,
+	          y: y
+	        });
+	        lastX = evt.clientX;
+	        lastY = evt.clientY;
+	      },
+	      stopDragging = function () {
+	        document.removeEventListener('mousemove', dragging, false);
+	        document.removeEventListener('mouseup', stop, false);
+	          
+	        when.end.call(undefined, {
+	          target: container,
+	          x: x,
+	          y: y
+	        });
+	      },
+	      start = function (evt) {
+	        if(evt.button !== 0) return;
+	          
+	        lastX = evt.clientX;
+	        lastY = evt.clientY;
+	          
+	        when.start.call({ target: container });
+	        document.addEventListener('mousemove', dragging, false);
+	        document.addEventListener('mouseup', stopDragging, false);
+	      };
+
+	    base.container.drag_handle.addEventListener('mousedown', start, false);
+	    
+	  return {
+	    when: function (obj) {
+	      when.start = obj.start;
+	      when.move = obj.move;
+	      when.end = obj.end;
+	    }
+	  };
+	};
+
+	/**
+	 * @class Internal
+	 */
+	var Internal = function Internal(base) {
+	  this.Base = base;
+	    
+	  this.container = base.container.element;
+	    
+	  // ready to close when both are chosen
+	  this.closeWhen = { hour: false, minute: false };
+	    
+	  // increment internal ids
+	  this._ids = 0;
+	    
+	  // active picker
+	  this.id_active = undefined;
+	    
+	  // is this opened
+	  this.opened = false;
+	    
+	  // these are targets we're working on
+	  this.targets = [];
+	    
+	  // this will cache DOM <a> hours (and minutes) array among others
+	  this.collection = {
+	    hours: [],
+	    minutes: []
+	  };
+	    
+	  this.events = utils.events();
+	    
+	  this.request_ani_id = undefined;
+	};
+	  
+	Internal.prototype.init = function init() {
+	  this.setFocusListener(this.Base.target);
+	  this.setSelectListener();
+	};
+
+	Internal.prototype.show = function show(id) {
+	  var target = this.targets[id].element;
+	  var target_offset = utils.offset(target);
+	  var container_offset = this.Base.container.size;
+	  var top = target_offset.top + target_offset.height + 5;
+	  var window_ = utils.getWindowSize();
+	    
+	  if (target_offset.left + container_offset.width > window_.width) {
+	    this.container.style.left = '';
+	    this.container.style.right = '5px';
+	  } else {
+	    this.container.style.right = '';
+	    this.container.style.left = target_offset.left + 'px';
+	  }
+	    
+	  if (target_offset.top + container_offset.height > window_.height) {
+	    this.container.style.bottom = '5px';
+	  } else {
+	    this.container.style.top = top + 'px';
+	  }
+	    
+	  this.events.subscribe(eventType.start_fade_in, function ( obj ) {
+	    obj.target.style.opacity = 0;
+	    obj.target.style.display = 'block';
+	  });
+	    
+	  this.request_ani_id = utils.fade(this.events, this.container, 400);
+	    
+	  this.Base.dispatchEvent(eventType.open, {
+	    element: target
+	  });
+	    
+	  this.handleOpen(id);
+	};
+
+	Internal.prototype.hide = function hide() {
+	  this.opened = false;
+	    
+	  this.events.subscribe(eventType.start_fade_out, function ( obj ) {
+	    obj.target.style.opacity = 1;
+	    obj.target.style.display = 'block';
+	  });
+	    
+	  this.events.subscribe(eventType.end_fade_out, function ( obj ) {
+	    obj.target.style.display = 'none';
+	  });
+	    
+	  this.request_ani_id = utils.fade(this.events, this.container, 800, 'out');
+	    
+	  this.Base.dispatchEvent(eventType.close, {
+	    element: this.targets[this.id_active].element
+	  });
+	};
+
+	Internal.prototype.handleOpen = function handleOpen(id) {
+	  var this$1 = this;
+
+	    var this_ = this;
+	  var sel_class = namespace + selected_class;
+	  var hour = this.targets[id].hour;
+	  var minute = this.targets[id].minute;
+	  var value;
+	    
+	  utils.removeClass(this.collection.hours, sel_class);
+	  utils.removeClass(this.collection.minutes, sel_class);
+	    
+	  if (hour && minute) {
+	    this.collection.hours.forEach(function ( element ) {
+	      value = this$1.getHour(element);
+	      if (value == hour) {
+	        utils.addClass(element, sel_class);
+	        return;
+	      }
+	    });
+	      
+	    this.collection.minutes.forEach(function ( element ) {
+	      value = this$1.getMinute(element);
+	      if (value == minute) {
+	        utils.addClass(element, sel_class);
+	        return;
+	      }
+	    });
+	  }
+	    
+	  //one-time fire
+	  document.addEventListener('mousedown', {
+	    handleEvent: function (evt) {
+	      // click inside Picker
+	      if (this_.container.contains(evt.target)) {
+	        return;
+	      }
+	        
+	      var is_clicking_target = false;
+	      this_.targets.forEach(function ( target ) {
+	        if (target.element == evt.target) {
+	          is_clicking_target = true;
+	        }
+	      });
+	        
+	      if (!is_clicking_target && this_.opened) {
+	        this_.hide();
+	      }
+	        
+	      if (this_.targets[id].element != evt.target) {
+	        document.removeEventListener(evt.type, this, false);
+	      }
+	    }
+	  }, false);
+	    
+	  this.opened = true;
+	  this.id_active = id;
+	  this.closeWhen = {
+	    hour: false,
+	    minute: false
+	  };
+	};
+
+	Internal.prototype.handleClose = function handleClose() {
+	  if (this.closeWhen.hour && this.closeWhen.minute) {
+	    this.hide();
+	  }
+	};
+
+	Internal.prototype.getHour = function getHour(element) {
+	  return element.getAttribute(attr.hour);
+	};
+
+	Internal.prototype.getMinute = function getMinute(element) {
+	  return element.getAttribute(attr.minute);
+	};
+
+	Internal.prototype.setSelectListener = function setSelectListener() {
+	  var this$1 = this;
+
+	    var hour_list = utils.$(ids.hour_list);
+	  var minute_list = utils.$(ids.minute_list);
+	  var sel_class = namespace + selected_class;
+	    
+	  this.collection.hours = utils.getAllChildren(hour_list, 'a');
+	  this.collection.minutes = utils.getAllChildren(minute_list, 'a');
+	    
+	  var selectHour = function ( evt ) {
+	    evt.preventDefault();
+	    var active = this$1.targets[this$1.id_active];
+	      
+	    active.hour = this$1.getHour(evt.target);
+	    this$1.Base.dispatchEvent(eventType.change, {
+	      element: active.element,
+	      hour: active.hour,
+	      minute: active.minute
+	    });
+	      
+	    utils.removeClass(this$1.collection.hours, sel_class);
+	    utils.addClass(evt.target, sel_class);
+	    this$1.closeWhen.hour = true;
+	    this$1.handleClose();
+	  };
+	  var selectMinute = function ( evt ) {
+	    evt.preventDefault();
+	    var active = this$1.targets[this$1.id_active];
+	      
+	    active.minute = this$1.getMinute(evt.target);
+	    this$1.Base.dispatchEvent(eventType.change, {
+	      element: active.element,
+	      hour: active.hour,
+	      minute: active.minute
+	    });
+	      
+	    utils.removeClass(this$1.collection.minutes, sel_class);
+	    utils.addClass(evt.target, sel_class);
+	    this$1.closeWhen.minute = true;
+	    this$1.handleClose();
+	  };
+	    
+	  this.collection.hours.forEach(function ( hour ) {
+	    hour.addEventListener('click', selectHour);
+	  });
+	  this.collection.minutes.forEach(function ( minute ) {
+	    minute.addEventListener('click', selectMinute);
+	  });
+	};
+
+	Internal.prototype.setFocusListener = function setFocusListener(target) {
+	  var this$1 = this;
+
+	    var triggerShow = function ( evt ) {
+	    evt.preventDefault();
+	    window.cancelAnimationFrame(this$1.request_ani_id);
+	    this$1.show(evt.target._id);
+	  };
+	    
+	  var ar_target = [], element;
+	  // to array if string
+	  target = Array.isArray(target) ? target : [target];
+	  // merge
+	  Array.prototype.push.apply(ar_target, target);
+	    
+	  ar_target.forEach(function ( el ) {
+	    element = utils.evaluate(el);
+	      
+	    if (!element) return;
+
+	    var id = this$1._ids++;
+	    element._id = id;
+	    this$1.targets[id] = {
+	      element: element
+	    };
+
+	    if (utils.focusable.test(element.nodeName)) {
+	      element.addEventListener('focus', triggerShow, true);
+	    } else if (utils.clickable.test(element.nodeName)) {
+	      element.addEventListener('click', triggerShow, true);
+	    }
+	  });
+	};
+
+	/**
+	 * Based on https://github.com/metafizzy/ev-emitter
+	 * @class Emitter
+	 */
+	var Emitter = function Emitter() {
+	  // set events hash
+	  this._events = this._events || {};
+	    
+	  // set onceEvents hash
+	  this._onceEvents = this._onceEvents || {}
+	};
+	  
+	Emitter.prototype.on = function on(eventName, listener) {
+	  if (!eventName || !listener) {
+	    return;
+	  }
+	  // set listeners array
+	  var listeners = this._events[eventName] = this._events[eventName] || [];
+	  // only add once
+	  if (listeners.indexOf(listener) == -1) {
+	    listeners.push(listener);
+	  }
+	    
+	  return this;
+	};
+	  
+	Emitter.prototype.once = function once(eventName, listener) {
+	  if (!eventName || !listener) {
+	    return;
+	  }
+	  // add event
+	  this.on(eventName, listener);
+	  // set onceListeners object
+	  var onceListeners = this._onceEvents[eventName] = 
+	    this._onceEvents[eventName] || {};
+	  // set flag
+	  onceListeners[listener] = true;
+	    
+	  return this;
+	};
+	Emitter.prototype.off = function off(eventName, listener) {
+	  var listeners = this._events && this._events[eventName];
+	  if (!listeners || !listeners.length) {
+	    return;
+	  }
+	  var index = listeners.indexOf(listener);
+	  if (index != -1) {
+	    listeners.splice(index, 1);
+	  }
+	    
+	  return this;
+	};
+	  
+	Emitter.prototype.dispatchEvent = function dispatchEvent(eventName, obj) {
+	  var this$1 = this;
+	    if ( obj === void 0 ) obj = {};
+
+	    var listeners = this._events && this._events[eventName];
+	    
+	  if (!listeners || !listeners.length) {
+	    return;
+	  }
+
+	  var i = 0;
+	  var listener = listeners[i];
+	  // once stuff
+	  var onceListeners = this._onceEvents && this._onceEvents[eventName];
+	    
+	  while (listener) {
+	    var isOnce = onceListeners && onceListeners[listener];
+	    if (isOnce) {
+	      // remove listener
+	      // remove before trigger to prevent recursion
+	      this$1.off(eventName, listener);
+	      // unset once flag
+	      delete onceListeners[listener];
+	    }
+	    // trigger listener
+	    listener.call(this$1, obj);
+	    // get next listener
+	    i += isOnce ? 0 : 1;
+	    listener = listeners[i];
+	  }
+	    
+	  return this;
+	};
+
+	/**
+	 * Principal class. Will be passed as argument to others.
+	 * @class Base
+	 */
+	var Base = (function (Emitter) {
+	  function Base(target, opt_options) {
+	    if ( opt_options === void 0 ) opt_options = {};
+
+	    utils.assert(
+	        Array.isArray(target) || 
+	        utils.typeOf(target) == 'string' || 
+	        utils.isElement(target),
+	        '`target` should be Element, <Array>Element, String or <Array>String.'
+	    );
+	    
+	    Emitter.call(this);
+	    
+	    this.options = utils.mergeOptions(defaultOptions, opt_options);
+	    this.target = target;
+	    this.container = {};
+	    
+	    var $html = new Html(this);
+	    var container_el = $html.createPicker();
+	    var $drag = new Drag(this);
+	    Base.Internal = new Internal(this);
+	    Base.Internal.init();
+	    
+	    $drag.when({
+	      start: function () {
+	        utils.addClass(container_el, namespace+dragging_class);
+	      },
+	      move: function ( resp ) {
+	        container_el.style.left = "" + (resp.x) + "px";
+	        container_el.style.top = "" + (resp.y) + "px";
+	      },
+	      end: function ( resp ) {
+	        utils.removeClass(container_el, namespace+dragging_class);
+	        if(resp.y < 0) container_el.style.top = 0;
+	      }
+	    });
+	  }
+
+	  Base.prototype = Object.create( Emitter && Emitter.prototype );
+	  Base.prototype.constructor = Base;
+
+	  Base.prototype.show = function show(target) {
+	    Base.Internal.show(utils.evaluate(target));
+	  };
+
+	  Base.prototype.hide = function hide() {
+	    Base.Internal.hide();
+	  };
+
+	  return Base;
+	}(Emitter));
+
+	return Base;
+
+}));
