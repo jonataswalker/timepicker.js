@@ -1,12 +1,16 @@
 {
   "name": "timepicker.js",
-  "version": "1.0.2",
-  "description": "Yet Another (framework free) TimePicker.",
-  "main": "build/timepicker.min.js",
-  "browser": "build/timepicker.min.js",
+  "version": "2.0.0",
+  "description": "A lightweight, customizable, TimePicker. Zero dependencies.",
   "author": "Jonatas Walker",
   "homepage": "https://github.com/jonataswalker/timepicker.js",
   "license": "MIT",
+  "main": "build/timepicker.min.js",
+  "rollup": {
+    "entry": "src/js/base.js",
+    "dest": "build/timepicker.js",
+    "moduleName": "TimePicker"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/jonataswalker/timepicker.js.git"
@@ -15,13 +19,55 @@
     "url": "https://github.com/jonataswalker/timepicker.js/issues"
   },
   "devDependencies": {
-    "jshint": "latest",
-    "js-beautify": "latest",
-    "uglify-js": "latest",
-    "clean-css": "latest",
-    "autoprefixer": "latest",
-    "postcss-cli": "latest",
-    "nodemon": "latest",
-    "parallelshell": "latest"
+    "autoprefixer": "^6.3.6",
+    "clean-css": "^3.4.12",
+    "eslint": "^2.8.0",
+    "node-sass": "^3.4.2",
+    "node-sass-json-importer": "^1.0.6",
+    "nodemon": "^1.9.1",
+    "parallelshell": "^2.0.0",
+    "postcss-cli": "^2.5.1",
+    "rollup": "^0.25.8",
+    "rollup-plugin-buble": "^0.5.0",
+    "rollup-plugin-json": "^2.0.0",
+    "susy": "^2.2.12",
+    "uglify-js": "^2.6.2"
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "amd": true,
+      "commonjs": true,
+      "node": true
+    },
+    "rules": {
+      "block-scoped-var": 1,
+      "dot-notation": 1,
+      "no-alert": 2,
+      "no-caller": 2,
+      "no-eval": 2,
+      "no-proto": 2,
+      "no-redeclare": 2,
+      "valid-typeof": 2,
+      "no-unreachable": 2,
+      "no-irregular-whitespace": 1,
+      "no-invalid-regexp": 1,
+      "no-func-assign": 2,
+      "no-extra-semi": 2,
+      "no-dupe-keys": 2,
+      "no-undef": 2,
+      "no-use-before-define": 2,
+      "no-unused-vars": 1,
+      "strict": [
+        1,
+        "global"
+      ],
+      "key-spacing": 0,
+      "new-cap": 1,
+      "quotes": [
+        1,
+        "single"
+      ]
+    }
   }
 }

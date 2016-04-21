@@ -1,0 +1,28 @@
+// dependencies
+@import "../../node_modules/susy/sass/susy";
+@import "vendor/palette";
+@import "partials/functions";
+@import "partials/mixins";
+
+// global project variables
+
+@import "../../sass-vars.json";
+
+$container-width: $width;
+$container-height: $height;
+
+$font-weight-regular: 400;
+$font-weight-bold: 600;
+
+// Configuring Susy Defaults
+$susy: (
+	container: $container-width,
+	gutters: 1/6,
+	columns: 10,
+	global-box-sizing: border-box
+);
+
+// partials
+@import "partials/reset";
+@import "partials/grids";
+@import "partials/themes";
