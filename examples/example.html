@@ -37,9 +37,10 @@
         padding: 5px 0;
         font-size: 1.5em;
         font-family: inherit;
-        width: 110px;
+        width: 120px;
       }
       .center { text-align: center }
+      .right { position:absolute; right: 5px }
       span.icon {
         position: absolute;
         right: 1px;
@@ -69,6 +70,7 @@
         border: 1px solid transparent;
       }
       a.icon:hover {
+        cursor: pointer;
         background-color: #eee;
         border: 1px solid #ccc;
       }
@@ -83,9 +85,11 @@
     </style>
   </head>
   <body>
-    <h1><a href="https://github.com/jonataswalker/timepicker.js" class="link">Timepicker.js</a> &mdash; Example</h1>
+    <h1>
+      <a href="https://github.com/jonataswalker/timepicker.js" class="link">Timepicker.js</a> &mdash; Example
+    </h1>
     <h3>Focusing:</h3>
-    <div class="table">
+    <div class="table right">
       <span class="icon"><i class="icon"></i></span>
       <input type="text" id="time" placeholder="Time">
       
@@ -93,21 +97,17 @@
     <h3 style="margin-top: 10px">Triggering:</h3>
     <div class="table">
       <input type="text" id="time2" class="center" placeholder="Time">
-      <a href="#" id="link" class="icon">Click to choose</a>
+      <a id="link" class="icon">Click to choose</a>
     </div>
     <div style="margin-top: 10px">
       <pre><code class="javascript">
-        var time2 = document.getElementById('time2');
-
         var timepicker = new TimePicker(['time', 'link'], {
-          lang: 'pt'
+          theme: 'dark', // 'blue-grey'
+          lang: 'en'
         });
-        timepicker.on('change', function(evt){
-          
-          console.info('change');
-          console.info(evt);
-          
-          var value = '' + (evt.hour || '00') + ':' + (evt.minute || '00');
+
+        timepicker.on('change', function(evt) {
+          var value = (evt.hour || '00') + ':' + (evt.minute || '00');
           
           if (evt.element.id == 'link') {
             time2.value = value;
@@ -115,22 +115,10 @@
             evt.element.value = value;
           }
         });
-        timepicker.on('open', function(evt){
-          
-          console.info('opened');
-          console.info(evt);
-          
-        });
-        timepicker.on('close', function(evt){
-          
-          console.info('closed');
-          console.info(evt);
-          
-        });
       </code></pre>
     </div>
     
-    <script src="../build/timepicker.js"></script>
+    <script src="../build/timepicker.min.js"></script>
     <script src="example.js"></script>
 </body>
 </html>
