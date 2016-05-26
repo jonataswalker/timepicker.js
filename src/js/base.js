@@ -4,7 +4,7 @@ import { Internal } from './internal';
 import { Emitter } from './emitter';
 import utils from './utils';
 import * as constants from './constants';
-import * as vars from '../../sass-vars.json';
+import * as vars from '../../config/vars.json';
 
 /**
  * Principal class. Will be passed as argument to others.

@@ -1,6 +1,6 @@
 import utils from './utils';
 import * as constants from './constants';
-import * as vars from '../../sass-vars.json';
+import * as vars from '../../config/vars.json';
 
 /**
  * @class Html

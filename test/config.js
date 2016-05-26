@@ -1,5 +1,5 @@
 var require = patchRequire(require),
-    vars = require('../sass-vars.json'),
+    vars = require('../config/vars.json'),
     port = 8888;
 
 exports.vars = vars;
