@@ -1,4 +1,7 @@
 # Timepicker.js
+
+[![Build Status](https://travis-ci.org/jonataswalker/timepicker.js.svg?branch=master)](https://travis-ci.org/jonataswalker/timepicker.js)
+
 A lightweight, customizable, TimePicker. Zero dependencies.
 
 Because `<input type="time">` is not yet supported in major browsers (MS Edge and Chrome only).
