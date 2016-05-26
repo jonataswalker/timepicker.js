@@ -17,6 +17,8 @@ JS_FINAL	:= $(ROOT_DIR)/$(call GetFromPkg,main)
 CSS_COMBINED 	:= $(BUILD_DIR)/timepicker.css
 CSS_FINAL 	:= $(BUILD_DIR)/timepicker.min.css
 TMPFILE 	:= $(BUILD_DIR)/tmp
+TEST_DIR 	:= $(ROOT_DIR)/test/spec/
+TEST_INC_FILE 	:= $(ROOT_DIR)/test/include.js
 
 JS_SRC 		:= $(SRC_DIR)/js
 SASS_SRC 	:= $(SRC_DIR)/scss
@@ -44,6 +46,9 @@ SASSFLAGS	:= --importer node_modules/node-sass-json-importer/dist/node-sass-json
 ROLLUP	 	:= $(NODE_MODULES)/rollup
 ROLLUPFLAGS 	:= -c config/rollup.config.js
 
+CASPERJS 	:= $(NODE_MODULES)/casperjs
+CASPERJSFLAGS 	:= test $(TEST_DIR) --includes=$(TEST_INC_FILE) --ssl-protocol=any --ignore-ssl-errors=true
+
 define HEADER
 /**
  * $(DESCRIPTION)
@@ -57,7 +62,7 @@ export HEADER
 
 # targets
 .PHONY: ci
-ci: build
+ci: build test
 
 .PHONY: build-watch
 build-watch: build watch
@@ -84,6 +89,10 @@ compile-sass: $(SASS_MAIN_FILE)
 .PHONY: prefix-css
 prefix-css: $(CSS_COMBINED)
 	@$(POSTCSS) $(POSTCSSFLAGS) $^
+
+.PHONY: test
+test:
+	@$(CASPERJS) $(CASPERJSFLAGS)
 
 .PHONY: build
 cleancss: $(CSS_COMBINED)
