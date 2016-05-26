@@ -1,4 +1,4 @@
-import * as vars from '../../sass-vars.json';
+import * as vars from '../../config/vars.json';
 import * as constants from './constants';
 import utils from './utils';
 
