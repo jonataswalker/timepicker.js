@@ -52,11 +52,11 @@ export default class Base extends Emitter {
     });
   }
 
-  show(target) {
-    Base.Internal.show(utils.evaluate(target));
+  show() {
+    Base.Internal.show_();
   }
 
   hide() {
-    Base.Internal.hide();
+    Base.Internal.hide_();
   }
 }

@@ -53,9 +53,11 @@ timepicker.on('change', function(evt){
 ## Methods
 
 #### timepicker.show()
+To be used programatically. Same for `hide()`.
+
+All targets passed to the constructor will be shown.
 
 #### timepicker.hide()
-
 
 ## Events
 
