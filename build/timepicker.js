@@ -1,8 +1,8 @@
 /**
  * A lightweight, customizable, TimePicker. Zero dependencies.
  * https://github.com/jonataswalker/timepicker.js
- * Version: v2.0.0
- * Built: 2016-04-20T22:20:15-0300
+ * Version: v2.0.1
+ * Built: 2016-06-10T08:10:31-0300
  */
 
 (function (global, factory) {
@@ -655,8 +655,14 @@
 	    
 	  this.handleOpen(id);
 	};
+	  
+	Internal.prototype.show_ = function show_() {
+	  var this$1 = this;
 
-	Internal.prototype.hide = function hide() {
+	    this.targets.forEach(function ( each ) { this$1.show(each.element._id); });
+	};
+
+	Internal.prototype.hide = function hide(id) {
 	  this.opened = false;
 	    
 	  this.events.subscribe(eventType.start_fade_out, function ( obj ) {
@@ -671,8 +677,14 @@
 	  this.request_ani_id = utils.fade(this.events, this.container, 800, 'out');
 	    
 	  this.Base.dispatchEvent(eventType.close, {
-	    element: this.targets[this.id_active].element
+	    element: this.targets[id].element
 	  });
+	};
+	  
+	Internal.prototype.hide_ = function hide_() {
+	  var this$1 = this;
+
+	    this.targets.forEach(function ( each ) { this$1.hide(each.element._id); });
 	};
 
 	Internal.prototype.handleOpen = function handleOpen(id) {
@@ -738,9 +750,9 @@
 	  };
 	};
 
-	Internal.prototype.handleClose = function handleClose() {
+	Internal.prototype.handleClose = function handleClose(id) {
 	  if (this.closeWhen.hour && this.closeWhen.minute) {
-	    this.hide();
+	    this.hide(id);
 	  }
 	};
 
@@ -776,7 +788,7 @@
 	    utils.removeClass(this$1.collection.hours, sel_class);
 	    utils.addClass(evt.target, sel_class);
 	    this$1.closeWhen.hour = true;
-	    this$1.handleClose();
+	    this$1.handleClose(this$1.id_active);
 	  };
 	  var selectMinute = function ( evt ) {
 	    evt.preventDefault();
@@ -792,7 +804,7 @@
 	    utils.removeClass(this$1.collection.minutes, sel_class);
 	    utils.addClass(evt.target, sel_class);
 	    this$1.closeWhen.minute = true;
-	    this$1.handleClose();
+	    this$1.handleClose(this$1.id_active);
 	  };
 	    
 	  this.collection.hours.forEach(function ( hour ) {
@@ -953,14 +965,14 @@
 	    
 	    $drag.when({
 	      start: function () {
-	        utils.addClass(container_el, namespace+dragging_class);
+	        utils.addClass(container_el, namespace + dragging_class);
 	      },
 	      move: function ( resp ) {
 	        container_el.style.left = "" + (resp.x) + "px";
 	        container_el.style.top = "" + (resp.y) + "px";
 	      },
 	      end: function ( resp ) {
-	        utils.removeClass(container_el, namespace+dragging_class);
+	        utils.removeClass(container_el, namespace + dragging_class);
 	        if(resp.y < 0) container_el.style.top = 0;
 	      }
 	    });
@@ -969,12 +981,12 @@
 	  Base.prototype = Object.create( Emitter && Emitter.prototype );
 	  Base.prototype.constructor = Base;
 
-	  Base.prototype.show = function show(target) {
-	    Base.Internal.show(utils.evaluate(target));
+	  Base.prototype.show = function show() {
+	    Base.Internal.show_();
 	  };
 
 	  Base.prototype.hide = function hide() {
-	    Base.Internal.hide();
+	    Base.Internal.hide_();
 	  };
 
 	  return Base;
