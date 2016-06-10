@@ -49,6 +49,33 @@ casper.test.begin('opens on link', 1, function(test) {
   test.done();
 });
 
+casper.test.begin('using programatically', 2, function(test) {
+  var link_id = 'link';
+  
+  casper.thenEvaluate(function(link_id) {
+    window.timepicker = new TimePicker(link_id);
+    timepicker.show();
+  }, link_id);
+  
+  casper.wait(150);
+  
+  casper.then(function() {
+    test.assertVisible('.' + vars.namespace + vars.container_class);
+  });
+  
+  casper.thenEvaluate(function() {
+    window.timepicker.hide();
+  });
+  
+  casper.wait(500);
+  
+  casper.then(function() {
+    test.assertNotVisible('.' + vars.namespace + vars.container_class);
+  });
+  
+  test.done();
+});
+
 casper.test.begin('sets time properly', 1, function(test) {
   casper.thenEvaluate(function() {
     var input_focused = document.getElementById('time'),

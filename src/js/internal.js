@@ -76,8 +76,12 @@ export class Internal {
     
     this.handleOpen(id);
   }
+  
+  show_() {
+    this.targets.forEach(each => { this.show(each.element._id); });
+  }
 
-  hide() {
+  hide(id) {
     this.opened = false;
     
     this.events.subscribe(constants.eventType.start_fade_out, obj => {
@@ -92,8 +96,12 @@ export class Internal {
     this.request_ani_id = utils.fade(this.events, this.container, 800, 'out');
     
     this.Base.dispatchEvent(constants.eventType.close, {
-      element: this.targets[this.id_active].element
+      element: this.targets[id].element
     });
+  }
+  
+  hide_() {
+    this.targets.forEach(each => { this.hide(each.element._id); });
   }
 
   handleOpen(id) {
@@ -157,9 +165,9 @@ export class Internal {
     };
   }
 
-  handleClose() {
+  handleClose(id) {
     if (this.closeWhen.hour && this.closeWhen.minute) {
-      this.hide();
+      this.hide(id);
     }
   }
 
@@ -193,7 +201,7 @@ export class Internal {
       utils.removeClass(this.collection.hours, sel_class);
       utils.addClass(evt.target, sel_class);
       this.closeWhen.hour = true;
-      this.handleClose();
+      this.handleClose(this.id_active);
     };
     const selectMinute = evt => {
       evt.preventDefault();
@@ -209,7 +217,7 @@ export class Internal {
       utils.removeClass(this.collection.minutes, sel_class);
       utils.addClass(evt.target, sel_class);
       this.closeWhen.minute = true;
-      this.handleClose();
+      this.handleClose(this.id_active);
     };
     
     this.collection.hours.forEach(hour => {
