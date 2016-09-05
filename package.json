@@ -47,7 +47,7 @@
       "no-alert": 2,
       "no-caller": 2,
       "no-eval": 2,
-      "no-proto": 2,
+      "no-proto": "warn",
       "no-redeclare": 2,
       "valid-typeof": 2,
       "no-unreachable": 2,
@@ -59,16 +59,10 @@
       "no-undef": 2,
       "no-use-before-define": 2,
       "no-unused-vars": 1,
-      "strict": [
-        1,
-        "global"
-      ],
+      "strict": [1, "global"],
       "key-spacing": 0,
       "new-cap": 1,
-      "quotes": [
-        1,
-        "single"
-      ]
+      "quotes": [1, "single"]
     }
   }
 }
