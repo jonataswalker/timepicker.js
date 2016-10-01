@@ -59,4 +59,15 @@ export default class Base extends Emitter {
   hide() {
     Base.Internal.hide_();
   }
+
+  setTarget(target) {
+	utils.assert(
+		Array.isArray(target) ||
+		utils.typeOf(target) == 'string' ||
+		utils.isElement(target),
+		'`target` should be Element, <Array>Element, String or <Array>String.'
+	);
+	this.target = target;
+	Base.Internal.setFocusListener(this.target);
+  }
 }
