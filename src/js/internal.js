@@ -90,15 +90,13 @@ export class Internal {
       obj.target.style.display = 'none';
     });
     this.request_ani_id = utils.fade(this.events, this.container, 800, 'out');
-    console.warn(this.targets);
-    console.warn(id);
     this.Base.dispatchEvent(EVENT_TYPE.close, {
       element: this.targets[id].element
     });
   }
 
   hide_() {
-    this.targets.forEach(each => { console.warn(each); this.hide(each.element._id); });
+    this.targets.forEach(each => { this.hide(each.element._id); });
   }
 
   handleOpen(id) {
