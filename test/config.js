@@ -1,4 +1,4 @@
-var require = patchRequire(require),
+var require = patchRequire(require), // eslint-disable-line no-use-before-define
     vars = require('../config/vars.json'),
     port = 8888;
 

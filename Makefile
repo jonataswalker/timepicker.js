@@ -61,8 +61,51 @@ endef
 export HEADER
 
 # targets
+.PHONY: default
+default: help
+
+.PHONY: help
+help:
+	@echo
+	@echo "The most common targets are:"
+	@echo
+	@echo "- install                 Install node dependencies"
+	@echo "- build                   Build JavaScript and CSS files"
+	@echo "- build-watch             Build files and watch for modifications"
+	@echo "- test                    Run unit tests in the console"
+	@echo "- help                    Display this help message"
+	@echo
+	@echo "Other less frequently used targets are:"
+	@echo
+	@echo "- lint                    Check the code with the linter"
+	@echo "- build-js                Build JavaScript files"
+	@echo "- build-css               Build CSS files"
+	@echo "- ci                      Run the full continuous integration process"
+	@echo
+
+.PHONY: npm-install
+npm-install: install
+
+$(BUILD_DIR)/timestamps/node-modules-timestamp: package.json
+	@mkdir -p $(@D)
+	npm install
+	@touch $@
+
+.PHONY: install
+install: $(BUILD_DIR)/timestamps/node-modules-timestamp
+
+.PHONY: clean
+clean:
+	@rm -f $(BUILD_DIR)/timestamps/eslint-timestamp
+	@rm -f $(JS_FINAL)
+	@rm -f $(JS_DEBUG)
+
 .PHONY: ci
-ci: build test
+ci: test
+
+.PHONY: test
+test: build
+	@$(CASPERJS) $(CASPERJSFLAGS)
 
 .PHONY: build-watch
 build-watch: build watch
@@ -72,7 +115,7 @@ watch:
 	$(PARALLELSHELL) "make watch-js" "make watch-sass"
 
 .PHONY: build
-build: build-js build-css
+build: install clean build-js build-css
 
 .PHONY: build-js
 build-js: bundle-js lint uglifyjs add-js-header
@@ -90,11 +133,7 @@ compile-sass: $(SASS_MAIN_FILE)
 prefix-css: $(CSS_COMBINED)
 	@$(POSTCSS) $(POSTCSSFLAGS) $^
 
-.PHONY: test
-test:
-	@$(CASPERJS) $(CASPERJSFLAGS)
-
-.PHONY: build
+.PHONY: cleancss
 cleancss: $(CSS_COMBINED)
 	@cat $^ | $(CLEANCSS) $(CLEANCSSFLAGS) > $(CSS_FINAL)
 
@@ -102,9 +141,14 @@ cleancss: $(CSS_COMBINED)
 bundle-js:
 	@$(ROLLUP) $(ROLLUPFLAGS)
 
-.PHONY: lint
-lint: $(JS_DEBUG)
+$(BUILD_DIR)/timestamps/eslint-timestamp: $(SRC_DIR) $(ROOT_DIR)/test/
+	@mkdir -p $(@D)
+	@echo "Running eslint ..."
 	@$(ESLINT) $^
+	@touch $@
+
+.PHONY: lint
+lint: $(BUILD_DIR)/timestamps/eslint-timestamp
 
 .PHONY: uglifyjs
 uglifyjs: $(JS_DEBUG)
@@ -140,4 +184,4 @@ watch-js: $(JS_SRC)
 watch-sass: $(SASS_SRC)
 	@$(NODEMON) --on-change-only --watch $^ --ext scss --ignore $(SASS_VENDOR_SRC) --exec "make build-css"
 	
-.DEFAULT_GOAL := build
+.DEFAULT_GOAL := default
