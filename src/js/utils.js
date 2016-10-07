@@ -1,4 +1,4 @@
-import * as constants from './constants';
+import { eventType as EVENT_TYPE } from './constants';
 /**
  * @module utils
  * All the helper functions needed in this project
@@ -17,29 +17,34 @@ export default {
    */
   addClass(element, classname, timeout) {
     if (Array.isArray(element)) {
-      element.forEach(each => { this.addClass(each, classname) });
+      element.forEach(each => {
+        this.addClass(each, classname);
+      });
       return;
     }
-    
-    const array = (Array.isArray(classname)) ? classname : classname.split(/\s+/);
+
+    const array = (Array.isArray(classname)) ?
+        classname : classname.split(/\s+/);
     let i = array.length;
-    
-    while(i--) {
+
+    while (i--) {
       if (!this.hasClass(element, array[i])) {
         this._addClass(element, array[i], timeout);
       }
     }
   },
-  _addClass(el, c, timeout) {
+  _addClass(el, klass, timeout) {
     // use native if available
     if (el.classList) {
-      el.classList.add(c);
+      el.classList.add(klass);
     } else {
-      el.className = (el.className +' '+ c).trim();
+      el.className = (el.className + ' ' + klass).trim();
     }
-    
+
     if (timeout && this.isNumeric(timeout)) {
-      window.setTimeout(() => { this._removeClass(el, c) }, timeout);
+      window.setTimeout(() => {
+        this._removeClass(el, klass);
+      }, timeout);
     }
   },
   /**
@@ -50,28 +55,31 @@ export default {
    */
   removeClass(element, classname, timeout) {
     if (Array.isArray(element)) {
-      element.forEach(each => { this.removeClass(each, classname, timeout) });
+      element.forEach(each => {
+        this.removeClass(each, classname, timeout);
+      });
       return;
     }
-    
-    const array = (Array.isArray(classname)) ? classname : classname.split(/\s+/);
+
+    const array = (Array.isArray(classname)) ?
+        classname : classname.split(/\s+/);
     let i = array.length;
-    
-    while(i--) {
+
+    while (i--) {
       if (this.hasClass(element, array[i])) {
         this._removeClass(element, array[i], timeout);
       }
     }
   },
-  _removeClass(el, c, timeout) {
+  _removeClass(el, klass, timeout) {
     if (el.classList) {
-      el.classList.remove(c);
+      el.classList.remove(klass);
     } else {
-      el.className = (el.className.replace(this.classRegex(c), ' ')).trim();
+      el.className = (el.className.replace(this.classRegex(klass), ' ')).trim();
     }
     if (timeout && this.isNumeric(timeout)) {
       window.setTimeout(() => {
-        this._addClass(el, c);
+        this._addClass(el, klass);
       }, timeout);
     }
   },
@@ -82,8 +90,9 @@ export default {
    */
   hasClass(element, c) {
     // use native if available
-    return (element.classList) ?
-      element.classList.contains(c) : this.classRegex(c).test(element.className);
+    return (element.classList)
+        ? element.classList.contains(c)
+        : this.classRegex(c).test(element.className);
   },
   /**
    * @param {Element|Array<Element>} element DOM node or array of nodes.
@@ -91,10 +100,10 @@ export default {
    */
   toggleClass(element, classname) {
     if (Array.isArray(element)) {
-      element.forEach(each => { this.toggleClass(each, classname) });
+      element.forEach(each => { this.toggleClass(each, classname); });
       return;
     }
-    
+
     // use native if available
     if (element.classList) {
       element.classList.toggle(classname);
@@ -116,7 +125,7 @@ export default {
       return (!!obj && obj instanceof HTMLElement);
     }
     // Older browsers
-    return (!!obj && typeof obj === 'object' && 
+    return (!!obj && typeof obj === 'object' &&
         obj.nodeType === 1 && !!obj.nodeName);
   },
   getAllChildren(node, tag) {
@@ -126,14 +135,14 @@ export default {
     const all = this.find('*', document, true);
     const len = all.length;
 
-    while(++i < len) {
+    while (++i < len) {
       zIndex = parseInt(window.getComputedStyle(all[i]).zIndex, 10);
       max = (zIndex) ? Math.max(max, zIndex) : max;
     }
     return max;
   },
   /**
-   * Overwrites obj1's values with obj2's and adds 
+   * Overwrites obj1's values with obj2's and adds
    * obj2's if non existent in obj1
    * @returns {Object} a new object based on obj1 and obj2
    */
@@ -147,15 +156,15 @@ export default {
     let elem;
     if (Array.isArray(node)) {
       elem = document.createElement(node[0]);
-      
+
       if (node[1].id) elem.id = node[1].id;
       if (node[1].classname) elem.className = node[1].classname;
-      
+
       if (node[1].attr) {
         let attr = node[1].attr;
         if (Array.isArray(attr)) {
           let i = -1;
-          while(++i < attr.length) {
+          while (++i < attr.length) {
             elem.setAttribute(attr[i].name, attr[i].value);
           }
         } else {
@@ -167,7 +176,7 @@ export default {
     }
     elem.innerHTML = html;
     let frag = document.createDocumentFragment();
-    
+
     while (elem.childNodes[0]) {
       frag.appendChild(elem.childNodes[0]);
     }
@@ -175,12 +184,12 @@ export default {
     return elem;
   },
   find(selector, context, find_all) {
-    let simpleRe = /^(#?[\w-]+|\.[\w-.]+)$/, 
-        periodRe = /\./g, 
+    let simpleRe = /^(#?[\w-]+|\.[\w-.]+)$/,
+        periodRe = /\./g,
         slice = [].slice,
         matches = [];
     if (simpleRe.test(selector)) {
-      switch(selector[0]) {
+      switch (selector[0]) {
         case '#':
           matches = [this.$(selector.substr(1))];
           break;
@@ -191,12 +200,12 @@ export default {
         default:
           matches = slice.call(context.getElementsByTagName(selector));
       }
-    } else{
-      // If not a simple selector, query the DOM as usual 
+    } else {
+      // If not a simple selector, query the DOM as usual
       // and return an array for easier usage
       matches = slice.call(context.querySelectorAll(selector));
     }
-    
+
     return (find_all) ? matches : matches[0];
   },
   offset(element) {
@@ -230,14 +239,16 @@ export default {
       case 'string':
         el = this.$(element);
         break;
+      default:
+        console.warn('Unknown type');
     }
     this.assert(el, 'Can\'t evaluate: @param ' + element);
     return el;
   },
   toType(obj) {
-    if (obj == window && obj.document && obj.location) {
+    if (obj === window && obj.document && obj.location) {
       return 'window';
-    } else if (obj == document) {
+    } else if (obj === document) {
       return 'htmldocument';
     } else if (typeof obj === 'string') {
       return 'string';
@@ -246,8 +257,7 @@ export default {
     }
   },
   typeOf(obj) {
-    return ({}).toString.call(obj)
-      .match(/\s([a-zA-Z]+)/)[1].toLowerCase();
+    return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
   },
   /**
    * Pub/Sub
@@ -255,29 +265,25 @@ export default {
   events() {
     let topics = {};
     let hOP = topics.hasOwnProperty;
-    
     return {
-      subscribe: function(topic, listener) {
+      subscribe: function (topic, listener) {
         // Create the topic's object if not yet created
-        if(!hOP.call(topics, topic)) topics[topic] = [];
-
+        if (!hOP.call(topics, topic)) topics[topic] = [];
         // Add the listener to queue
-        let index = topics[topic].push(listener) -1;
-        
+        let index = topics[topic].push(listener) - 1;
         // Provide handle back for removal of topic
         return {
-          remove: function() {
+          remove: function () {
             delete topics[topic][index];
           }
         };
       },
-      publish: function(topic, info) {
+      publish: function (topic, info) {
         // If the topic doesn't exist, or there's no listeners
         // in queue, just leave
-        if(!hOP.call(topics, topic)) return;
-      
+        if (!hOP.call(topics, topic)) return;
         // Cycle through topics queue, fire!
-        topics[topic].forEach(function(item) {
+        topics[topic].forEach(function (item) {
           item(info !== undefined ? info : {});
         });
       }
@@ -293,43 +299,41 @@ export default {
     let opacity;
     let start = null, finished = false;
     let request_id;
-    
-    let event_start = action == 'in' ? 
-      constants.eventType.start_fade_in : constants.eventType.start_fade_out;
-    
-    let event_end = action == 'in' ? 
-      constants.eventType.end_fade_in : constants.eventType.end_fade_out;
-    
+
+    let event_start = action === 'in'
+        ? EVENT_TYPE.start_fade_in
+        : EVENT_TYPE.start_fade_out;
+
+    let event_end = action === 'in'
+        ? EVENT_TYPE.end_fade_in
+        : EVENT_TYPE.end_fade_out;
+
     const tick = timestamp => {
       if (!start) {
         publisher.publish(event_start, {
           target: element
         });
-        
         start = timestamp;
       }
-      
-      if (action == 'in') {
+
+      if (action === 'in') {
         opacity = +element.style.opacity + (timestamp - start) / time;
         finished = opacity >= 1;
       } else {
         opacity = +element.style.opacity - (timestamp - start) / time;
         finished = opacity <= 0;
       }
-      
+
       element.style.opacity = opacity;
-      
+
       if (finished) {
-        publisher.publish(event_end, {
-          target: element
-        });
+        publisher.publish(event_end, { target: element });
       } else {
         request_id = window.requestAnimationFrame(tick);
       }
     };
-    
+
     request_id = window.requestAnimationFrame(tick);
-    
     return request_id;
   },
   assert(condition, message) {
@@ -341,4 +345,4 @@ export default {
       throw message; // Fallback
     }
   }
-}
+};

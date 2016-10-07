@@ -13,30 +13,26 @@ import * as vars from '../../config/vars.json';
 export default class Base extends Emitter {
   /**
    * @constructor
-   * @param {String|Array<String>|Element|Array<Element>} target String or 
+   * @param {String|Array<String>|Element|Array<Element>} target String or
    * array of string, DOM node or array of nodes.
    * @param {Object|undefined} opt_options Options.
    */
   constructor(target, opt_options = {}) {
-    utils.assert(
-        Array.isArray(target) || 
-        utils.typeOf(target) == 'string' || 
-        utils.isElement(target),
+    utils.assert(Array.isArray(target)
+        || utils.typeOf(target) === 'string'
+        || utils.isElement(target),
         '`target` should be Element, <Array>Element, String or <Array>String.'
     );
-    
     super();
-    
     this.options = utils.mergeOptions(constants.defaultOptions, opt_options);
     this.target = target;
     this.container = {};
-    
     const $html = new Html(this);
     const container_el = $html.createPicker();
     const $drag = new Drag(this);
     Base.Internal = new Internal(this);
     Base.Internal.init();
-    
+
     $drag.when({
       start: () => {
         utils.addClass(container_el, vars.namespace + vars.dragging_class);
@@ -47,7 +43,7 @@ export default class Base extends Emitter {
       },
       end: resp => {
         utils.removeClass(container_el, vars.namespace + vars.dragging_class);
-        if(resp.y < 0) container_el.style.top = 0;
+        if (resp.y < 0) container_el.style.top = 0;
       }
     });
   }
@@ -61,13 +57,12 @@ export default class Base extends Emitter {
   }
 
   setTarget(target) {
-	utils.assert(
-		Array.isArray(target) ||
-		utils.typeOf(target) == 'string' ||
-		utils.isElement(target),
-		'`target` should be Element, <Array>Element, String or <Array>String.'
-	);
-	this.target = target;
-	Base.Internal.setFocusListener(this.target);
+    utils.assert(Array.isArray(target)
+        || utils.typeOf(target) === 'string'
+        || utils.isElement(target),
+        '`target` should be Element, <Array>Element, String or <Array>String.'
+    );
+    this.target = target;
+    Base.Internal.setFocusListener(this.target);
   }
 }
