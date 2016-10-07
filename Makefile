@@ -141,7 +141,9 @@ cleancss: $(CSS_COMBINED)
 bundle-js:
 	@$(ROLLUP) $(ROLLUPFLAGS)
 
-$(BUILD_DIR)/timestamps/eslint-timestamp: $(SRC_DIR) $(ROOT_DIR)/test/
+$(BUILD_DIR)/timestamps/eslint-timestamp: $(SRC_DIR) \
+					  $(ROOT_DIR)/test/ \
+					  $(ROOT_DIR)/examples/
 	@mkdir -p $(@D)
 	@echo "Running eslint ..."
 	@$(ESLINT) $^
