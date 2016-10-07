@@ -1,11 +1,16 @@
 {
   "name": "timepicker.js",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "A lightweight, customizable, TimePicker. Zero dependencies.",
   "author": "Jonatas Walker",
   "homepage": "https://github.com/jonataswalker/timepicker.js",
   "license": "MIT",
   "main": "build/timepicker.min.js",
+  "keywords": [
+    "timepicker",
+    "time",
+    "picker"
+  ],
   "rollup": {
     "entry": "src/js/base.js",
     "dest": "build/timepicker.js",
