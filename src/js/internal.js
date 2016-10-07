@@ -136,7 +136,7 @@ export class Internal {
           if (target.element === evt.target) is_clicking_target = true;
         });
 
-        if (!is_clicking_target && this_.opened) this_.hide();
+        if (!is_clicking_target && this_.opened) this_.hide(id);
 
         if (this_.targets[id].element !== evt.target) {
           document.removeEventListener(evt.type, this, false);
