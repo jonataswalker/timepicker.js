@@ -59,6 +59,9 @@ All targets passed to the constructor will be shown.
 
 #### timepicker.hide()
 
+#### timepicker.setTarget(target)
+`target` can be: `{String|Array<String>|Element|Array<Element>}` String or array of string, DOM node or array of nodes.
+
 ## Events
 
 ```javascript
