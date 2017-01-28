@@ -1,11 +1,11 @@
 {
   "name": "timepicker.js",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "A lightweight, customizable, TimePicker. Zero dependencies.",
   "author": "Jonatas Walker",
   "homepage": "https://github.com/jonataswalker/timepicker.js",
   "license": "MIT",
-  "main": "build/timepicker.min.js",
+  "main": "build/timepicker.js",
   "keywords": [
     "timepicker",
     "time",
@@ -18,7 +18,7 @@
   "scripts": {
     "lint": "eslint --ext .js src/js",
     "build:css": "node build-css",
-    "build:js": "yarn run lint && rollup -c",
+    "build:js": "yarn run lint && rollup -c && node minify",
     "build": "yarn run build:js && yarn run build:css",
     "watch:js": "nodemon --on-change-only --watch src --ext js --exec 'yarn run build:js'",
     "watch:css": "nodemon --on-change-only --watch src --ext scss --exec 'yarn run build:css'",
