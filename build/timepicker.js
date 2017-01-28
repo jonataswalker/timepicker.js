@@ -1,8 +1,8 @@
-/**
+/*!
+ * timepicker.js - v2.1.0
  * A lightweight, customizable, TimePicker. Zero dependencies.
  * https://github.com/jonataswalker/timepicker.js
- * Version: v2.1.0
- * Built: 2016-10-07T14:04:35-03:00
+ * Built: Sat Jan 28 2017 15:03:05 GMT-0200 (BRST)
  */
 
 (function (global, factory) {

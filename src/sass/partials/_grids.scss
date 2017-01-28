@@ -21,35 +21,13 @@
 	  text-decoration: none;
 	  outline: none;
 	}
-	
-	.#{$namespace}#{$header_class} {
-		position: relative;
-		font-weight: $font-weight-bold;
-		text-align: center;
-		cursor: grab;
-		@include line-height(30);
-		@include clearfix;
-	}
 
 	&.#{$namespace}#{$dragging_class} {
 		opacity: .85 !important;
-		.#{$namespace}#{$header_class} {
-			cursor: grabbing;
-		}
+
+		.#{$namespace}#{$header_class} { cursor: grabbing }
 	}
 
-	.#{$namespace}#{$body_class} {
-		padding: 2px 0;
-		@include clearfix;
-	}
-
-	.#{$namespace}#{$hour_class} {
-		@include span(6.5);
-	}
-
-	.#{$namespace}#{$minute_class} {
-		@include span(3.5 last);
-	}
 
 	ol {
 		text-align: center;
@@ -79,4 +57,26 @@
 			}
 		}
 	}
+}
+
+.#{$namespace}#{$header_class} {
+	position: relative;
+	font-weight: $font-weight-bold;
+	text-align: center;
+	cursor: grab;
+	@include line-height(30);
+	@include clearfix;
+}
+
+.#{$namespace}#{$body_class} {
+	padding: 2px 0;
+	@include clearfix;
+}
+
+.#{$namespace}#{$hour_class} {
+	@include span(6.5);
+}
+
+.#{$namespace}#{$minute_class} {
+	@include span(3.5 last);
 }
