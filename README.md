@@ -1,13 +1,29 @@
 # Timepicker.js
 
-[![Build Status](https://travis-ci.org/jonataswalker/timepicker.js.svg?branch=master)](https://travis-ci.org/jonataswalker/timepicker.js)
-
-[![NPM](https://nodei.co/npm/timepicker.js.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/timepicker.js/)
+<p align="center">
+  <a href="https://travis-ci.org/jonataswalker/timepicker.js">
+    <img src="https://travis-ci.org/jonataswalker/timepicker.js.svg?branch=master" alt="build status">
+  </a>
+  <a href="https://www.npmjs.com/package/timepicker.js">
+    <img src="https://img.shields.io/npm/v/timepicker.js.svg"
+      alt="npm version">
+  </a>
+  <a href="https://github.com/jonataswalker/timepicker.js/blob/master/LICENSE.md">
+    <img src="https://img.shields.io/npm/l/timepicker.js.svg"
+      alt="license">
+  </a>
+  <a href="https://david-dm.org/jonataswalker/timepicker.js">
+    <img src="https://david-dm.org/jonataswalker/timepicker.js/status.svg"
+      alt="dependency status">
+  </a>
+  <a href="https://david-dm.org/jonataswalker/timepicker.js">
+    <img src="https://david-dm.org/jonataswalker/timepicker.js/dev-status.svg" alt="devDependency status">
+  </a>
+</p>
 
 A lightweight, customizable, TimePicker. Zero dependencies.
 
 Because `<input type="time">` is not yet supported in major browsers (MS Edge and Chrome only).
-
 
 ![Timepicker anim](https://raw.githubusercontent.com/jonataswalker/timepicker.js/screenshot/images/anim.gif)
 
@@ -33,7 +49,7 @@ var timepicker = new TimePicker(['field1', 'field2'], {
 });
 timepicker.on('change', function(evt){
   console.info(evt);
-  
+
   var value = (evt.hour || '00') + ':' + (evt.minute || '00');
   evt.element.value = value;
 });
@@ -72,13 +88,13 @@ timepicker.on('open', function(evt){
 });
 
 timepicker.on('close', function(evt){
-  
+
 });
 
 timepicker.on('change', function(evt){
-  
+
   var hour = evt.hour;
   var minute = evt.minute;
-  
+
 });
 ```
