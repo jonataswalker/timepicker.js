@@ -2,6 +2,7 @@
   "namespace": "_jw-tpk",
   "width": "260px",
   "height": "140px",
+  "container_id": "-container-id",
   "container_class": "-container",
   "header_class": "-header",
   "body_class": "-body",

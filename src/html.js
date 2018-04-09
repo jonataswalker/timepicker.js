@@ -51,10 +51,11 @@ export class Html {
     Html.picker[index_hour_title] = LANG[options.lang].hour;
     Html.picker[index_minute_title] = LANG[options.lang].minute;
 
-    let container = createElement([
-      'div', { classname:
-        CLASSNAME.container + ' ' + VARS.namespace + '-' + options.theme }
-    ], Html.picker.join(''));
+    const ct = `${CLASSNAME.container} ${VARS.namespace}-${options.theme}`;
+    const container = createElement(
+      ['div', { id: VARS.container_id, classname: ct }],
+      Html.picker.join('')
+    );
 
     container.style.zIndex = getMaxZIndex() + 10;
     container.style.visibility = 'hidden';
