@@ -11,7 +11,7 @@
 	box-sizing: border-box;
 
 	@include container($width:$container-width);
-  @include simple-nested-reset;
+  @include nested-reset;
 	@include line-height(16);
 	@include font-size(16);
 
@@ -65,8 +65,11 @@
 	font-weight: $font-weight-bold;
 	text-align: center;
 	cursor: grab;
-	@include line-height(30);
 	@include clearfix;
+
+	> div {
+		padding: 5px 0;
+	}
 }
 
 .#{$namespace}#{$body_class} {
