@@ -33,7 +33,7 @@ See [here a demo](http://rawgit.com/jonataswalker/timepicker.js/master/examples/
 
 ## How to use it?
 
-##### &#8594; [NPM](https://www.npmjs.com/package/scroll-watcher)
+##### &#8594; [NPM](https://www.npmjs.com/package/timepicker.js)
 ```shell
 npm i timepicker.js
 ```
