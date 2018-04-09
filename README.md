@@ -32,13 +32,19 @@ See [here a demo](http://rawgit.com/jonataswalker/timepicker.js/master/examples/
 
 
 ## How to use it?
-##### CDN Hosted - [jsDelivr](http://www.jsdelivr.com/projects/timepicker.js)
+
+##### &#8594; [NPM](https://www.npmjs.com/package/scroll-watcher)
+```shell
+npm i timepicker.js
+```
+
+##### &#8594; CDN Hosted - [jsDelivr](http://www.jsdelivr.com/projects/timepicker.js)
 Load CSS and Javascript:
 ```HTML
 <link href="//cdn.jsdelivr.net/timepicker.js/latest/timepicker.min.css"  rel="stylesheet">
 <script src="//cdn.jsdelivr.net/timepicker.js/latest/timepicker.min.js"></script>
 ```
-##### Self hosted
+##### &#8594; Self hosted
 Download [latest release](https://github.com/jonataswalker/timepicker.js/releases/latest) and (obviously) load CSS and Javascript.
 
 ##### Instantiate with some options and listen to changes
