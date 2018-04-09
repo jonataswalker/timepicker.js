@@ -1,9 +1,5 @@
-import utils from './utils';
-import {
-  CLASSNAME,
-  VARS,
-  lang as LANG
-} from './constants';
+import { createElement, getMaxZIndex, offset } from './helpers/dom';
+import { CLASSNAME, VARS, LANG } from './constants';
 
 /**
  * @class Html
@@ -55,22 +51,22 @@ export class Html {
     Html.picker[index_hour_title] = LANG[options.lang].hour;
     Html.picker[index_minute_title] = LANG[options.lang].minute;
 
-    let container = utils.createElement([
+    let container = createElement([
       'div', { classname:
         CLASSNAME.container + ' ' + VARS.namespace + '-' + options.theme }
     ], Html.picker.join(''));
 
-    container.style.zIndex = utils.getMaxZIndex() + 10;
+    container.style.zIndex = getMaxZIndex() + 10;
     container.style.visibility = 'hidden';
     document.body.appendChild(container);
 
-    const offset = utils.offset(container);
+    const _offset_ = offset(container);
 
     // store element container and dimensions
     this.Base.container = {
       size: {
-        width: offset.width,
-        height: offset.height
+        width: _offset_.width,
+        height: _offset_.height
       },
       element: container,
       drag_handle: container.querySelector(`.${CLASSNAME.header}`)

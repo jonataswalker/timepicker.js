@@ -2,9 +2,9 @@ import { Html } from './html';
 import { Drag } from './drag';
 import { Internal } from './internal';
 import { Emitter } from './emitter';
-import utils from './utils';
-import * as constants from './constants';
-import * as vars from '../../config/vars.json';
+import { assert, mergeOptions } from './helpers/mix';
+import { isElement, addClass, removeClass } from './helpers/dom';
+import { DEFAULT_OPTIONS, VARS } from './constants';
 
 /**
  * Principal class. Will be passed as argument to others.
@@ -18,13 +18,15 @@ export default class Base extends Emitter {
    * @param {Object|undefined} opt_options Options.
    */
   constructor(target, opt_options = {}) {
-    utils.assert(Array.isArray(target)
-        || utils.typeOf(target) === 'string'
-        || utils.isElement(target),
-        '`target` should be Element, <Array>Element, String or <Array>String.'
+    assert(
+      Array.isArray(target)
+        || typeof target === 'string'
+        || isElement(target),
+      '`target` should be Element, <Array>Element, String or <Array>String.'
     );
+
     super();
-    this.options = utils.mergeOptions(constants.defaultOptions, opt_options);
+    this.options = mergeOptions(DEFAULT_OPTIONS, opt_options);
     this.target = target;
     this.container = {};
     const $html = new Html(this);
@@ -35,14 +37,14 @@ export default class Base extends Emitter {
 
     $drag.when({
       start: () => {
-        utils.addClass(container_el, vars.namespace + vars.dragging_class);
+        addClass(container_el, VARS.namespace + VARS.dragging_class);
       },
       move: resp => {
         container_el.style.left = `${resp.x}px`;
         container_el.style.top = `${resp.y}px`;
       },
       end: resp => {
-        utils.removeClass(container_el, vars.namespace + vars.dragging_class);
+        removeClass(container_el, VARS.namespace + VARS.dragging_class);
         if (resp.y < 0) container_el.style.top = 0;
       }
     });
@@ -57,10 +59,11 @@ export default class Base extends Emitter {
   }
 
   setTarget(target) {
-    utils.assert(Array.isArray(target)
-        || utils.typeOf(target) === 'string'
-        || utils.isElement(target),
-        '`target` should be Element, <Array>Element, String or <Array>String.'
+    assert(
+      Array.isArray(target)
+        || typeof target === 'string'
+        || isElement(target),
+      '`target` should be Element, <Array>Element, String or <Array>String.'
     );
     this.target = target;
     Base.Internal.setFocusListener(this.target);

@@ -9,10 +9,11 @@
 	overflow: hidden;
 	border-radius: 3px;
 	box-sizing: border-box;
-	@include container;
+
+	@include container($width:$container-width);
+  @include simple-nested-reset;
 	@include line-height(16);
 	@include font-size(16);
-	@include border-box-sizing;
 
 	*,
 	*:hover,
@@ -74,9 +75,9 @@
 }
 
 .#{$namespace}#{$hour_class} {
-	@include span(6.5);
+	@include span(6 of $columns);
 }
 
 .#{$namespace}#{$minute_class} {
-	@include span(3.5 last);
+	@include span(4 last);
 }

@@ -7,13 +7,13 @@ var fs = require('fs'),
     jsonImporter = require('node-sass-json-importer'),
     autoprefixer = require('autoprefixer'),
     postcss = require('postcss'),
-    postcssImport = require('postcss-import'),
+    // postcssImport = require('postcss-import'),
     postcssReport = require('postcss-reporter'),
-    styleLint = require('stylelint'),
+    // styleLint = require('stylelint'),
     cssnano = require('cssnano'),
-    pkg = require('./package.json');
+    pkg = require('../package.json');
 
-var banner = fs.readFileSync('banner.js', 'utf-8')
+var banner = fs.readFileSync('./build/banner.js', 'utf-8')
   .replace('${name}', pkg.name)
   .replace('${description}', pkg.description)
   .replace('${homepage}', pkg.homepage)
@@ -22,26 +22,26 @@ var banner = fs.readFileSync('banner.js', 'utf-8')
 
 
 sass.render({
-  file: 'src/sass/main.scss',
+  file: './src/sass/main.scss',
   importer: jsonImporter
 }, (err, result) => {
   if (err) throw err.message;
   let css, cssMin;
   const prefixer = postcss([
-    postcssImport({ plugins: [styleLint()] }),
+    // postcssImport({ plugins: [styleLint()] }),
     autoprefixer({ browsers: ['> 5%'] }),
     postcssReport({ clearMessages: true })
   ]);
-  prefixer.process(result.css).then((res) => {
+  prefixer.process(result.css, { from: undefined }).then((res) => {
     res.warnings().forEach((warn) => {
       console.warn(warn.toString());
     });
     css = res.css;
-    fs.writeFileSync('build/timepicker.css', banner + css);
+    fs.writeFileSync('./dist/timepicker.css', banner + css);
 
     cssnano.process(css).then((r) => {
       cssMin = r.css;
-      fs.writeFileSync('build/timepicker.min.css', banner + cssMin);
+      fs.writeFileSync('./dist/timepicker.min.css', banner + cssMin);
 
       const cssSize = bytes(Buffer.byteLength(css));
       const cssMinSize = bytes(Buffer.byteLength(cssMin));

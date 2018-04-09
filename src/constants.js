@@ -1,6 +1,6 @@
-import * as _VARS from '../../config/vars.json';
+import * as _VARS from '../config/vars.json';
 
-export const eventType = {
+export const EVENT_TYPE = {
   open: 'open',
   close: 'close',
   change: 'change',
@@ -10,12 +10,16 @@ export const eventType = {
   end_fade_out: 'end-fade-out'
 };
 
-export const defaultOptions = {
+export const DEFAULT_OPTIONS = {
   lang: 'en',
   theme: 'dark'
 };
 
-export const lang = {
+export const FOCUSABLE = /^(?:input|select|textarea|button|object)$/i;
+
+export const CLICKABLE = /^(?:a|area)$/i;
+
+export const LANG = {
   en: {
     hour: 'Hour',
     minute: 'Minute'

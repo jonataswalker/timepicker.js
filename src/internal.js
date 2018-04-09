@@ -1,9 +1,20 @@
-import utils from './utils';
 import {
   CLASSNAME,
   VARS,
-  eventType as EVENT_TYPE
+  EVENT_TYPE,
+  FOCUSABLE,
+  CLICKABLE
 } from './constants';
+import {
+  offset,
+  getWindowSize,
+  addClass,
+  removeClass,
+  getAllChildren,
+  evaluate,
+  $
+} from './helpers/dom';
+import { pubSub, fade } from './helpers/mix';
 
 /**
  * @class Internal
@@ -30,12 +41,9 @@ export class Internal {
     this.targets = [];
 
     // this will cache DOM <a> hours (and minutes) array among others
-    this.collection = {
-      hours: [],
-      minutes: []
-    };
+    this.collection = { hours: [], minutes: [] };
 
-    this.events = utils.events();
+    this.pubSub = pubSub();
 
     this.request_ani_id = undefined;
   }
@@ -47,10 +55,10 @@ export class Internal {
 
   show(id) {
     const target = this.targets[id].element;
-    const target_offset = utils.offset(target);
+    const target_offset = offset(target);
     const container_offset = this.Base.container.size;
     const top = target_offset.top + target_offset.height + 5;
-    const window_ = utils.getWindowSize();
+    const window_ = getWindowSize();
 
     if (target_offset.left + container_offset.width > window_.width) {
       this.container.style.left = '';
@@ -66,37 +74,37 @@ export class Internal {
       this.container.style.top = top + 'px';
     }
 
-    this.events.subscribe(EVENT_TYPE.start_fade_in, obj => {
+    this.pubSub.subscribe(EVENT_TYPE.start_fade_in, obj => {
       obj.target.style.opacity = 0;
       obj.target.style.display = 'block';
     });
 
-    this.request_ani_id = utils.fade(this.events, this.container, 400);
+    this.request_ani_id = fade(this.pubSub, this.container, 400);
     this.Base.dispatchEvent(EVENT_TYPE.open, { element: target });
     this.handleOpen(id);
   }
 
   show_() {
-    this.targets.forEach(each => { this.show(each.element._id); });
+    this.targets.forEach(each => this.show(each.element._id));
   }
 
   hide(id) {
     this.opened = false;
-    this.events.subscribe(EVENT_TYPE.start_fade_out, obj => {
+    this.pubSub.subscribe(EVENT_TYPE.start_fade_out, obj => {
       obj.target.style.opacity = 1;
       obj.target.style.display = 'block';
     });
-    this.events.subscribe(EVENT_TYPE.end_fade_out, obj => {
+    this.pubSub.subscribe(EVENT_TYPE.end_fade_out, obj => {
       obj.target.style.display = 'none';
     });
-    this.request_ani_id = utils.fade(this.events, this.container, 800, 'out');
+    this.request_ani_id = fade(this.pubSub, this.container, 800, 'out');
     this.Base.dispatchEvent(EVENT_TYPE.close, {
       element: this.targets[id].element
     });
   }
 
   hide_() {
-    this.targets.forEach(each => { this.hide(each.element._id); });
+    this.targets.forEach(each => this.hide(each.element._id));
   }
 
   handleOpen(id) {
@@ -105,21 +113,21 @@ export class Internal {
     const minute = this.targets[id].minute;
     let value;
 
-    utils.removeClass(this.collection.hours, CLASSNAME.selected);
-    utils.removeClass(this.collection.minutes, CLASSNAME.selected);
+    removeClass(this.collection.hours, CLASSNAME.selected);
+    removeClass(this.collection.minutes, CLASSNAME.selected);
 
     if (hour && minute) {
       this.collection.hours.forEach(element => {
         value = this.getHour(element);
         if (value === hour) {
-          utils.addClass(element, CLASSNAME.selected);
+          addClass(element, CLASSNAME.selected);
           return;
         }
       });
       this.collection.minutes.forEach(element => {
         value = this.getMinute(element);
         if (value === minute) {
-          utils.addClass(element, CLASSNAME.selected);
+          addClass(element, CLASSNAME.selected);
           return;
         }
       });
@@ -146,10 +154,7 @@ export class Internal {
 
     this.opened = true;
     this.id_active = id;
-    this.closeWhen = {
-      hour: false,
-      minute: false
-    };
+    this.closeWhen = { hour: false, minute: false };
   }
 
   handleClose(id) {
@@ -165,8 +170,8 @@ export class Internal {
   }
 
   setSelectListener() {
-    const hour_list = utils.$(VARS.ids.hour_list);
-    const minute_list = utils.$(VARS.ids.minute_list);
+    const hour_list = $(VARS.ids.hour_list);
+    const minute_list = $(VARS.ids.minute_list);
     const selectHour = evt => {
       evt.preventDefault();
       const active = this.targets[this.id_active];
@@ -178,8 +183,8 @@ export class Internal {
         minute: active.minute
       });
 
-      utils.removeClass(this.collection.hours, CLASSNAME.selected);
-      utils.addClass(evt.target, CLASSNAME.selected);
+      removeClass(this.collection.hours, CLASSNAME.selected);
+      addClass(evt.target, CLASSNAME.selected);
       this.closeWhen.hour = true;
       this.handleClose(this.id_active);
     };
@@ -194,14 +199,14 @@ export class Internal {
         minute: active.minute
       });
 
-      utils.removeClass(this.collection.minutes, CLASSNAME.selected);
-      utils.addClass(evt.target, CLASSNAME.selected);
+      removeClass(this.collection.minutes, CLASSNAME.selected);
+      addClass(evt.target, CLASSNAME.selected);
       this.closeWhen.minute = true;
       this.handleClose(this.id_active);
     };
 
-    this.collection.hours = utils.getAllChildren(hour_list, 'a');
-    this.collection.minutes = utils.getAllChildren(minute_list, 'a');
+    this.collection.hours = getAllChildren(hour_list, 'a');
+    this.collection.minutes = getAllChildren(minute_list, 'a');
 
     this.collection.hours.forEach(hour => {
       hour.addEventListener('click', selectHour);
@@ -225,16 +230,16 @@ export class Internal {
     Array.prototype.push.apply(ar_target, target);
 
     ar_target.forEach(el => {
-      element = utils.evaluate(el);
+      element = evaluate(el);
       if (!element) return;
 
       let id = this._ids++;
       element._id = id;
       this.targets[id] = { element: element };
 
-      if (utils.focusable.test(element.nodeName)) {
+      if (FOCUSABLE.test(element.nodeName)) {
         element.addEventListener('focus', triggerShow, true);
-      } else if (utils.clickable.test(element.nodeName)) {
+      } else if (CLICKABLE.test(element.nodeName)) {
         element.addEventListener('click', triggerShow, true);
       }
     });
