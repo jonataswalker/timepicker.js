@@ -41,8 +41,8 @@ npm i timepicker.js
 ##### &#8594; CDN Hosted - [jsDelivr](http://www.jsdelivr.com/projects/timepicker.js)
 Load CSS and Javascript:
 ```HTML
-<link href="//cdn.jsdelivr.net/timepicker.js/latest/timepicker.min.css"  rel="stylesheet">
-<script src="//cdn.jsdelivr.net/timepicker.js/latest/timepicker.min.js"></script>
+<link href="//cdn.jsdelivr.net/npm/timepicker.js@latest/build/timepicker.min.css"  rel="stylesheet">
+<script src="//cdn.jsdelivr.net/npm/timepicker.js@latest/build/timepicker.min.js"></script>
 ```
 ##### &#8594; Self hosted
 Download [latest release](https://github.com/jonataswalker/timepicker.js/releases/latest) and (obviously) load CSS and Javascript.
