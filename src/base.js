@@ -19,10 +19,8 @@ export default class Base extends Emitter {
    */
   constructor(target, opt_options = {}) {
     assert(
-      Array.isArray(target)
-        || typeof target === 'string'
-        || isElement(target),
-      '`target` should be Element, <Array>Element, String or <Array>String.'
+      Array.isArray(target) || typeof target === 'string' || isElement(target),
+      '`target` should be Element, <Array>Element, String or <Array>String.',
     );
 
     super();
@@ -46,7 +44,7 @@ export default class Base extends Emitter {
       end: resp => {
         removeClass(container_el, VARS.namespace + VARS.dragging_class);
         if (resp.y < 0) container_el.style.top = 0;
-      }
+      },
     });
   }
 
@@ -60,10 +58,8 @@ export default class Base extends Emitter {
 
   setTarget(target) {
     assert(
-      Array.isArray(target)
-        || typeof target === 'string'
-        || isElement(target),
-      '`target` should be Element, <Array>Element, String or <Array>String.'
+      Array.isArray(target) || typeof target === 'string' || isElement(target),
+      '`target` should be Element, <Array>Element, String or <Array>String.',
     );
     this.target = target;
     Base.Internal.setFocusListener(this.target);

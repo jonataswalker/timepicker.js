@@ -4,9 +4,9 @@ import json from 'rollup-plugin-json';
 import buble from 'rollup-plugin-buble';
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
-import eslint from 'rollup-plugin-eslint';
+import { eslint } from 'rollup-plugin-eslint';
 import bundleSize from 'rollup-plugin-filesize';
-import uglify from 'rollup-plugin-uglify';
+import { uglify } from 'rollup-plugin-uglify';
 
 const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
 
@@ -14,7 +14,7 @@ const lintOpts = {
   // extensions: ['js'],
   exclude: ['**/*.json'],
   cache: true,
-  throwOnError: true
+  throwOnError: true,
 };
 
 const banner = readFileSync('build/banner.js', 'utf-8')
@@ -40,7 +40,7 @@ export default [
       resolve({ browser: true }),
       commonjs(),
       buble({ target: { ie: 11 } }),
-      uglify({ output: { comments: /^!/ } }, minify)
+      uglify({ output: { comments: /^!/ } }, minify),
     ],
   },
   {
@@ -57,7 +57,7 @@ export default [
       bundleSize(),
       resolve({ browser: true }),
       commonjs(),
-      buble({ target: { ie: 11 } })
+      buble({ target: { ie: 11 } }),
     ],
-  }
+  },
 ];

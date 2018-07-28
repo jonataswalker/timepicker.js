@@ -16,7 +16,7 @@ export class Emitter {
   on(eventName, listener) {
     if (!eventName || !listener) return;
     // set listeners array
-    let listeners = this._events[eventName] = this._events[eventName] || [];
+    let listeners = (this._events[eventName] = this._events[eventName] || []);
     // only add once
     if (listeners.indexOf(listener) === -1) listeners.push(listener);
     return this;
@@ -27,9 +27,8 @@ export class Emitter {
     // add event
     this.on(eventName, listener);
     // set onceListeners object
-    let onceListeners =
-      this._onceEvents[eventName] =
-        this._onceEvents[eventName] || {};
+    let onceListeners = (this._onceEvents[eventName] =
+      this._onceEvents[eventName] || {});
     // set flag
     onceListeners[listener] = true;
     return this;

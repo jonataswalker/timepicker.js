@@ -1,10 +1,4 @@
-import {
-  CLASSNAME,
-  VARS,
-  EVENT_TYPE,
-  FOCUSABLE,
-  CLICKABLE
-} from './constants';
+import { CLASSNAME, VARS, EVENT_TYPE, FOCUSABLE, CLICKABLE } from './constants';
 import {
   offset,
   getWindowSize,
@@ -12,7 +6,7 @@ import {
   removeClass,
   getAllChildren,
   evaluate,
-  $
+  $,
 } from './helpers/dom';
 import { pubSub, fade } from './helpers/mix';
 
@@ -99,7 +93,7 @@ export class Internal {
     });
     this.request_ani_id = fade(this.pubSub, this.container, 800, 'out');
     this.Base.dispatchEvent(EVENT_TYPE.close, {
-      element: this.targets[id].element
+      element: this.targets[id].element,
     });
   }
 
@@ -134,23 +128,27 @@ export class Internal {
     }
 
     //one-time fire
-    document.addEventListener('mousedown', {
-      handleEvent: function (evt) {
-        // click inside Picker
-        if (this_.container.contains(evt.target)) return;
+    document.addEventListener(
+      'mousedown',
+      {
+        handleEvent: function (evt) {
+          // click inside Picker
+          if (this_.container.contains(evt.target)) return;
 
-        let is_clicking_target = false;
-        this_.targets.forEach(target => {
-          if (target.element === evt.target) is_clicking_target = true;
-        });
+          let is_clicking_target = false;
+          this_.targets.forEach(target => {
+            if (target.element === evt.target) is_clicking_target = true;
+          });
 
-        if (!is_clicking_target && this_.opened) this_.hide(id);
+          if (!is_clicking_target && this_.opened) this_.hide(id);
 
-        if (this_.targets[id].element !== evt.target) {
-          document.removeEventListener(evt.type, this, false);
-        }
-      }
-    }, false);
+          if (this_.targets[id].element !== evt.target) {
+            document.removeEventListener(evt.type, this, false);
+          }
+        },
+      },
+      false,
+    );
 
     this.opened = true;
     this.id_active = id;
@@ -180,7 +178,7 @@ export class Internal {
       this.Base.dispatchEvent(EVENT_TYPE.change, {
         element: active.element,
         hour: active.hour,
-        minute: active.minute
+        minute: active.minute,
       });
 
       removeClass(this.collection.hours, CLASSNAME.selected);
@@ -196,7 +194,7 @@ export class Internal {
       this.Base.dispatchEvent(EVENT_TYPE.change, {
         element: active.element,
         hour: active.hour,
-        minute: active.minute
+        minute: active.minute,
       });
 
       removeClass(this.collection.minutes, CLASSNAME.selected);
@@ -223,7 +221,8 @@ export class Internal {
       this.show(evt.target._id);
     };
 
-    let ar_target = [], element;
+    let ar_target = [],
+        element;
     // to array if string
     target = Array.isArray(target) ? target : [target];
     // merge
