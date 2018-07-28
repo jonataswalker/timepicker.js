@@ -1,10 +1,10 @@
 import { EVENT_TYPE } from '../constants';
 
 /**
-  * Overwrites obj1's values with obj2's and adds
-  * obj2's if non existent in obj1
-  * @returns obj3 a new object based on obj1 and obj2
-  */
+ * Overwrites obj1's values with obj2's and adds
+ * obj2's if non existent in obj1
+ * @returns obj3 a new object based on obj1 and obj2
+ */
 export function mergeOptions(obj1, obj2) {
   let obj3 = {};
   for (let attr1 in obj1) obj3[attr1] = obj1[attr1];
@@ -28,12 +28,14 @@ export function now() {
     window.performance = {};
   }
 
-  Date.now = (Date.now || function () { // thanks IE8
-    return new Date().getTime();
-  });
+  Date.now =
+    Date.now ||
+    function () {
+      // thanks IE8
+      return new Date().getTime();
+    };
 
   if ('now' in window.performance === false) {
-
     let nowOffset = Date.now();
 
     if (performance.timing && performance.timing.navigationStart) {
@@ -56,7 +58,7 @@ export function isNumeric(str) {
 }
 
 export function isEmpty(str) {
-  return (!str || 0 === str.length);
+  return !str || 0 === str.length;
 }
 
 export function emptyArray(array) {
@@ -93,7 +95,7 @@ export function pubSub() {
       let index = topics[topic].push(listener) - 1;
       // Provide handle back for removal of topic
       return {
-        remove: () => delete topics[topic][index]
+        remove: () => delete topics[topic][index],
       };
     },
     publish: (topic, info) => {
@@ -102,7 +104,7 @@ export function pubSub() {
       if (!hOP.call(topics, topic)) return;
       // Cycle through topics queue, fire!
       topics[topic].forEach(item => item(info !== undefined ? info : {}));
-    }
+    },
   };
 }
 
@@ -114,16 +116,15 @@ export function pubSub() {
  */
 export function fade(publisher, element, time = 300, action = 'in') {
   let opacity;
-  let start = null, finished = false;
+  let start = null,
+      finished = false;
   let request_id;
 
-  let event_start = action === 'in'
-    ? EVENT_TYPE.start_fade_in
-    : EVENT_TYPE.start_fade_out;
+  let event_start =
+    action === 'in' ? EVENT_TYPE.start_fade_in : EVENT_TYPE.start_fade_out;
 
-  let event_end = action === 'in'
-    ? EVENT_TYPE.end_fade_in
-    : EVENT_TYPE.end_fade_out;
+  let event_end =
+    action === 'in' ? EVENT_TYPE.end_fade_in : EVENT_TYPE.end_fade_out;
 
   const tick = timestamp => {
     if (!start) {

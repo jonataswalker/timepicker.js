@@ -8,9 +8,14 @@ export class Drag {
    */
   constructor(base) {
     let container = base.container.element,
-        lastX, lastY, currentX, currentY, x, y,
+        lastX,
+        lastY,
+        currentX,
+        currentY,
+        x,
+        y,
         when = {},
-        dragging = (evt) => {
+        dragging = evt => {
           evt.preventDefault && evt.preventDefault();
 
           currentX = parseInt(container.style.left, 10) || 0;
@@ -21,7 +26,7 @@ export class Drag {
           when.move.call(undefined, {
             target: container,
             x: x,
-            y: y
+            y: y,
           });
           lastX = evt.clientX;
           lastY = evt.clientY;
@@ -32,10 +37,10 @@ export class Drag {
           when.end.call(undefined, {
             target: container,
             x: x,
-            y: y
+            y: y,
           });
         },
-        start = (evt) => {
+        start = evt => {
           if (evt.button !== 0) return;
 
           lastX = evt.clientX;
@@ -46,11 +51,11 @@ export class Drag {
         };
     base.container.drag_handle.addEventListener('mousedown', start, false);
     return {
-      when: (obj) => {
+      when: obj => {
         when.start = obj.start;
         when.move = obj.move;
         when.end = obj.end;
-      }
+      },
     };
   }
 }

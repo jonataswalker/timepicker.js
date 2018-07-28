@@ -6,6 +6,6 @@ module.exports = {
     phantom: true,
   },
   rules: {
-    'no-console': 1
+    'no-console': 1,
   },
 };

@@ -3,7 +3,7 @@
 var time2 = document.getElementById('time2');
 var timepicker = new TimePicker(['time', 'link'], {
   lang: 'en',
-  theme: 'blue-grey'
+  theme: 'blue-grey',
 });
 timepicker.on('change', function (evt) {
   var value = (evt.hour || '00') + ':' + (evt.minute || '00');
