@@ -20,7 +20,7 @@ export default class Base extends Emitter {
   constructor(target, opt_options = {}) {
     assert(
       Array.isArray(target) || typeof target === 'string' || isElement(target),
-      '`target` should be Element, <Array>Element, String or <Array>String.',
+      '`target` should be Element, <Array>Element, String or <Array>String.'
     );
 
     super();
@@ -59,7 +59,7 @@ export default class Base extends Emitter {
   setTarget(target) {
     assert(
       Array.isArray(target) || typeof target === 'string' || isElement(target),
-      '`target` should be Element, <Array>Element, String or <Array>String.',
+      '`target` should be Element, <Array>Element, String or <Array>String.'
     );
     this.target = target;
     Base.Internal.setFocusListener(this.target);

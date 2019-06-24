@@ -30,7 +30,7 @@ export function now() {
 
   Date.now =
     Date.now ||
-    function () {
+    function() {
       // thanks IE8
       return new Date().getTime();
     };
@@ -117,7 +117,7 @@ export function pubSub() {
 export function fade(publisher, element, time = 300, action = 'in') {
   let opacity;
   let start = null,
-      finished = false;
+    finished = false;
   let request_id;
 
   let event_start =

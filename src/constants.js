@@ -27,30 +27,30 @@ export const LANG = {
   pt: {
     hour: 'Hora',
     minute: 'Minuto',
-  }, 
+  },
   de: {
-    hour: "Stunde",
-    minute: "Minute",
+    hour: 'Stunde',
+    minute: 'Minute',
   },
   es: {
-    hour: "Hora",
-    minute: "Minuto",
+    hour: 'Hora',
+    minute: 'Minuto',
   },
   fr: {
-    hour: "Heure",
-    minute: "minute",
+    hour: 'Heure',
+    minute: 'minute',
   },
   it: {
-    hour: "Ora",
-    minute: "minuto",
+    hour: 'Ora',
+    minute: 'minuto',
   },
   nl: {
-    hour: "Uur",
-    minute: "minuut",
+    hour: 'Uur',
+    minute: 'minuut',
   },
   sv: {
-    hour: "Timmars",
-    minute: "minut",
+    hour: 'Timmars',
+    minute: 'minut',
   },
 };
 
