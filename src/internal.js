@@ -131,7 +131,7 @@ export class Internal {
     document.addEventListener(
       'mousedown',
       {
-        handleEvent: function (evt) {
+        handleEvent: function(evt) {
           // click inside Picker
           if (this_.container.contains(evt.target)) return;
 
@@ -147,7 +147,7 @@ export class Internal {
           }
         },
       },
-      false,
+      false
     );
 
     this.opened = true;
@@ -222,7 +222,7 @@ export class Internal {
     };
 
     let ar_target = [],
-        element;
+      element;
     // to array if string
     target = Array.isArray(target) ? target : [target];
     // merge

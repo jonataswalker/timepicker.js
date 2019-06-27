@@ -16,12 +16,12 @@ export class Html {
     const index_hour_title = Html.picker.indexOf(Html.replace.hour_title);
     const index_minute_title = Html.picker.indexOf(Html.replace.minute_title);
     let hours_html = [],
-        minutes_html = [];
+      minutes_html = [];
     let minute_zero;
     let i = 0,
-        ii,
-        v = 6,
-        u = 0;
+      ii,
+      v = 6,
+      u = 0;
 
     /** hours **/
     for (; u < 4; u++) {
@@ -29,7 +29,7 @@ export class Html {
       hours_html.push('<ol>');
       for (; i < ii; i++) {
         hours_html.push(
-          ['<li><a ', VARS.attr.hour, '="', i, '">', i, '</a></li>'].join(''),
+          ['<li><a ', VARS.attr.hour, '="', i, '">', i, '</a></li>'].join('')
         );
       }
       hours_html.push('</ol>');
@@ -53,7 +53,7 @@ export class Html {
             '">',
             minute_zero,
             '</a></li>',
-          ].join(''),
+          ].join('')
         );
       }
       minutes_html.push('</ol>');
@@ -67,7 +67,7 @@ export class Html {
     const ct = `${CLASSNAME.container} ${VARS.namespace}-${options.theme}`;
     const container = createElement(
       ['div', { id: VARS.container_id, classname: ct }],
-      Html.picker.join(''),
+      Html.picker.join('')
     );
 
     container.style.zIndex = getMaxZIndex() + 10;

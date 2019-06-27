@@ -1,17 +1,17 @@
 var fs = require('fs'),
-    boxen = require('boxen'),
-    chalk = require('chalk'),
-    gzip = require('gzip-size'),
-    bytes = require('bytes'),
-    sass = require('node-sass'),
-    jsonImporter = require('node-sass-json-importer'),
-    autoprefixer = require('autoprefixer'),
-    postcss = require('postcss'),
-    // postcssImport = require('postcss-import'),
-    postcssReport = require('postcss-reporter'),
-    // styleLint = require('stylelint'),
-    cssnano = require('cssnano'),
-    pkg = require('../package.json');
+  boxen = require('boxen'),
+  chalk = require('chalk'),
+  gzip = require('gzip-size'),
+  bytes = require('bytes'),
+  sass = require('node-sass'),
+  jsonImporter = require('node-sass-json-importer'),
+  autoprefixer = require('autoprefixer'),
+  postcss = require('postcss'),
+  // postcssImport = require('postcss-import'),
+  postcssReport = require('postcss-reporter'),
+  // styleLint = require('stylelint'),
+  cssnano = require('cssnano'),
+  pkg = require('../package.json');
 
 var banner = fs
   .readFileSync('./build/banner.js', 'utf-8')
@@ -24,14 +24,14 @@ var banner = fs
 sass.render(
   {
     file: './src/sass/main.scss',
-    importer: jsonImporter,
+    importer: jsonImporter(),
   },
   (err, result) => {
     if (err) throw err.message;
     let css, cssMin;
     const prefixer = postcss([
       // postcssImport({ plugins: [styleLint()] }),
-      autoprefixer({ browsers: ['> 5%'] }),
+      autoprefixer(),
       postcssReport({ clearMessages: true }),
     ]);
     prefixer.process(result.css, { from: undefined }).then(res => {
@@ -69,10 +69,10 @@ sass.render(
               chalk.green.bold('Now: '),
               chalk.yellow.bold(new Date()),
             ].join(''),
-            { padding: 1 },
-          ),
+            { padding: 1 }
+          )
         );
       });
     });
-  },
+  }
 );
