@@ -14,6 +14,9 @@
   "files": [
     "dist/"
   ],
+  "browserslist": [
+    "defaults"
+  ],
   "scripts": {
     "dev": "run-s lint build:css rollup:dev",
     "build": "run-s lint rollup build:css",

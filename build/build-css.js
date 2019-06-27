@@ -24,14 +24,14 @@ var banner = fs
 sass.render(
   {
     file: './src/sass/main.scss',
-    importer: jsonImporter,
+    importer: jsonImporter(),
   },
   (err, result) => {
     if (err) throw err.message;
     let css, cssMin;
     const prefixer = postcss([
       // postcssImport({ plugins: [styleLint()] }),
-      autoprefixer({ browsers: ['> 5%'] }),
+      autoprefixer(),
       postcssReport({ clearMessages: true }),
     ]);
     prefixer.process(result.css, { from: undefined }).then(res => {
