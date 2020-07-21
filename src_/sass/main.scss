@@ -1,0 +1,27 @@
+// dependencies
+@import "../../node_modules/susy/sass/susy-prefix";
+@import "vendor/utilities";
+@import "vendor/palette";
+@import "partials/functions";
+
+// global project variables
+@import "../../config/vars.json";
+
+$container-width: $width;
+$container-height: $height;
+
+$font-weight-regular: 400;
+$font-weight-bold: 600;
+
+$columns: 10;
+
+// Configuring Susy Defaults
+$susy: (
+	columns: susy-repeat($columns),
+	gutters: 1/6
+);
+
+// partials
+@import "partials/mixins";
+@import "partials/themes";
+@import "partials/grids";

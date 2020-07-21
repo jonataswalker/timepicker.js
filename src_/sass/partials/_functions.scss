@@ -1,0 +1,28 @@
+/// Interact with the color map
+///
+/// @param {string} $key - Name of the color
+///
+/// @example scss
+///   .block {
+///     color: color(grey);
+///   }
+@function color($map, $key) {
+  @if map-has-key($map, $key) {
+    @return map-get($map, $key);
+  } @else {
+    @warn "Error: There is no color #{$key} associated";
+  }
+}
+
+/// Map deep get
+/// @param {Map} $map - Map
+/// @param {Arglist} $keys - Key chain
+/// @return {*} - Desired value
+@function map-deep-get($map, $keys...) {
+  $value: $map;
+  @each $key in $keys {
+    $value: map-get($value, $key);
+  }
+  @return $value;
+}
+

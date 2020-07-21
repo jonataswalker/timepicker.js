@@ -2,12 +2,15 @@
 <html lang="pt-br">
   <head>
     <title>Timepicker.js &mdash; Example</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
     <script src="https://cdn.jsdelivr.net/highlight.js/9.2.0/highlight.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/highlight.js/9.2.0/styles/default.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Raleway:400" rel="stylesheet">
-    <link href="../dist/timepicker.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/highlight.js/9.2.0/styles/default.min.css"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com/css?family=Raleway:400" rel="stylesheet" />
+    <!-- <link href="../dist/timepicker.min.css" rel="stylesheet"> -->
     <style type="text/css">
       body {
         font: 1.2em/1.3 'Raleway', sans-serif;
@@ -16,8 +19,12 @@
         padding: 20px 40px;
         background: linear-gradient(#efefef, #999) fixed;
       }
-      :focus {outline:none}
-      ::-moz-focus-inner {border:0}
+      :focus {
+        outline: none;
+      }
+      ::-moz-focus-inner {
+        border: 0;
+      }
       h1 {
         font-size: 250%;
         text-align: center;
@@ -38,8 +45,13 @@
         font-family: inherit;
         width: 120px;
       }
-      .center { text-align: center }
-      .right { position:absolute; right: 5px }
+      .center {
+        text-align: center;
+      }
+      .right {
+        position: absolute;
+        right: 5px;
+      }
       span.icon {
         position: absolute;
         right: 1px;
@@ -54,8 +66,9 @@
           top: 3px;
         }
       }
-      i.icon, a.icon {
-        background: url("clock.png") no-repeat center center;
+      i.icon,
+      a.icon {
+        background: url('clock.png') no-repeat center center;
       }
       i.icon {
         display: block;
@@ -85,19 +98,20 @@
   </head>
   <body>
     <h1>
-      <a href="https://github.com/jonataswalker/timepicker.js" class="link">Timepicker.js</a> &mdash; Example
+      <a href="https://github.com/jonataswalker/timepicker.js" class="link">Timepicker.js</a>
+      &mdash; Example
     </h1>
     <h3>Focusing:</h3>
     <div class="table right">
       <span class="icon"><i class="icon"></i></span>
-      <input type="text" id="time" placeholder="Time">
+      <input type="text" id="time" placeholder="Time" />
     </div>
-    <h3 style="margin-top: 10px">Triggering:</h3>
+    <h3 style="margin-top: 10px;">Triggering:</h3>
     <div class="table">
-      <input type="text" id="time2" class="center" placeholder="Time">
+      <input type="text" id="time2" class="center" placeholder="Time" />
       <a id="link" class="icon">Click to choose</a>
     </div>
-    <div style="margin-top: 10px">
+    <div style="margin-top: 10px;">
       <pre><code class="javascript">
         var timepicker = new TimePicker(['time', 'link'], {
           theme: 'dark', // 'blue-grey'
@@ -115,7 +129,7 @@
         });
       </code></pre>
     </div>
-    <script src="../dist/timepicker.min.js"></script>
+    <script src="../dist/timepicker.js"></script>
     <script src="example.js"></script>
-</body>
+  </body>
 </html>

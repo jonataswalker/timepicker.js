@@ -1,12 +1,19 @@
 /* global hljs, TimePicker */
 
-var time2 = document.getElementById('time2');
-var timepicker = new TimePicker(['time', 'link'], {
+const time2 = document.querySelector('#time2');
+const timepicker = new TimePicker('#link', {
   lang: 'en',
-  theme: 'blue-grey',
+  theme: 'dark',
 });
-timepicker.on('change', function(evt) {
-  var value = (evt.hour || '00') + ':' + (evt.minute || '00');
+
+// timepicker.show();
+
+// console.log(timepicker);
+
+timepicker.on('change', function (evt) {
+  console.log('onChange', { evt });
+
+  const value = `${evt.hour || '00'}:${evt.minute || '00'}`;
 
   if (evt.element.id === 'link') {
     time2.value = value;

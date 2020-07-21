@@ -1,4 +1,5 @@
 import { Selector } from 'testcafe';
+
 import { VARS } from '../../src/constants';
 
 export default class Page {

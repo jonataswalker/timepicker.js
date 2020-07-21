@@ -1,29 +1,32 @@
-@import './colors';
-
 @mixin theme($name) {
 	$background: map-deep-get($themes, $name, "background");
 	$color: map-deep-get($themes, $name, "color");
 	$lighten-background: lighten($background, 20%);
 
-	.#{$name} {
+	.#{$namespace}-#{$name} {
 		color: $background;
 		box-shadow: $background 0 0 0 1px inset;
 
-		.header {
+		.#{$namespace}#{$header_class} {
 			color: $color;
 			@include background-linear-gradient($background, $lighten-background);
 		}
-		a.selected {
+		ol > li > a.#{$namespace}#{$selected_class} {
 			color: $color;
 			@include background-linear-gradient($background, $lighten-background);
 		}
 	}
 }
 
+// Map of theme colors
 $themes: (
 	dark: (
-		background: map-deep-get($colors, 'grey', 'darken-4'),
-		color: map-deep-get($colors, 'grey', 'lighten-5'),
+		background: palette(Grey, 900),
+		color: palette(Grey, 100)
+	),
+	blue-grey: (
+		background: palette(Blue Grey, 900),
+		color: palette(Blue Grey, 100)
 	)
 );
 

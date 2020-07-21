@@ -1,11 +1,13 @@
 import { ClientFunction } from 'testcafe';
-import TimePicker from '../../';
+
+import TimePicker from '../..';
 
 export function show(id) {
   return ClientFunction(
     () => {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         const picker = new TimePicker(id);
+
         picker.show();
         resolve();
       });
@@ -17,8 +19,9 @@ export function show(id) {
 export function hide(id) {
   return ClientFunction(
     () => {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         const picker = new TimePicker(id);
+
         picker.show();
 
         window.setTimeout(() => {

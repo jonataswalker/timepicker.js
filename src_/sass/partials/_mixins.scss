@@ -1,0 +1,64 @@
+@mixin clearfix {
+	&::before,
+	&::after {
+		content: "";
+		display: table;
+	}
+	&::after {
+		clear: both;
+	}
+}
+
+@mixin font-size($size: 12, $base: 16) {
+	font-size: ($size / $base) * 1rem;
+}
+
+@mixin line-height($height: 16, $base: 16) {
+	line-height: ($height / $base) * 1rem;
+}
+
+@mixin background-linear-gradient($color1, $color2) {
+	background: linear-gradient($color1, $color2);
+}
+
+// Span Mixin
+// ----------
+@mixin span(
+	$span,
+	$config: $susy
+) {
+	width: susy-span($span, $config);
+
+	@if index($span, 'last') {
+		float: right;
+		// margin-right: 0; if you want an explicit reset
+	} @else {
+		float: left;
+		margin-right: susy-gutter();
+	}
+}
+
+// overall container mixin
+@mixin container(
+  $width: all,
+  $config: $susy,
+  $debug: false
+) {
+  $config: susy-settings($config);
+  $container-spread: map-get($config, 'container-spread');
+  $width: susy-span($width $container-spread of $container-spread, $config);
+
+  @include clearfix;
+  margin: 0 auto;
+  max-width: $width or 100%;
+
+	*,
+  *::before,
+  *::after {
+      box-sizing: inherit;
+  }
+
+  @if $debug {
+    background: susy-svg-grid($grid: $config) no-repeat scroll;
+  }
+}

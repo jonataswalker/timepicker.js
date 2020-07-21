@@ -1,26 +1,25 @@
+import { isNumeric } from './mix';
+
 /**
  * @param {Element|Array<Element>} element DOM node or array of nodes.
  * @param {String|Array<String>} classname Class or array of classes.
  * For example: 'class1 class2' or ['class1', 'class2']
+ * @param {Number|undefined} timeout Timeout to remove a class.
  */
-export function addClass(element, classname) {
+export function addClass(element, classname, timeout) {
   if (Array.isArray(element)) {
     element.forEach((each) => addClass(each, classname));
 
     return;
   }
 
-  const array = Array.isArray(classname) ? classname : classname.split(/\s+/u);
+  const array = Array.isArray(classname) ? classname : classname.split(/\s+/);
 
   let i = array.length;
 
   while (i--) {
     if (!hasClass(element, array[i])) {
-      if (element.classList) {
-        element.classList.add(array[i]);
-      } else {
-        element.className = `${element.className} ${array[i]}`.trim();
-      }
+      _addClass(element, array[i], timeout);
     }
   }
 }
@@ -31,24 +30,20 @@ export function addClass(element, classname) {
  * For example: 'class1 class2' or ['class1', 'class2']
  * @param {Number|undefined} timeout Timeout to add a class.
  */
-export function removeClass(element, classname) {
-  if (Array.isArray(element) || NodeList.prototype.isPrototypeOf(element)) {
-    element.forEach((each) => removeClass(each, classname));
+export function removeClass(element, classname, timeout) {
+  if (Array.isArray(element)) {
+    element.forEach((each) => removeClass(each, classname, timeout));
 
     return;
   }
 
-  const array = Array.isArray(classname) ? classname : classname.split(/\s+/u);
+  const array = Array.isArray(classname) ? classname : classname.split(/\s+/);
 
   let i = array.length;
 
   while (i--) {
     if (hasClass(element, array[i])) {
-      if (element.classList) {
-        element.classList.remove(array[i]);
-      } else {
-        element.className = element.className.replace(classRegex(array[i]), ' ').trim();
-      }
+      _removeClass(element, array[i], timeout);
     }
   }
 }
@@ -78,8 +73,53 @@ export function toggleClass(element, classname) {
   if (element.classList) {
     element.classList.toggle(classname);
   } else {
-    hasClass(element, classname) ? removeClass(element, classname) : addClass(element, classname);
+    hasClass(element, classname) ? _removeClass(element, classname) : _addClass(element, classname);
   }
+}
+
+/**
+ * Abstraction to querySelectorAll for increased
+ * performance and greater usability
+ * @param {String} selector
+ * @param {Element} context (optional)
+ * @param {Boolean} find_all (optional)
+ * @return (find_all) {Element} : {Array}
+ */
+export function find(selector, context = window.document, find_all) {
+  const simpleRe = /^(#?[\w-]+|\.[\w-.]+)$/;
+
+  const periodRe = /\./g;
+
+  const { slice } = Array.prototype;
+
+  let matches = [];
+
+  // Redirect call to the more performant function
+  // if it's a simple selector and return an array
+  // for easier usage
+  if (simpleRe.test(selector)) {
+    switch (selector[0]) {
+      case '#':
+        matches = [$(selector.slice(1))];
+
+        break;
+      case '.':
+        matches = slice.call(
+          context.getElementsByClassName(selector.slice(1).replace(periodRe, ' '))
+        );
+
+        break;
+
+      default:
+        matches = slice.call(context.getElementsByTagName(selector));
+    }
+  } else {
+    // If not a simple selector, query the DOM as usual
+    // and return an array for easier usage
+    matches = slice.call(context.querySelectorAll(selector));
+  }
+
+  return find_all ? matches : matches[0];
 }
 
 export function toType(object) {
@@ -90,8 +130,36 @@ export function toType(object) {
   if (typeof object === 'string') return 'string';
 
   if (isElement(object)) return 'element';
+}
 
-  return 'unknown type';
+export function evaluate(el) {
+  let element;
+
+  switch (toType(el)) {
+    case 'window':
+    case 'htmldocument':
+    case 'element':
+      element = el;
+
+      break;
+    case 'string':
+      const t = el[0] === '#' || el[0] === '.' ? el : `#${el}`;
+
+      element = find(t);
+
+      break;
+
+    default:
+      console.warn('Unknown type');
+  }
+
+  return element;
+}
+
+export function $(id) {
+  id = id[0] === '#' ? id.slice(1, 1 + id.length) : id;
+
+  return document.getElementById(id);
 }
 
 export function isElement(object) {
@@ -122,6 +190,23 @@ export function getChildren(node, tag) {
   return [].filter.call(node.childNodes, (el) =>
     tag ? el.nodeType === 1 && el.tagName.toLowerCase() === tag : el.nodeType === 1
   );
+}
+
+export function template(html, row) {
+  return html.replace(/{ *([\w-]+) *}/g, (htm, key) => {
+    const value = row[key] === undefined ? '' : row[key];
+
+    return htmlEscape(value);
+  });
+}
+
+export function htmlEscape(string) {
+  return String(string)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
 }
 
 export function createElement(node, html) {
@@ -175,8 +260,8 @@ export function getScroll() {
 
 export function getViewportSize() {
   return {
-    width: window.innerWidth || document.documentElement.clientWidth,
-    height: window.innerHeight || document.documentElement.clientHeight,
+    w: window.innerWidth || document.documentElement.clientWidth,
+    h: window.innerHeight || document.documentElement.clientHeight,
   };
 }
 
@@ -199,36 +284,55 @@ export function getWindowSize() {
   };
 }
 
-export function getMaxZIndex() {
-  return Array.from(document.querySelectorAll('body *'), (el) =>
-    Number.parseFloat(window.getComputedStyle(el).zIndex)
-  )
-    .filter((zIndex) => !Number.isNaN(zIndex))
-    .reduce((accumulator, current) => (current > accumulator ? current : accumulator), 0);
+export function getMaxZIndex(zIndex, max = 0, i = -1) {
+  const all = find('*', document, true);
+  const length_ = all.length;
+
+  while (++i < length_) {
+    zIndex = Number.parseInt(window.getComputedStyle(all[i]).zIndex, 10);
+    max = zIndex ? Math.max(max, zIndex) : max;
+  }
+
+  return max;
 }
 
-export function getOffset(element) {
+export function offset(element) {
   const rect = element.getBoundingClientRect();
   const { documentElement } = document;
-  const left = rect.left + window.pageXOffset - documentElement.clientLeft;
-  const top = rect.top + window.pageYOffset - documentElement.clientTop;
-  const width = element.offsetWidth;
-  const height = element.offsetHeight;
-  const right = left + width;
-  const bottom = top + height;
 
-  return { width, height, top, bottom, right, left };
+  return {
+    left: rect.left + window.pageXOffset - documentElement.clientLeft,
+    top: rect.top + window.pageYOffset - documentElement.clientTop,
+    width: element.offsetWidth,
+    height: element.offsetHeight,
+  };
 }
 
 function classRegex(classname) {
-  // eslint-disable-next-line security/detect-non-literal-regexp
-  return new RegExp(`(^|\\s+) ${classname} (\\s+|$)`, 'u');
+  return new RegExp(`(^|\\s+) ${classname} (\\s+|$)`);
 }
 
-export function getHour(element) {
-  return element.getAttribute('data-hour');
+function _addClass(el, klass, timeout) {
+  // use native if available
+  if (el.classList) {
+    el.classList.add(klass);
+  } else {
+    el.className = `${el.className} ${klass}`.trim();
+  }
+
+  if (timeout && isNumeric(timeout)) {
+    window.setTimeout(() => _removeClass(el, klass), timeout);
+  }
 }
 
-export function getMinute(element) {
-  return element.getAttribute('data-minute');
+function _removeClass(el, klass, timeout) {
+  if (el.classList) {
+    el.classList.remove(klass);
+  } else {
+    el.className = el.className.replace(classRegex(klass), ' ').trim();
+  }
+
+  if (timeout && isNumeric(timeout)) {
+    window.setTimeout(() => _addClass(el, klass), timeout);
+  }
 }

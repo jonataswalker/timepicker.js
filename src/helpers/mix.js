@@ -1,20 +1,9 @@
 import { EVENT_TYPE } from '../constants';
 
-/**
- * Overwrites obj1's values with obj2's and adds
- * obj2's if non existent in obj1
- * @returns obj3 a new object based on obj1 and obj2
- */
-export function mergeOptions(obj1, obj2) {
-  let obj3 = {};
-  for (let attr1 in obj1) obj3[attr1] = obj1[attr1];
-  for (let attr2 in obj2) obj3[attr2] = obj2[attr2];
-  return obj3;
-}
-
 export function assert(condition, message = 'Assertion failed') {
   if (!condition) {
     if (typeof Error !== 'undefined') throw new Error(message);
+
     throw message; // Fallback
   }
 }
@@ -30,7 +19,7 @@ export function now() {
 
   Date.now =
     Date.now ||
-    function() {
+    function () {
       // thanks IE8
       return new Date().getTime();
     };
@@ -50,15 +39,16 @@ export function now() {
 
 export function randomId(prefix) {
   const id = now().toString(36);
+
   return prefix ? prefix + id : id;
 }
 
-export function isNumeric(str) {
-  return /^\d+$/.test(str);
+export function isNumeric(string) {
+  return /^\d+$/u.test(string);
 }
 
-export function isEmpty(str) {
-  return !str || 0 === str.length;
+export function isEmpty(string) {
+  return !string || string.length === 0;
 }
 
 export function emptyArray(array) {
@@ -66,89 +56,50 @@ export function emptyArray(array) {
 }
 
 export function anyMatchInArray(source, target) {
-  return source.some(each => target.indexOf(each) >= 0);
+  return source.some((each) => target.includes(each));
 }
 
-export function everyMatchInArray(arr1, arr2) {
-  return arr2.every(each => arr1.indexOf(each) >= 0);
-}
-
-export function anyItemHasValue(obj, has = false) {
-  const keys = Object.keys(obj);
-  keys.forEach(key => {
-    if (!isEmpty(obj[key])) has = true;
-  });
-  return has;
+export function everyMatchInArray(array1, array2) {
+  return array2.every((each) => array1.includes(each));
 }
 
 /**
- * Pub/Sub
+ * @param {Function} emitter
+ * @param {Element} element
+ * @param {Object} config
  */
-export function pubSub() {
-  let topics = {};
-  let hOP = topics.hasOwnProperty;
-  return {
-    subscribe: (topic, listener) => {
-      // Create the topic's object if not yet created
-      if (!hOP.call(topics, topic)) topics[topic] = [];
-      // Add the listener to queue
-      let index = topics[topic].push(listener) - 1;
-      // Provide handle back for removal of topic
-      return {
-        remove: () => delete topics[topic][index],
-      };
-    },
-    publish: (topic, info) => {
-      // If the topic doesn't exist, or there's no listeners
-      // in queue, just leave
-      if (!hOP.call(topics, topic)) return;
-      // Cycle through topics queue, fire!
-      topics[topic].forEach(item => item(info !== undefined ? info : {}));
-    },
-  };
-}
+export function fade({ emitter, element, time = 300, action = 'in' }) {
+  let start = null;
+  let requestId;
 
-/**
- * @param {Function} publisher instanceof pubSub().
- * @param {Element} element DOM node.
- * @param {String} action 'in' or 'out'.
- * @param {Number|undefined} time ms.
- */
-export function fade(publisher, element, time = 300, action = 'in') {
-  let opacity;
-  let start = null,
-    finished = false;
-  let request_id;
+  const [evtStart, evtEnd] =
+    action === 'in'
+      ? [EVENT_TYPE.startFadeIn, EVENT_TYPE.endFadeIn]
+      : [EVENT_TYPE.startFadeOut, EVENT_TYPE.endFadeOut];
 
-  let event_start =
-    action === 'in' ? EVENT_TYPE.start_fade_in : EVENT_TYPE.start_fade_out;
-
-  let event_end =
-    action === 'in' ? EVENT_TYPE.end_fade_in : EVENT_TYPE.end_fade_out;
-
-  const tick = timestamp => {
+  const tick = (timestamp) => {
     if (!start) {
-      publisher.publish(event_start, { target: element });
+      emitter.emit(evtStart, { target: element });
       start = timestamp;
     }
 
-    if (action === 'in') {
-      opacity = +element.style.opacity + (timestamp - start) / time;
-      finished = opacity >= 1;
-    } else {
-      opacity = +element.style.opacity - (timestamp - start) / time;
-      finished = opacity <= 0;
-    }
+    const opacity =
+      action === 'in'
+        ? Number(element.style.opacity) + (timestamp - start) / time
+        : Number(element.style.opacity) - (timestamp - start) / time;
+
+    const finished = action === 'in' ? opacity >= 1 : opacity <= 0;
 
     element.style.opacity = opacity;
 
     if (finished) {
-      publisher.publish(event_end, { target: element });
+      emitter.emit(evtEnd, { target: element });
     } else {
-      request_id = window.requestAnimationFrame(tick);
+      requestId = window.requestAnimationFrame(tick);
     }
   };
 
-  request_id = window.requestAnimationFrame(tick);
-  return request_id;
+  requestId = window.requestAnimationFrame(tick);
+
+  return requestId;
 }

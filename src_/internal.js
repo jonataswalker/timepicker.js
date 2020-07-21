@@ -59,18 +59,18 @@ export class Internal {
       this.container.style.right = '5px';
     } else {
       this.container.style.right = '';
-      this.container.style.left = target_offset.left + 'px';
+      this.container.style.left = `${target_offset.left}px`;
     }
 
     if (target_offset.top + container_offset.height > window_.height) {
       this.container.style.bottom = '5px';
     } else {
-      this.container.style.top = top + 'px';
+      this.container.style.top = `${top}px`;
     }
 
-    this.pubSub.subscribe(EVENT_TYPE.start_fade_in, obj => {
-      obj.target.style.opacity = 0;
-      obj.target.style.display = 'block';
+    this.pubSub.subscribe(EVENT_TYPE.start_fade_in, (object) => {
+      object.target.style.opacity = 0;
+      object.target.style.display = 'block';
     });
 
     this.request_ani_id = fade(this.pubSub, this.container, 400);
@@ -79,17 +79,17 @@ export class Internal {
   }
 
   show_() {
-    this.targets.forEach(each => this.show(each.element._id));
+    this.targets.forEach((each) => this.show(each.element._id));
   }
 
   hide(id) {
     this.opened = false;
-    this.pubSub.subscribe(EVENT_TYPE.start_fade_out, obj => {
-      obj.target.style.opacity = 1;
-      obj.target.style.display = 'block';
+    this.pubSub.subscribe(EVENT_TYPE.start_fade_out, (object) => {
+      object.target.style.opacity = 1;
+      object.target.style.display = 'block';
     });
-    this.pubSub.subscribe(EVENT_TYPE.end_fade_out, obj => {
-      obj.target.style.display = 'none';
+    this.pubSub.subscribe(EVENT_TYPE.end_fade_out, (object) => {
+      object.target.style.display = 'none';
     });
     this.request_ani_id = fade(this.pubSub, this.container, 800, 'out');
     this.Base.dispatchEvent(EVENT_TYPE.close, {
@@ -98,45 +98,47 @@ export class Internal {
   }
 
   hide_() {
-    this.targets.forEach(each => this.hide(each.element._id));
+    this.targets.forEach((each) => this.hide(each.element._id));
   }
 
   handleOpen(id) {
     const this_ = this;
-    const hour = this.targets[id].hour;
-    const minute = this.targets[id].minute;
+    const { hour } = this.targets[id];
+    const { minute } = this.targets[id];
+
     let value;
 
     removeClass(this.collection.hours, CLASSNAME.selected);
     removeClass(this.collection.minutes, CLASSNAME.selected);
 
     if (hour && minute) {
-      this.collection.hours.forEach(element => {
+      this.collection.hours.forEach((element) => {
         value = this.getHour(element);
+
         if (value === hour) {
           addClass(element, CLASSNAME.selected);
-          return;
         }
       });
-      this.collection.minutes.forEach(element => {
+      this.collection.minutes.forEach((element) => {
         value = this.getMinute(element);
+
         if (value === minute) {
           addClass(element, CLASSNAME.selected);
-          return;
         }
       });
     }
 
-    //one-time fire
+    // one-time fire
     document.addEventListener(
       'mousedown',
       {
-        handleEvent: function(evt) {
+        handleEvent(evt) {
           // click inside Picker
           if (this_.container.contains(evt.target)) return;
 
           let is_clicking_target = false;
-          this_.targets.forEach(target => {
+
+          this_.targets.forEach((target) => {
             if (target.element === evt.target) is_clicking_target = true;
           });
 
@@ -170,8 +172,9 @@ export class Internal {
   setSelectListener() {
     const hour_list = $(VARS.ids.hour_list);
     const minute_list = $(VARS.ids.minute_list);
-    const selectHour = evt => {
+    const selectHour = (evt) => {
       evt.preventDefault();
+
       const active = this.targets[this.id_active];
 
       active.hour = this.getHour(evt.target);
@@ -186,8 +189,9 @@ export class Internal {
       this.closeWhen.hour = true;
       this.handleClose(this.id_active);
     };
-    const selectMinute = evt => {
+    const selectMinute = (evt) => {
       evt.preventDefault();
+
       const active = this.targets[this.id_active];
 
       active.minute = this.getMinute(evt.target);
@@ -206,35 +210,39 @@ export class Internal {
     this.collection.hours = getAllChildren(hour_list, 'a');
     this.collection.minutes = getAllChildren(minute_list, 'a');
 
-    this.collection.hours.forEach(hour => {
+    this.collection.hours.forEach((hour) => {
       hour.addEventListener('click', selectHour);
     });
-    this.collection.minutes.forEach(minute => {
+    this.collection.minutes.forEach((minute) => {
       minute.addEventListener('click', selectMinute);
     });
   }
 
   setFocusListener(target) {
-    const triggerShow = evt => {
+    const triggerShow = (evt) => {
       evt.preventDefault();
       window.cancelAnimationFrame(this.request_ani_id);
       this.show(evt.target._id);
     };
 
-    let ar_target = [],
-      element;
+    const ar_target = [];
+
+    let element;
+
     // to array if string
     target = Array.isArray(target) ? target : [target];
     // merge
     Array.prototype.push.apply(ar_target, target);
 
-    ar_target.forEach(el => {
+    ar_target.forEach((el) => {
       element = evaluate(el);
+
       if (!element) return;
 
-      let id = this._ids++;
+      const id = this._ids++;
+
       element._id = id;
-      this.targets[id] = { element: element };
+      this.targets[id] = { element };
 
       if (FOCUSABLE.test(element.nodeName)) {
         element.addEventListener('focus', triggerShow, true);
