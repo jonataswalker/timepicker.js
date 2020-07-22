@@ -382,16 +382,6 @@ $grey: map-deep-merge(
   $grey
 );
 
-$shades: () !default;
-$shades: map-deep-merge(
-  (
-    'black': #000000,
-    'white': #FFFFFF,
-    'transparent': transparent
-  ),
-  $shades
-);
-
 $colors: () !default;
 $colors: map-deep-merge(
   (
@@ -414,7 +404,6 @@ $colors: map-deep-merge(
     'brown': $brown,
     'blue-grey': $blue-grey,
     'grey': $grey,
-    'shades': $shades
   ),
   $colors
 );

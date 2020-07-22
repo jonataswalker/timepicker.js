@@ -6,20 +6,9 @@ const timepicker = new TimePicker('#link', {
   theme: 'dark',
 });
 
-// timepicker.show();
-
-// console.log(timepicker);
-
 timepicker.on('change', function (evt) {
-  console.log('onChange', { evt });
-
   const value = `${evt.hour || '00'}:${evt.minute || '00'}`;
-
-  if (evt.element.id === 'link') {
-    time2.value = value;
-  } else {
-    evt.element.value = value;
-  }
+  time2.value = value;
 });
 
 hljs.configure({ tabReplace: '  ' });

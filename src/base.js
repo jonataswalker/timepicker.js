@@ -25,7 +25,7 @@ export default function (target, initOptions) {
   assert(isElement(targetElement), "Couldn't find target in DOM");
 
   const emitter = mitt();
-  const options = { ...DEFAULT_OPTIONS, initOptions };
+  const options = Object.assign(DEFAULT_OPTIONS, initOptions);
   const picker = {
     options,
     target: { element: targetElement, offset: getOffset(targetElement) },
@@ -54,6 +54,7 @@ export default function (target, initOptions) {
     const container = createStructure(picker);
     const offset = getOffset(container);
 
+    container.style.display = 'none';
     container.style.visibility = '';
     picker.container.element = container;
     picker.container.size.width = offset.width;
@@ -65,9 +66,7 @@ export default function (target, initOptions) {
     const drag = handleDrag(picker);
 
     drag.when({
-      start: () => {
-        addClass(container, style.dragging);
-      },
+      start: () => addClass(container, style.dragging),
 
       move: (resp) => {
         container.style.left = `${resp.x}px`;
@@ -91,6 +90,7 @@ export default function (target, initOptions) {
   }
 
   function show() {
+    const { hour, minute, collection } = picker;
     const containerElement = picker.container.element;
     const containerSize = picker.container.size;
     const targetOffset = picker.target.offset;
@@ -105,8 +105,6 @@ export default function (target, initOptions) {
     containerElement.style.top = top;
 
     picker.requestAnimationId = fade({ emitter, element: containerElement });
-
-    const { hour, minute, collection } = picker;
 
     removeClass(collection.hours, style.selected);
     removeClass(collection.minutes, style.selected);
@@ -138,7 +136,7 @@ export default function (target, initOptions) {
           // click inside Picker
           if (containerElement.contains(evt.target)) return;
 
-          const clickingTarget = targetElement === evt.target;
+          const clickingTarget = picker.target.element === evt.target;
 
           if (!clickingTarget) {
             picker.opened && hide();
@@ -154,7 +152,7 @@ export default function (target, initOptions) {
     picker.closeWhen.minute = false;
 
     // client events
-    emitter.emit(EVENT_TYPE.open, { element: targetElement });
+    emitter.emit(EVENT_TYPE.open, { element: picker.target.element });
   }
 
   function hide() {
@@ -168,6 +166,21 @@ export default function (target, initOptions) {
 
     // client events
     emitter.emit(EVENT_TYPE.close, { element: picker.container.element });
+  }
+
+  function setTarget(newTarget) {
+    const newTargetElement = isElement(newTarget) ? newTarget : document.querySelector(newTarget);
+
+    assert(isElement(newTargetElement), "Couldn't find target in DOM");
+
+    picker.target.element.removeEventListener('focus', triggerShow, true);
+    picker.target.element.removeEventListener('click', triggerShow, true);
+    picker.hour = null;
+    picker.minute = null;
+
+    picker.target.element = newTargetElement;
+    picker.target.offset = getOffset(newTargetElement);
+    setListeners();
   }
 
   function setListeners() {
@@ -185,10 +198,10 @@ export default function (target, initOptions) {
       object.target.style.display = 'none';
     });
 
-    if (FOCUSABLE.test(targetElement.nodeName)) {
-      targetElement.addEventListener('focus', triggerShow, true);
-    } else if (CLICKABLE.test(targetElement.nodeName)) {
-      targetElement.addEventListener('click', triggerShow, true);
+    if (FOCUSABLE.test(picker.target.element.nodeName)) {
+      picker.target.element.addEventListener('focus', triggerShow, true);
+    } else if (CLICKABLE.test(picker.target.element.nodeName)) {
+      picker.target.element.addEventListener('click', triggerShow, true);
     }
 
     picker.collection.hours.forEach((anchor) => {
@@ -215,13 +228,14 @@ export default function (target, initOptions) {
     }
 
     addClass(anchor, style.selected);
+    picker.closeWhen.hour && picker.closeWhen.minute && hide();
 
     emitter.emit(EVENT_TYPE.change, {
-      element: targetElement,
+      element: picker.target.element,
       hour: picker.hour,
       minute: picker.minute,
     });
   }
 
-  return { options, show, initialize, picker, emitter };
+  return { options, show, hide, initialize, picker, emitter, setTarget };
 }

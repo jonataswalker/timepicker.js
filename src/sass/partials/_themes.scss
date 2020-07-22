@@ -1,32 +1,27 @@
 @import './colors';
 
 @mixin theme($name) {
-	$background: map-deep-get($themes, $name, "background");
-	$color: map-deep-get($themes, $name, "color");
-	$lighten-background: lighten($background, 20%);
+	@if map-has-key($colors, $name) {
+		$background: map-deep-get($colors, $name, "darken-4");
+		$color: map-deep-get($colors, $name, "lighten-5");
+		$lighten-background: lighten($background, 10%);
 
-	.#{$name} {
-		color: $background;
-		box-shadow: $background 0 0 0 1px inset;
+		.#{"" + $name} {
+			color: $background;
+			box-shadow: $background 0 0 0 1px inset;
 
-		.header {
-			color: $color;
-			@include background-linear-gradient($background, $lighten-background);
-		}
-		a.selected {
-			color: $color;
-			@include background-linear-gradient($background, $lighten-background);
+			.header {
+				color: $color;
+				@include background-linear-gradient($background, $lighten-background);
+			}
+			a.selected {
+				color: $color;
+				@include background-linear-gradient($background, $lighten-background);
+			}
 		}
 	}
 }
 
-$themes: (
-	dark: (
-		background: map-deep-get($colors, 'grey', 'darken-4'),
-		color: map-deep-get($colors, 'grey', 'lighten-5'),
-	)
-);
-
-@each $key, $value in $themes {
+@each $key, $value in $colors {
 	@include theme($key);
 }

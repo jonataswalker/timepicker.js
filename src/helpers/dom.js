@@ -58,9 +58,11 @@ export function removeClass(element, classname) {
  * @param {String} classname Classname.
  * @return {Boolean}
  */
-export function hasClass(element, c) {
+export function hasClass(element, classname) {
   // use native if available
-  return element.classList ? element.classList.contains(c) : classRegex(c).test(element.className);
+  return element.classList
+    ? element.classList.contains(classname)
+    : classRegex(classname).test(element.className);
 }
 
 /**

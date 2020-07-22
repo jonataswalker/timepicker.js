@@ -124,4 +124,10 @@ rules:
         el: true
   sonarjs/cognitive-complexity:
     - error
-    - 25
+    - 40
+
+overrides:
+  - files:
+      - '*.test.js'
+    extends:
+      - plugin:testcafe/recommended
