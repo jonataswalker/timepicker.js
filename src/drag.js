@@ -1,61 +1,43 @@
-/**
- * @class Drag
- */
-export class Drag {
-  /**
-   * @constructor
-   * @param {Function} base Base class.
-   */
-  constructor(base) {
-    let container = base.container.element,
-      lastX,
-      lastY,
-      currentX,
-      currentY,
-      x,
-      y,
-      when = {},
-      dragging = evt => {
-        evt.preventDefault && evt.preventDefault();
+export function handleDrag(picker) {
+  // eslint-disable-next-line prefer-const
+  let { element, dragElement, lastX, lastY, currentX, currentY, x, y } = picker.container;
 
-        currentX = parseInt(container.style.left, 10) || 0;
-        currentY = parseInt(container.style.top, 10) || 0;
-        x = currentX + (evt.clientX - lastX);
-        y = currentY + (evt.clientY - lastY);
+  const when = {};
+  const dragging = (evt) => {
+    evt.preventDefault();
 
-        when.move.call(undefined, {
-          target: container,
-          x: x,
-          y: y,
-        });
-        lastX = evt.clientX;
-        lastY = evt.clientY;
-      },
-      stopDragging = () => {
-        document.removeEventListener('mousemove', dragging, false);
-        document.removeEventListener('mouseup', stop, false);
-        when.end.call(undefined, {
-          target: container,
-          x: x,
-          y: y,
-        });
-      },
-      start = evt => {
-        if (evt.button !== 0) return;
+    currentX = Number.parseInt(element.style.left, 10) || 0;
+    currentY = Number.parseInt(element.style.top, 10) || 0;
+    x = currentX + (evt.clientX - lastX);
+    y = currentY + (evt.clientY - lastY);
 
-        lastX = evt.clientX;
-        lastY = evt.clientY;
-        when.start.call({ target: container });
-        document.addEventListener('mousemove', dragging, false);
-        document.addEventListener('mouseup', stopDragging, false);
-      };
-    base.container.drag_handle.addEventListener('mousedown', start, false);
-    return {
-      when: obj => {
-        when.start = obj.start;
-        when.move = obj.move;
-        when.end = obj.end;
-      },
-    };
-  }
+    when.move.call(undefined, { target: element, x, y });
+    lastX = evt.clientX;
+    lastY = evt.clientY;
+  };
+  const stopDragging = () => {
+    document.removeEventListener('mousemove', dragging, false);
+    document.removeEventListener('mouseup', stopDragging, false);
+    when.end.call(undefined, { target: element, x, y });
+  };
+  const startDragging = (evt) => {
+    if (evt.button !== 0) return;
+
+    lastX = evt.clientX;
+    lastY = evt.clientY;
+
+    when.start.call({ target: element });
+    document.addEventListener('mousemove', dragging, false);
+    document.addEventListener('mouseup', stopDragging, false);
+  };
+
+  dragElement.addEventListener('mousedown', startDragging, false);
+
+  return {
+    when: (object) => {
+      when.start = object.start;
+      when.move = object.move;
+      when.end = object.end;
+    },
+  };
 }

@@ -1,120 +1,87 @@
-import { createElement, getMaxZIndex, offset } from './helpers/dom';
-import { CLASSNAME, VARS, LANG } from './constants';
+import style from './sass/main.scss';
+import { createElement, getMaxZIndex } from './helpers/dom';
+import { LANG } from './constants';
 
-/**
- * @class Html
- */
-export class Html {
-  constructor(base) {
-    this.Base = base;
-  }
-
-  createPicker() {
-    const options = this.Base.options;
-    const index_hour = Html.picker.indexOf(Html.replace.hour_list);
-    const index_minute = Html.picker.indexOf(Html.replace.minute_list);
-    const index_hour_title = Html.picker.indexOf(Html.replace.hour_title);
-    const index_minute_title = Html.picker.indexOf(Html.replace.minute_title);
-    let hours_html = [],
-      minutes_html = [];
-    let minute_zero;
-    let i = 0,
-      ii,
-      v = 6,
-      u = 0;
-
-    /** hours **/
-    for (; u < 4; u++) {
-      ii = i + v;
-      hours_html.push('<ol>');
-      for (; i < ii; i++) {
-        hours_html.push(
-          ['<li><a ', VARS.attr.hour, '="', i, '">', i, '</a></li>'].join('')
-        );
-      }
-      hours_html.push('</ol>');
-    }
-
-    /** minutes **/
-    i = 0;
-    ii = 0;
-    v = 15;
-    for (u = 0; u < 4; u++) {
-      ii = i + v;
-      minutes_html.push('<ol>');
-      for (; i < ii; i += 5) {
-        minute_zero = i < 10 ? (minute_zero = '0' + i) : i;
-        minutes_html.push(
-          [
-            '<li><a ',
-            VARS.attr.minute,
-            '="',
-            minute_zero,
-            '">',
-            minute_zero,
-            '</a></li>',
-          ].join('')
-        );
-      }
-      minutes_html.push('</ol>');
-    }
-
-    Html.picker[index_hour] = hours_html.join('');
-    Html.picker[index_minute] = minutes_html.join('');
-    Html.picker[index_hour_title] = LANG[options.lang].hour;
-    Html.picker[index_minute_title] = LANG[options.lang].minute;
-
-    const ct = `${CLASSNAME.container} ${VARS.namespace}-${options.theme}`;
-    const container = createElement(
-      ['div', { id: VARS.container_id, classname: ct }],
-      Html.picker.join('')
-    );
-
-    container.style.zIndex = getMaxZIndex() + 10;
-    container.style.visibility = 'hidden';
-    document.body.appendChild(container);
-
-    const _offset_ = offset(container);
-
-    // store element container and dimensions
-    this.Base.container = {
-      size: {
-        width: _offset_.width,
-        height: _offset_.height,
-      },
-      element: container,
-      drag_handle: container.querySelector(`.${CLASSNAME.header}`),
-    };
-    container.style.visibility = '';
-    container.style.display = 'none';
-    return container;
-  }
-}
-
-Html.replace = {
-  hour_list: '__hour-list__',
-  minute_list: '__minute-list__',
-  hour_title: '__hour-title__',
-  minute_title: '__minute-title__',
+const themesMap = {
+  dark: style.grey,
+  red: style.red,
+  pink: style.pink,
+  purple: style.purple,
+  'deep-purple': style['deep-purple'],
+  indigo: style.indigo,
+  blue: style.blue,
+  'light-blue': style['light-blue'],
+  cyan: style.cyan,
+  teal: style.teal,
+  green: style.green,
+  'light-green': style['light-green'],
+  lime: style.lime,
+  yellow: style.yellow,
+  amber: style.amber,
+  orange: style.orange,
+  'deep-orange': style['deep-orange'],
+  brown: style.brown,
+  'blue-grey': style['blue-grey'],
 };
 
-/* eslint-disable indent */
-Html.picker = [
-  `<div class="${CLASSNAME.header}">`,
-  `<div class="${CLASSNAME.hour}">`,
-  Html.replace.hour_title,
-  '</div>',
-  `<div class="${CLASSNAME.minute}">`,
-  Html.replace.minute_title,
-  '</div>',
-  '</div>',
-  `<div class="${CLASSNAME.body}">`,
-  `<div id="${VARS.ids.hour_list}" class="${CLASSNAME.hour}">`,
-  Html.replace.hour_list,
-  '</div>',
-  `<div id="${VARS.ids.minute_list}" class="${CLASSNAME.minute}">`,
-  Html.replace.minute_list,
-  '</div>',
-  '</div>',
-];
-/* eslint-enable indent */
+const createHours = (rowNumber) => {
+  const colsNumber = 6;
+
+  let cols = '';
+
+  for (let index = 0; index < colsNumber; index++) {
+    const hour = rowNumber * colsNumber + index;
+
+    cols += `<td><a class="${style.hourAnchor}" data-hour="${hour}">${hour}</a></td>`;
+  }
+
+  return cols;
+};
+
+const createMinutes = (rowNumber) => {
+  const colsNumber = 3;
+  const step = 5;
+
+  let cols = `<td class="${style.space}"></td>`;
+
+  for (let index = 0; index < colsNumber; index++) {
+    const minute = String((rowNumber * colsNumber + index) * step).padStart(2, '0');
+
+    cols += `<td><a class="${style.minuteAnchor}" data-minute="${minute}">${minute}</a></td>`;
+  }
+
+  return cols;
+};
+
+export function createStructure(picker) {
+  const structure = [
+    `<table class="${style.table}">`,
+    `<thead><tr class="${style.dragTarget}">`,
+    `<th colspan="6" class="${style.header}">${LANG[picker.options.lang].hour}</th>`,
+    `<th colspan="4" class="${style.header}">${LANG[picker.options.lang].minute}</th>`,
+    '</tr></thead>',
+    '<tbody>',
+    '{{body}}',
+    '</tbody>',
+    '</table>',
+  ];
+
+  const rows = [];
+
+  for (let index = 0; index < 4; index++) {
+    const row = `<tr>${createHours(index)}${createMinutes(index)}</tr>`;
+
+    rows.push(row);
+  }
+
+  structure[structure.indexOf('{{body}}')] = rows.join('');
+
+  const classname = [style.container, themesMap[picker.options.theme]].join(' ');
+  const container = createElement(['div', { classname }], structure.join(''));
+
+  container.style.zIndex = getMaxZIndex() + 10;
+  container.style.visibility = 'hidden';
+  document.body.append(container);
+
+  return container;
+}

@@ -1,23 +1,26 @@
-import { isNumeric } from './mix';
-
 /**
  * @param {Element|Array<Element>} element DOM node or array of nodes.
  * @param {String|Array<String>} classname Class or array of classes.
  * For example: 'class1 class2' or ['class1', 'class2']
- * @param {Number|undefined} timeout Timeout to remove a class.
  */
-export function addClass(element, classname, timeout) {
+export function addClass(element, classname) {
   if (Array.isArray(element)) {
-    element.forEach(each => addClass(each, classname));
+    element.forEach((each) => addClass(each, classname));
+
     return;
   }
 
-  const array = Array.isArray(classname) ? classname : classname.split(/\s+/);
+  const array = Array.isArray(classname) ? classname : classname.split(/\s+/u);
+
   let i = array.length;
 
   while (i--) {
     if (!hasClass(element, array[i])) {
-      _addClass(element, array[i], timeout);
+      if (element.classList) {
+        element.classList.add(array[i]);
+      } else {
+        element.className = `${element.className} ${array[i]}`.trim();
+      }
     }
   }
 }
@@ -28,18 +31,24 @@ export function addClass(element, classname, timeout) {
  * For example: 'class1 class2' or ['class1', 'class2']
  * @param {Number|undefined} timeout Timeout to add a class.
  */
-export function removeClass(element, classname, timeout) {
-  if (Array.isArray(element)) {
-    element.forEach(each => removeClass(each, classname, timeout));
+export function removeClass(element, classname) {
+  if (Array.isArray(element) || NodeList.prototype.isPrototypeOf(element)) {
+    element.forEach((each) => removeClass(each, classname));
+
     return;
   }
 
-  const array = Array.isArray(classname) ? classname : classname.split(/\s+/);
+  const array = Array.isArray(classname) ? classname : classname.split(/\s+/u);
+
   let i = array.length;
 
   while (i--) {
     if (hasClass(element, array[i])) {
-      _removeClass(element, array[i], timeout);
+      if (element.classList) {
+        element.classList.remove(array[i]);
+      } else {
+        element.className = element.className.replace(classRegex(array[i]), ' ').trim();
+      }
     }
   }
 }
@@ -49,11 +58,11 @@ export function removeClass(element, classname, timeout) {
  * @param {String} classname Classname.
  * @return {Boolean}
  */
-export function hasClass(element, c) {
+export function hasClass(element, classname) {
   // use native if available
   return element.classList
-    ? element.classList.contains(c)
-    : classRegex(c).test(element.className);
+    ? element.classList.contains(classname)
+    : classRegex(classname).test(element.className);
 }
 
 /**
@@ -62,7 +71,8 @@ export function hasClass(element, c) {
  */
 export function toggleClass(element, classname) {
   if (Array.isArray(element)) {
-    element.forEach(each => toggleClass(each, classname));
+    element.forEach((each) => toggleClass(each, classname));
+
     return;
   }
 
@@ -70,92 +80,30 @@ export function toggleClass(element, classname) {
   if (element.classList) {
     element.classList.toggle(classname);
   } else {
-    hasClass(element, classname)
-      ? _removeClass(element, classname)
-      : _addClass(element, classname);
+    hasClass(element, classname) ? removeClass(element, classname) : addClass(element, classname);
   }
 }
 
-/**
- * Abstraction to querySelectorAll for increased
- * performance and greater usability
- * @param {String} selector
- * @param {Element} context (optional)
- * @param {Boolean} find_all (optional)
- * @return (find_all) {Element} : {Array}
- */
-export function find(selector, context = window.document, find_all) {
-  let simpleRe = /^(#?[\w-]+|\.[\w-.]+)$/,
-    periodRe = /\./g,
-    slice = Array.prototype.slice,
-    matches = [];
+export function toType(object) {
+  if (object === window && object.document && object.location) return 'window';
 
-  // Redirect call to the more performant function
-  // if it's a simple selector and return an array
-  // for easier usage
-  if (simpleRe.test(selector)) {
-    switch (selector[0]) {
-      case '#':
-        matches = [$(selector.substr(1))];
-        break;
-      case '.':
-        matches = slice.call(
-          context.getElementsByClassName(
-            selector.substr(1).replace(periodRe, ' ')
-          )
-        );
-        break;
-      default:
-        matches = slice.call(context.getElementsByTagName(selector));
-    }
-  } else {
-    // If not a simple selector, query the DOM as usual
-    // and return an array for easier usage
-    matches = slice.call(context.querySelectorAll(selector));
-  }
+  if (object === document) return 'htmldocument';
 
-  return find_all ? matches : matches[0];
+  if (typeof object === 'string') return 'string';
+
+  if (isElement(object)) return 'element';
+
+  return 'unknown type';
 }
 
-export function toType(obj) {
-  if (obj === window && obj.document && obj.location) return 'window';
-  else if (obj === document) return 'htmldocument';
-  else if (typeof obj === 'string') return 'string';
-  else if (isElement(obj)) return 'element';
-}
-
-export function evaluate(el) {
-  let element;
-  switch (toType(el)) {
-    case 'window':
-    case 'htmldocument':
-    case 'element':
-      element = el;
-      break;
-    case 'string':
-      const t = el[0] === '#' || el[0] === '.' ? el : '#' + el;
-      element = find(t);
-      break;
-    default:
-      console.warn('Unknown type');
-  }
-  return element;
-}
-
-export function $(id) {
-  id = id[0] === '#' ? id.substr(1, id.length) : id;
-  return document.getElementById(id);
-}
-
-export function isElement(obj) {
+export function isElement(object) {
   // DOM, Level2
   if ('HTMLElement' in window) {
-    return !!obj && obj instanceof HTMLElement;
+    return !!object && object instanceof HTMLElement;
   }
+
   // Older browsers
-  return (
-    !!obj && typeof obj === 'object' && obj.nodeType === 1 && !!obj.nodeName
-  );
+  return !!object && typeof object === 'object' && object.nodeType === 1 && !!object.nodeName;
 }
 
 export function getAllChildren(node, tag) {
@@ -163,66 +111,57 @@ export function getAllChildren(node, tag) {
 }
 
 export function removeAllChildren(node) {
-  while (node.firstChild) node.removeChild(node.firstChild);
+  while (node.firstChild) node.firstChild.remove();
 }
 
 export function removeAll(collection) {
   let node;
-  while ((node = collection[0])) node.parentNode.removeChild(node);
+
+  while ((node = collection[0])) node.remove();
 }
 
 export function getChildren(node, tag) {
-  return [].filter.call(node.childNodes, el =>
-    tag
-      ? el.nodeType === 1 && el.tagName.toLowerCase() === tag
-      : el.nodeType === 1
+  return [].filter.call(node.childNodes, (el) =>
+    tag ? el.nodeType === 1 && el.tagName.toLowerCase() === tag : el.nodeType === 1
   );
 }
 
-export function template(html, row) {
-  return html.replace(/\{ *([\w_-]+) *\}/g, (htm, key) => {
-    let value = row[key] === undefined ? '' : row[key];
-    return htmlEscape(value);
-  });
-}
-
-export function htmlEscape(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-
 export function createElement(node, html) {
-  let elem;
-  if (Array.isArray(node)) {
-    elem = document.createElement(node[0]);
+  let element;
 
-    if (node[1].id) elem.id = node[1].id;
-    if (node[1].classname) elem.className = node[1].classname;
+  if (Array.isArray(node)) {
+    element = document.createElement(node[0]);
+
+    if (node[1].id) element.id = node[1].id;
+
+    if (node[1].classname) element.className = node[1].classname;
 
     if (node[1].attr) {
-      let attr = node[1].attr;
+      const { attr } = node[1];
+
       if (Array.isArray(attr)) {
         let i = -1;
+
         while (++i < attr.length) {
-          elem.setAttribute(attr[i].name, attr[i].value);
+          element.setAttribute(attr[i].name, attr[i].value);
         }
       } else {
-        elem.setAttribute(attr.name, attr.value);
+        element.setAttribute(attr.name, attr.value);
       }
     }
   } else {
-    elem = document.createElement(node);
+    element = document.createElement(node);
   }
-  elem.innerHTML = html;
-  let frag = document.createDocumentFragment();
 
-  while (elem.childNodes[0]) frag.appendChild(elem.childNodes[0]);
-  elem.appendChild(frag);
-  return elem;
+  element.innerHTML = html;
+
+  const frag = document.createDocumentFragment();
+
+  while (element.childNodes[0]) frag.append(element.childNodes[0]);
+
+  element.append(frag);
+
+  return element;
 }
 
 export function getScroll() {
@@ -238,8 +177,8 @@ export function getScroll() {
 
 export function getViewportSize() {
   return {
-    w: window.innerWidth || document.documentElement.clientWidth,
-    h: window.innerHeight || document.documentElement.clientHeight,
+    width: window.innerWidth || document.documentElement.clientWidth,
+    height: window.innerHeight || document.documentElement.clientHeight,
   };
 }
 
@@ -255,63 +194,43 @@ export function getDocumentHeight() {
 
 export function getWindowSize() {
   return {
-    width:
-      window.innerWidth ||
-      document.documentElement.clientWidth ||
-      document.body.clientWidth,
+    width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+
     height:
-      window.innerHeight ||
-      document.documentElement.clientHeight ||
-      document.body.clientHeight,
+      window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
   };
 }
 
-export function getMaxZIndex(zIndex, max = 0, i = -1) {
-  const all = find('*', document, true);
-  const len = all.length;
-
-  while (++i < len) {
-    zIndex = parseInt(window.getComputedStyle(all[i]).zIndex, 10);
-    max = zIndex ? Math.max(max, zIndex) : max;
-  }
-  return max;
+export function getMaxZIndex() {
+  return Array.from(document.querySelectorAll('body *'), (el) =>
+    Number.parseFloat(window.getComputedStyle(el).zIndex)
+  )
+    .filter((zIndex) => !Number.isNaN(zIndex))
+    .reduce((accumulator, current) => (current > accumulator ? current : accumulator), 0);
 }
 
-export function offset(element) {
+export function getOffset(element) {
   const rect = element.getBoundingClientRect();
-  const docEl = document.documentElement;
-  return {
-    left: rect.left + window.pageXOffset - docEl.clientLeft,
-    top: rect.top + window.pageYOffset - docEl.clientTop,
-    width: element.offsetWidth,
-    height: element.offsetHeight,
-  };
+  const { documentElement } = document;
+  const left = rect.left + window.pageXOffset - documentElement.clientLeft;
+  const top = rect.top + window.pageYOffset - documentElement.clientTop;
+  const width = element.offsetWidth;
+  const height = element.offsetHeight;
+  const right = left + width;
+  const bottom = top + height;
+
+  return { width, height, top, bottom, right, left };
 }
 
 function classRegex(classname) {
-  return new RegExp(`(^|\\s+) ${classname} (\\s+|$)`);
+  // eslint-disable-next-line security/detect-non-literal-regexp
+  return new RegExp(`(^|\\s+) ${classname} (\\s+|$)`, 'u');
 }
 
-function _addClass(el, klass, timeout) {
-  // use native if available
-  if (el.classList) {
-    el.classList.add(klass);
-  } else {
-    el.className = (el.className + ' ' + klass).trim();
-  }
-
-  if (timeout && isNumeric(timeout)) {
-    window.setTimeout(() => _removeClass(el, klass), timeout);
-  }
+export function getHour(element) {
+  return element.getAttribute('data-hour');
 }
 
-function _removeClass(el, klass, timeout) {
-  if (el.classList) {
-    el.classList.remove(klass);
-  } else {
-    el.className = el.className.replace(classRegex(klass), ' ').trim();
-  }
-  if (timeout && isNumeric(timeout)) {
-    window.setTimeout(() => _addClass(el, klass), timeout);
-  }
+export function getMinute(element) {
+  return element.getAttribute('data-minute');
 }

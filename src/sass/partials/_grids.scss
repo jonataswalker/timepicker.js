@@ -1,4 +1,4 @@
-.#{$namespace}#{$container_class} {
+.container {
 	position: absolute;
 	width: $container-width;
 	height: $container-height;
@@ -10,7 +10,7 @@
 	border-radius: 3px;
 	box-sizing: border-box;
 
-	@include container($width:$container-width);
+	// @include container($width:$container-width);
   @include nested-reset;
 	@include line-height(16);
 	@include font-size(16);
@@ -23,10 +23,10 @@
 	  outline: none;
 	}
 
-	&.#{$namespace}#{$dragging_class} {
+	&.dragging {
 		opacity: .85 !important;
 
-		.#{$namespace}#{$header_class} { cursor: grabbing }
+		.header { cursor: grabbing }
 	}
 
 
@@ -46,7 +46,7 @@
 				border: 1px solid transparent;
 				@include font-size(14);
 
-				&:not(.#{$namespace}#{$selected_class}):hover {
+				&:not(.selected):hover {
 					cursor: pointer;
 					border: 1px solid #ccc;
 					border-right: 1px solid #aaa;
@@ -60,7 +60,7 @@
 	}
 }
 
-.#{$namespace}#{$header_class} {
+.header {
 	position: relative;
 	font-weight: $font-weight-bold;
 	text-align: center;
@@ -72,15 +72,15 @@
 	}
 }
 
-.#{$namespace}#{$body_class} {
+.body {
 	padding: 2px 0;
 	@include clearfix;
 }
 
-.#{$namespace}#{$hour_class} {
-	@include span(6 of $columns);
+.hour {
+	// @include span(6 of $columns);
 }
 
-.#{$namespace}#{$minute_class} {
-	@include span(4 last);
+.minute {
+	// @include span(4 last);
 }

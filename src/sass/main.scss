@@ -1,27 +1,104 @@
 // dependencies
-@import "../../node_modules/susy/sass/susy-prefix";
 @import "vendor/utilities";
-@import "vendor/palette";
 @import "partials/functions";
+@import "partials/mixins";
 
-// global project variables
-@import "../../config/vars.json";
-
-$container-width: $width;
-$container-height: $height;
+$container-width: 260px;
+$container-height: 140px;
 
 $font-weight-regular: 400;
 $font-weight-bold: 600;
 
-$columns: 10;
 
-// Configuring Susy Defaults
-$susy: (
-	columns: susy-repeat($columns),
-	gutters: 1/6
-);
+.container {
+	position: absolute;
+	width: $container-width;
+	height: $container-height;
+	padding: 0;
+	background: #fff;
+	font-family: inherit;
+	font-weight: $font-weight-regular;
+	overflow: hidden;
+	border-radius: 3px;
+	box-sizing: border-box;
 
-// partials
-@import "partials/mixins";
+  @include nested-reset;
+	@include line-height(16);
+  @include font-size(16);
+
+	*,
+  *::before,
+  *::after {
+      box-sizing: inherit;
+  }
+
+	*,
+	*:hover,
+	*:focus,
+	*.active {
+	  text-decoration: none;
+	  outline: none;
+	}
+
+	&.dragging {
+		opacity: .85 !important;
+
+		.dragTarget { cursor: grabbing }
+	}
+
+}
+
+.table {
+  position: relative;
+  width: 100%;
+
+  tbody::before {
+    content: '';
+    display: block;
+    height: 7px;
+  }
+
+  .header {
+    font-weight: $font-weight-bold;
+    text-align: center;
+    padding: 5px;
+  }
+
+  td {
+    text-align: center;
+
+    > a {
+      display: inline-block;
+      padding: 3px 0;
+      width: 25px;
+      color: inherit;
+      border-radius: 3px;
+      border: 1px solid transparent;
+      @include font-size(14);
+
+      &:not(.selected):hover {
+        cursor: pointer;
+        border: 1px solid #ccc;
+        border-right: 1px solid #aaa;
+        border-bottom: 1px solid #aaa;
+        background: rgb(245,245,245);
+        background: linear-gradient(rgb(230,230,230), rgb(245,245,245));
+        box-shadow: 0 2px 3px rgba(220,220,220,.8);
+      }
+    }
+  }
+}
+
+.dragTarget {
+  cursor: grab;
+}
+
+.space {
+  background: none;
+  width: 10px;
+}
+
+.hourAnchor { text-align: center }
+.minuteAnchor { text-align: center }
+
 @import "partials/themes";
-@import "partials/grids";
