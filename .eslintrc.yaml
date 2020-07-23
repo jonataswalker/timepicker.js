@@ -71,7 +71,8 @@ rules:
     - ignoreDestructuring: true
   id-length:
     - error
-    - exceptions:
+    - properties: never
+      exceptions:
         - $
         - _
         - h
@@ -125,9 +126,3 @@ rules:
   sonarjs/cognitive-complexity:
     - error
     - 40
-
-overrides:
-  - files:
-      - '*.test.js'
-    extends:
-      - plugin:testcafe/recommended

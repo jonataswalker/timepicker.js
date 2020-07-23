@@ -4,6 +4,9 @@ const focusPicker = new TimePicker('#input1');
 const triggerPicker = new TimePicker('#link');
 const triggerInput = document.getElementById('input2');
 
+window.focusPicker = focusPicker;
+window.triggerPicker = triggerPicker;
+
 triggerPicker.on('change', function (evt) {
   triggerInput.value = `${evt.hour || '00'}:${evt.minute || '00'}`;
 });

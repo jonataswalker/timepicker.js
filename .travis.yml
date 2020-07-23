@@ -1,20 +1,17 @@
-dist: xenial
-
 language: node_js
 node_js:
   - '12'
 
-cache:
-  bundler: true
-  directories:
-    - node_modules
-
 addons:
-  chrome: stable
+  apt:
+    packages:
+      - libgconf-2-4
 
-services:
-  - xvfb
+cache:
+  npm: true
+  directories:
+    - ~/.cache
 
-branches:
-  only:
-    - master
+script:
+  - npm run lint
+  - node bin/test --env pipeline
