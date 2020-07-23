@@ -84,6 +84,8 @@ export default function (target, initOptions) {
   }
 
   function triggerShow(evt) {
+    if (picker.opened) return;
+
     evt.preventDefault();
     window.cancelAnimationFrame(picker.requestAnimationId);
     show();

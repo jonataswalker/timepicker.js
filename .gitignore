@@ -14,3 +14,13 @@ dist
 
 #eslint
 .eslintcache
+
+# cypress
+cypress/cypress.json
+cypress/screenshots
+cypress/videos
+
+# vscode
+.vscode/snipsnap.code-snippets
+
+public/timepicker.js
