@@ -6,7 +6,7 @@
   "homepage": "https://github.com/jonataswalker/timepicker.js",
   "license": "MIT",
   "type": "module",
-  "main": "dist/timepicker.js",
+  "browser": "dist/timepicker.js",
   "keywords": [
     "timepicker",
     "time",
