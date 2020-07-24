@@ -99,9 +99,7 @@ timepicker.on('close', function(evt) {});
 timepicker.on('change', function(evt) {});
 ```
 
-
 ## Themes
-
 - dark
 - red
 - pink
@@ -121,3 +119,14 @@ timepicker.on('change', function(evt) {});
 - deep-orange
 - brown
 - blue-grey
+
+# Changelog
+
+## [3.0.0] - 2020-07-24
+
+### Added
+- A bunch of new themes.
+
+### Changed
+- No longer needs to load a separate CSS file.
+- (breaking change) No longer accept an array of elements.
