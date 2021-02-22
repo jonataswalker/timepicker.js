@@ -17,6 +17,7 @@ export default (port, openCypress) => {
   const cypressConfig = {
     baseUrl,
     video: false,
+    pluginsFile: false,
     watchForFileChanges: true,
     viewportWidth: 1366,
     viewportHeight: 720,
