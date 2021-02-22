@@ -39,7 +39,7 @@
     "cypress": "^6.5.0",
     "eslint": "^7.20.0",
     "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-config-hardcore": "^16.0.2",
+    "eslint-config-hardcore": "12.9",
     "eslint-config-prettier": "^8.0.0",
     "eslint-plugin-chai-friendly": "^0.6.0",
     "eslint-plugin-cypress": "^2.11.2",
