@@ -26,4 +26,5 @@ export const LANG = {
   it: { hour: 'Ora', minute: 'minuto' },
   nl: { hour: 'Uur', minute: 'minuut' },
   sv: { hour: 'Timmars', minute: 'minut' },
+  ru: { hour: 'Час', minute: 'Минута'}
 };
