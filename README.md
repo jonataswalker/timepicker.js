@@ -73,7 +73,7 @@ timepicker.on('change', function(evt) {
 ###### `options` is an object with the following possible properties:
 
 - `theme`: `'dark'`; Theme color
-- `lang`: `'en'`; Header language ('en', 'pt' for now)
+- `lang`: `'en'`; Header language ('en', 'pt', 'de', 'es', 'fr', 'it', 'nl', 'sv', 'ru')
 
 ## Methods
 
