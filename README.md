@@ -21,7 +21,7 @@
   </a>
 </p>
 
-A lightweight, customizable, TimePicker. Zero dependencies.
+A lightweight, customizable, TimePicker.
 
 Because `<input type="time">` is not yet supported in major browsers (MS Edge and Chrome only).
 
@@ -51,12 +51,12 @@ Load:
 
 ```javascript
 var timepicker = new TimePicker('.field', {
-  theme: 'dark',
-  lang: 'pt',
+    theme: 'dark',
+    lang: 'pt',
 });
-timepicker.on('change', function(evt) {
-  var value = (evt.hour || '00') + ':' + (evt.minute || '00');
-  evt.element.value = value;
+timepicker.on('change', function (evt) {
+    var value = (evt.hour || '00') + ':' + (evt.minute || '00');
+    evt.element.value = value;
 });
 ```
 
@@ -72,8 +72,8 @@ timepicker.on('change', function(evt) {
 
 ###### `options` is an object with the following possible properties:
 
-- `theme`: `'dark'`; Theme color
-- `lang`: `'en'`; Header language ('en', 'pt' for now)
+-   `theme`: `'dark'`; Theme color
+-   `lang`: `'en'`; Header language ('en', 'pt' for now)
 
 ## Methods
 
@@ -92,41 +92,44 @@ All targets passed to the constructor will be shown.
 ## Events
 
 ```javascript
-timepicker.on('open', function(evt) {});
+timepicker.on('open', function (evt) {});
 
-timepicker.on('close', function(evt) {});
+timepicker.on('close', function (evt) {});
 
-timepicker.on('change', function(evt) {});
+timepicker.on('change', function (evt) {});
 ```
 
 ## Themes
-- dark
-- red
-- pink
-- purple
-- deep-purple
-- indigo
-- blue
-- light-blue
-- cyan
-- teal
-- green
-- light-green
-- lime
-- yellow
-- amber
-- orange
-- deep-orange
-- brown
-- blue-grey
+
+-   dark
+-   red
+-   pink
+-   purple
+-   deep-purple
+-   indigo
+-   blue
+-   light-blue
+-   cyan
+-   teal
+-   green
+-   light-green
+-   lime
+-   yellow
+-   amber
+-   orange
+-   deep-orange
+-   brown
+-   blue-grey
 
 # Changelog
 
 ## [3.0.0] - 2020-07-24
 
 ### Added
-- A bunch of new themes.
+
+-   A bunch of new themes.
 
 ### Changed
-- No longer needs to load a separate CSS file.
-- (breaking change) No longer accept an array of elements.
+
+-   No longer needs to load a separate CSS file.
+-   (breaking change) No longer accept an array of elements.

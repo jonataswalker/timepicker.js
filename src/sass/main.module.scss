@@ -1,0 +1,128 @@
+// dependencies
+@import "partials/functions";
+@import "partials/mixins";
+
+$container-width: 260px;
+$container-height: 150px;
+
+$font-weight-regular: 400;
+$font-weight-bold: 600;
+
+
+.timepicker-container {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: $container-width;
+    height: $container-height;
+    padding: 0;
+    font: 100%/1.2 inherit;
+    background: #fff;
+    font-family: inherit;
+    font-weight: $font-weight-regular;
+    overflow: hidden;
+    border-radius: 3px;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+
+    *,
+    *::before,
+    *::after {
+        box-sizing: inherit;
+    }
+
+    *,
+    *:hover,
+    *:focus,
+    *.active {
+        text-decoration: none;
+        outline: none;
+    }
+
+    * {
+        margin: 0;
+    }
+
+    .header {
+        font-weight: $font-weight-bold;
+        text-align: center;
+        padding: 2px 0;
+        cursor: grab;
+    }
+
+    &.dragging {
+        opacity: .85 !important;
+
+        .header {
+            cursor: grabbing
+        }
+    }
+
+    .hour-width {
+        flex-grow: 0;
+        flex-shrink: 0;
+        flex-basis: 66%;
+    }
+
+    .minute-width {
+        flex-grow: 0;
+        flex-shrink: 0;
+        flex-basis: 33%;
+    }
+
+    .grid-container {
+        display: flex;
+        column-gap: 5px;
+        text-align: center;
+    }
+
+    .grid-container-without-header {
+        flex: 1;
+        align-items: center;
+        padding: 3px;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-rows: repeat(4, 25px);
+        grid-column-gap: 3px;
+        grid-row-gap: 3px;
+    }
+
+    .grid>a {
+        width: 25px;
+        line-height: 23px;
+        color: inherit;
+        text-align: center;
+        border-radius: 3px;
+        user-select: none;
+        border: 1px solid transparent;
+    }
+
+    .grid>a:not(.selected):hover {
+        cursor: pointer;
+        border: 1px solid #ccc;
+        border-right: 1px solid #aaa;
+        border-bottom: 1px solid #aaa;
+        background: rgb(245, 245, 245);
+        background: linear-gradient(rgb(230, 230, 230), rgb(245, 245, 245));
+        box-shadow: 0 2px 3px rgba(220, 220, 220, .8);
+    }
+
+    .grid-hour {
+        grid-template-columns: repeat(6, 25px);
+    }
+
+    .grid-minute {
+        grid-template-columns: repeat(3, 25px);
+    }
+
+}
+
+.space {
+    background: none;
+    width: 10px;
+}
+
+@import "partials/themes";
