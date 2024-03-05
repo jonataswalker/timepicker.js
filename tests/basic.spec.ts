@@ -5,7 +5,7 @@ import { PlaywrightDevPage } from './page-dev'
 let devPage: PlaywrightDevPage
 
 test.beforeEach(async ({ page }) => {
-    await page.goto('http://127.0.0.1:4000')
+    await page.goto('http://localhost:4000')
 
     devPage = new PlaywrightDevPage(page)
 })
