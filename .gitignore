@@ -24,3 +24,7 @@ cypress/videos
 .vscode/snipsnap.code-snippets
 
 public/timepicker.js
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
