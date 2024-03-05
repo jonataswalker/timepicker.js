@@ -113,14 +113,14 @@
         <div class="left-container">
             <h3>Focusing:</h3>
             <div>
-                <input type="text" id="input1" class="icon" placeholder="Time" />
+                <input type="text" id="focus-trigger" class="icon" placeholder="Time" />
             </div>
         </div>
         <div class="right-container">
             <h3 style="margin-top: 10px;">Triggering:</h3>
             <div class="flex">
-                <input type="text" id="input2" class="center" placeholder="Time" />
-                <button id="link"><i class="icon"></i></button>
+                <input type="text" id="click-trigger-input" class="center" placeholder="Time" />
+                <button id="click-trigger"><i class="icon"></i></button>
             </div>
         </div>
     </div>
@@ -128,19 +128,36 @@
 
         import TimePicker from './src/main.ts'
 
-        const focusPicker = new TimePicker('#input1');
-        const triggerPicker = new TimePicker('#link');
-        const triggerInput = document.getElementById('input2');
+        const focusPicker = new TimePicker('#focus-trigger');
+        const triggerPicker = new TimePicker('#click-trigger');
+        const triggerInput = document.getElementById('click-trigger-input');
+
+        triggerPicker.picker.container.element.classList.add('click-trigger-container-class')
+        focusPicker.picker.container.element.classList.add('focus-trigger-container-class')
+
+        const testingPurposes = {
+            picker: triggerPicker,
+            eventsCalled: [],
+            chosen: { hour: '', minute: '' }
+        }
+        window.testingPurposes = testingPurposes
 
         triggerPicker.on('open', function (evt) {
+            testingPurposes.eventsCalled.push('open')
             console.log('triggerPicker open', { evt });
         });
         triggerPicker.on('close', function (evt) {
+            testingPurposes.eventsCalled.push('close')
             console.log('triggerPicker close', { evt });
         });
 
         triggerPicker.on('change', function (evt) {
             console.log('triggerPicker change', { evt });
+
+            testingPurposes.eventsCalled.push('change')
+            testingPurposes.chosen.hour = evt.hour
+            testingPurposes.chosen.minute = evt.minute
+
             triggerInput.value = `${evt.hour || '00'}:${evt.minute || '00'}`;
         });
 
