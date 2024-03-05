@@ -13,7 +13,8 @@ A lightweight, customizable, TimePicker.
 
 ### Demo
 
-See [here a demo](https://jsfiddle.net/jonataswalker/fgyk86on/).
+[JSFiddle](https://jsfiddle.net/jonataswalker/fgyk86on/)
+[StackBlitz](https://stackblitz.com/edit/jonataswalker-timepicker?file=index.js)
 
 ## How to use it?
 
@@ -28,20 +29,25 @@ npm i timepicker.js
 Load:
 
 ```HTML
-<script src="//cdn.jsdelivr.net/timepicker.js/latest/timepicker.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/timepicker.js/dist/timepicker.iife.min.js"></script>
 ```
 
 ##### Instantiate with some options and listen to changes
 
 ```javascript
-var timepicker = new TimePicker('.field', {
+const timepicker = new TimePicker('#click-trigger', {
     theme: 'dark',
     lang: 'pt',
-});
-timepicker.on('change', function (evt) {
-    var value = (evt.hour || '00') + ':' + (evt.minute || '00');
-    evt.element.value = value;
-});
+})
+timepicker.on('change', (evt) => {
+    console.log(evt)
+
+    // {
+    //     hour: string;
+    //     minute: string;
+    //     element: HTMLElement;
+    // }
+})
 ```
 
 # API
