@@ -1,7 +1,12 @@
-name: pr-check
+name: CI
 on:
+  push:
+    branches:
+      - master
   pull_request:
-    branches: [ main, master ]
+    branches:
+      - master
+
 jobs:
   test:
     timeout-minutes: 60
