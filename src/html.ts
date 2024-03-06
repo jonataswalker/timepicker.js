@@ -63,7 +63,7 @@ export function createStructure(picker: Picker) {
     `
 
     const classname = [style['timepicker-container'], themesMap[picker.options.theme]].join(' ')
-    const container = createElement(['div', { classname }], structure)
+    const container = createElement(['div', { classname }], structure) as HTMLDivElement
 
     container.style.zIndex = String(getMaxZIndex() + 10)
     container.style.visibility = 'hidden'

@@ -1,9 +1,8 @@
 import { readFileSync } from 'node:fs'
 
 import { defineConfig } from 'vite'
+import dts from 'vite-plugin-dts'
 import bannerPlugin from 'vite-plugin-banner'
-// eslint-disable-next-line import/default, import/no-named-as-default, import/no-named-as-default-member
-import typescript from '@rollup/plugin-typescript'
 import { default as cssInjectedByJsPlugin } from 'vite-plugin-css-injected-by-js'
 
 type Pkg = { name: string, version: string, homepage: string }
@@ -35,7 +34,7 @@ export default defineConfig(({ command }) => {
         plugins: [
             bannerPlugin(banner),
             cssInjectedByJsPlugin(),
-            typescript({ tsconfig: 'tsconfig.build.json' }),
+            dts({ rollupTypes: true }),
         ],
         define: {
             __APP_VERSION__: JSON.stringify(version),

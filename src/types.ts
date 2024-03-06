@@ -76,7 +76,7 @@ export type Picker = {
     collection: { hours: NodeListOf<HTMLAnchorElement>, minutes: NodeListOf<HTMLAnchorElement> }
 
     container: {
-        element: HTMLElement
+        element: HTMLDivElement
         dragElement: HTMLElement
         lastX: number
         lastY: number
