@@ -13,13 +13,13 @@
         ".": {
             "import": "./dist/timepicker.js",
             "require": "./dist/timepicker.umd.cjs",
-            "types": "./dist/types.d.ts"
+            "types": "./dist/timepicker.d.ts"
         }
     },
     "files": [
         "dist"
     ],
-    "types": "./dist/types.d.ts",
+    "types": "./dist/timepicker.d.ts",
     "engines": {
         "node": "^16 || ^18 || ^20",
         "npm": ">=8"
@@ -37,7 +37,8 @@
         "test": "playwright test",
         "pretest": "npm run test:pre",
         "posttest": "npm run test:post",
-        "test:ui": "npm run test:pre && playwright test --ui"
+        "test:ui": "npm run test:pre && playwright test --ui",
+        "release": "release-it --no-npm.publish"
     },
     "repository": {
         "type": "git",
@@ -48,9 +49,7 @@
     },
     "devDependencies": {
         "@playwright/test": "^1.42.1",
-        "@rollup/plugin-typescript": "^11.1.6",
         "@types/node": "^20.11.24",
-        "@types/sinon": "^17.0.3",
         "auto-changelog": "^2.4.0",
         "eslint-config-jwalker": "^10.2.0",
         "husky": "^9.0.11",
@@ -61,7 +60,8 @@
         "typescript": "^5.3.3",
         "vite": "^5.1.5",
         "vite-plugin-banner": "^0.7.1",
-        "vite-plugin-css-injected-by-js": "^3.4.0"
+        "vite-plugin-css-injected-by-js": "^3.4.0",
+        "vite-plugin-dts": "^3.7.3"
     },
     "dependencies": {
         "mitt": "^3.0.1"

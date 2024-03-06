@@ -1,4 +1,4 @@
-import type Timepicker from '../src/main'
+import type TimePicker from '../src/main'
 
 export {}
 
@@ -11,7 +11,7 @@ declare global {
     }
     interface Window {
         testingPurposes: {
-            picker: Timepicker
+            picker: TimePicker
             eventsCalled: string[]
             chosen: { hour: string, minute: string }
         }

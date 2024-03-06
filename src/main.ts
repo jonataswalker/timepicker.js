@@ -17,8 +17,8 @@ function assert(condition: unknown, message: string): asserts condition {
     if (!condition) throw new Error(message)
 }
 
-export default class Timepicker {
-    container!: HTMLElement
+export default class TimePicker {
+    container!: Picker['container']['element']
 
     protected options: Options = DEFAULT_OPTIONS
 

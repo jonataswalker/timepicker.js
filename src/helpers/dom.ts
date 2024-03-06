@@ -1,4 +1,4 @@
-import type Timepicker from '../main'
+import type TimePicker from '../main'
 import { type EmitterEvents, Events, type Picker } from '../types'
 
 export function isElement(object: string | HTMLElement | null) {
@@ -66,7 +66,7 @@ export function getWindowSize() {
 }
 
 export function fade(
-    { emitter, element, time = 300, action = 'in' }: { emitter: Timepicker['emitter'], element: Picker['container']['element'], time?: number, action?: string },
+    { emitter, element, time = 300, action = 'in' }: { emitter: TimePicker['emitter'], element: Picker['container']['element'], time?: number, action?: string },
 ) {
     let start: number
     let requestId
