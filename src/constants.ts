@@ -5,10 +5,6 @@ export const DEFAULT_OPTIONS: Options = {
     theme: 'dark',
 }
 
-export const FOCUSABLE = /^(?:input|select|textarea|button|object)$/iu
-
-export const CLICKABLE = /^(?:a|area)$/iu
-
 export const LANG: Language = {
     en: { hour: 'Hour', minute: 'Minute' },
     pt: { hour: 'Hora', minute: 'Minuto' },

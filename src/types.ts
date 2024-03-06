@@ -21,21 +21,24 @@ export type AvailableThemes =
 
 export type AvailableLanguages = 'en' | 'pt' | 'de' | 'es' | 'fr' | 'it' | 'nl' | 'sv'
 
-export const enum Events {
-    OPEN = 'open',
-    CLOSE = 'close',
-    CHANGE = 'change',
-    START_FADE_IN = 'start-fade-in',
-    END_FADE_IN = 'end-fade-in',
-    START_FADE_OUT = 'start-fade-out',
-    END_FADE_OUT = 'end-fade-out',
-}
+export const Events = {
+    OPEN: 'open',
+    CLOSE: 'close',
+    CHANGE: 'change',
+} as const
+
+export const InternalEvents = {
+    START_FADE_IN: 'start-fade-in',
+    END_FADE_IN: 'end-fade-in',
+    START_FADE_OUT: 'start-fade-out',
+    END_FADE_OUT: 'end-fade-out',
+} as const
 
 export type EmitterEvents = {
-    [Events.START_FADE_IN]: Picker['target']['element']
-    [Events.START_FADE_OUT]: Picker['target']['element']
-    [Events.END_FADE_IN]: Picker['target']['element']
-    [Events.END_FADE_OUT]: Picker['target']['element']
+    [InternalEvents.START_FADE_IN]: Picker['target']['element']
+    [InternalEvents.START_FADE_OUT]: Picker['target']['element']
+    [InternalEvents.END_FADE_IN]: Picker['target']['element']
+    [InternalEvents.END_FADE_OUT]: Picker['target']['element']
 }
 
 export type EmitterClientEvents = {

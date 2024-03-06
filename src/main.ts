@@ -3,37 +3,39 @@ import mitt, { type Handler } from 'mitt'
 import { handleDrag } from './drag'
 import { createStructure } from './html'
 import style from './sass/main.module.scss'
-import { CLICKABLE, DEFAULT_OPTIONS, FOCUSABLE } from './constants'
+import { DEFAULT_OPTIONS } from './constants'
 import { fade, getOffset, getWindowSize, isElement, removeClass } from './helpers/dom'
 import {
     Events,
-    type EmitterClientEvents,
-    type EmitterEvents,
-    type Options,
+    InternalEvents,
     type Picker,
+    type Options,
+    type EmitterEvents,
+    type EmitterClientEvents,
 } from './types'
-
-function assert(condition: unknown, message: string): asserts condition {
-    if (!condition) throw new Error(message)
-}
 
 export default class TimePicker {
     container!: Picker['container']['element']
-
-    protected options: Options = DEFAULT_OPTIONS
-
-    protected targetElement!: HTMLElement
 
     protected emitter = mitt<EmitterEvents & EmitterClientEvents>()
 
     protected picker!: Picker
 
-    constructor(target: string | HTMLElement, opts: Partial<Options> = {}) {
-        const targetElement = isElement(target)
-            ? (target as HTMLElement)
-            : (document.querySelector<HTMLElement>(target as string)) as HTMLElement
+    constructor(target: string | Picker['target']['element'], opts: Partial<Options> = {}) {
+        let targetElement: Picker['target']['element']
 
-        assert(isElement(targetElement), 'Couldn\'t find target in DOM')
+        if (typeof target === 'string') {
+            const el = document.querySelector<Picker['target']['element']>(target)
+
+            if (!el) throw new Error(`Couldn't find target (${target}) in DOM`)
+
+            targetElement = el
+        }
+        else {
+            if (!isElement(target)) throw new Error(`Couldn't find target in DOM`)
+
+            targetElement = target
+        }
 
         const options = Object.assign(DEFAULT_OPTIONS, opts)
 
@@ -106,26 +108,32 @@ export default class TimePicker {
             },
         })
 
-        this.emitter.on(Events.START_FADE_IN, (element) => {
+        this.emitter.on(InternalEvents.START_FADE_IN, (element) => {
             element.style.opacity = '0'
             element.style.display = 'flex'
         })
 
-        this.emitter.on(Events.START_FADE_OUT, (element) => {
+        this.emitter.on(InternalEvents.START_FADE_OUT, (element) => {
             element.style.opacity = '1'
             element.style.display = 'flex'
         })
 
-        this.emitter.on(Events.END_FADE_OUT, (element) => {
+        this.emitter.on(InternalEvents.END_FADE_OUT, (element) => {
             element.style.display = 'none'
         })
 
-        if (FOCUSABLE.test(this.picker.target.element.nodeName)) {
-            this.picker.target.element.addEventListener('focus', this.triggerShow, true)
-        }
-        else if (CLICKABLE.test(this.picker.target.element.nodeName)) {
-            this.picker.target.element.addEventListener('click', this.triggerShow, true)
-        }
+        this.setDomListeners()
+    }
+
+    private setDomListeners() {
+        document.addEventListener('mousedown', this.handleClickOutside)
+
+        this.picker.target.element.addEventListener(
+            this.picker.target.element instanceof HTMLInputElement
+                ? 'focus'
+                : 'click',
+            this.triggerShow,
+        )
 
         this.picker.collection.hours.forEach((anchor) => {
             anchor.addEventListener('click', this.handleAnchorClick)
@@ -133,6 +141,19 @@ export default class TimePicker {
         this.picker.collection.minutes.forEach((anchor) => {
             anchor.addEventListener('click', this.handleAnchorClick)
         })
+    }
+
+    private handleClickOutside = (evt: MouseEvent) => {
+        if (!this.picker.opened) return
+
+        const target = evt.target as HTMLElement
+
+        // click inside Picker
+        if (this.picker.container.element.contains(target)) return
+
+        const clickingTarget = this.picker.target.element === target || this.picker.target.element.contains(target)
+
+        !clickingTarget && this.hide()
     }
 
     private triggerShow = (evt: FocusEvent | MouseEvent) => {
@@ -164,6 +185,7 @@ export default class TimePicker {
 
         anchor.classList.add(style.selected)
         this.picker.closeWhen.hour && this.picker.closeWhen.minute && this.hide()
+
         this.emitter.emit(Events.CHANGE, {
             hour: this.picker.hour,
             minute: this.picker.minute,
@@ -209,23 +231,6 @@ export default class TimePicker {
                 }
             })
         }
-
-        document.addEventListener(
-            'mousedown',
-            (event) => {
-                const target = event.target as HTMLElement
-
-                // click inside Picker
-                if (containerElement.contains(target)) return
-
-                const clickingTarget = this.picker.target.element === target
-
-                if (!clickingTarget) {
-                    this.picker.opened && this.hide()
-                }
-            },
-            { once: true },
-        )
 
         this.picker.opened = true
         this.picker.closeWhen.hour = false

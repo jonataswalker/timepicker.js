@@ -10,6 +10,7 @@ export default [
         rules: {
             'no-undefined': 'off',
             'sort-imports': 'off',
+            'max-statements': 'off',
 
             'import/extensions': 'off',
 
@@ -19,9 +20,10 @@ export default [
         },
     },
     {
-        files: [...GLOB_TESTS, 'tests/*.ts'],
+        files: [...GLOB_TESTS, 'tests/*.ts', 'lib-testing/*.ts'],
         rules: {
             'no-undef': 'off',
+            'no-console': 'off',
 
             '@typescript-eslint/no-unsafe-call': 'off',
             '@typescript-eslint/no-unsafe-return': 'off',
