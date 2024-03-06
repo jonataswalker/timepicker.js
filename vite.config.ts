@@ -28,8 +28,9 @@ export default defineConfig(({ command }) => {
                 entry: './src/main.ts',
                 name: 'TimePicker',
                 fileName: 'timepicker',
-                formats: ['es', 'umd', 'iife'],
+                formats: ['es', 'iife'],
             },
+            rollupOptions: { output: { exports: 'named' } },
         },
         plugins: [
             bannerPlugin(banner),
