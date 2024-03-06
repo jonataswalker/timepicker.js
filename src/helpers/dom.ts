@@ -1,5 +1,5 @@
 import type TimePicker from '../main'
-import { type EmitterEvents, Events, type Picker } from '../types'
+import { type EmitterEvents, type Picker, InternalEvents } from '../types'
 
 export function isElement(object: string | HTMLElement | null) {
     if (!object) return false
@@ -73,8 +73,8 @@ export function fade(
 
     const [evtStart, evtEnd]
       = action === 'in'
-          ? [Events.START_FADE_IN, Events.END_FADE_IN]
-          : [Events.START_FADE_OUT, Events.END_FADE_OUT]
+          ? [InternalEvents.START_FADE_IN, InternalEvents.END_FADE_IN]
+          : [InternalEvents.START_FADE_OUT, InternalEvents.END_FADE_OUT]
 
     const tick = (timestamp: number) => {
         if (!start) {
