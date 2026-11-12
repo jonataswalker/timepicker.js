@@ -167,6 +167,8 @@ export default class TimePicker {
     private handleAnchorClick = (evt: MouseEvent) => {
         evt.preventDefault()
 
+        if (this.picker.target.element.matches(':disabled')) return
+
         const anchor = evt.target as HTMLAnchorElement
 
         if (Object.hasOwn(anchor.dataset, 'hour')) {
