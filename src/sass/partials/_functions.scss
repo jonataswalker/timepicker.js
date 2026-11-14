@@ -1,3 +1,5 @@
+@use "sass:map";
+@use "sass:meta";
 /// Interact with the color map
 ///
 /// @param {string} $key - Name of the color
@@ -7,8 +9,8 @@
 ///     color: color(grey);
 ///   }
 @function color($map, $key) {
-  @if map-has-key($map, $key) {
-    @return map-get($map, $key);
+  @if map.has-key($map, $key) {
+    @return map.get($map, $key);
   } @else {
     @warn "Error: There is no color #{$key} associated";
   }
@@ -21,7 +23,7 @@
 @function map-deep-get($map, $keys...) {
   $value: $map;
   @each $key in $keys {
-    $value: map-get($value, $key);
+    $value: map.get($value, $key);
   }
   @return $value;
 }
@@ -30,17 +32,17 @@
   $result: $parent-map;
 
   @each $key, $child in $child-map {
-    $parent-has-key: map-has-key($result, $key);
-    $parent-value: map-get($result, $key);
-    $parent-type: type-of($parent-value);
-    $child-type: type-of($child);
+    $parent-has-key: map.has-key($result, $key);
+    $parent-value: map.get($result, $key);
+    $parent-type: meta.type-of($parent-value);
+    $child-type: meta.type-of($child);
     $parent-is-map: $parent-type == map;
     $child-is-map: $child-type == map;
 
     @if (not $parent-has-key) or ($parent-type != $child-type) or (not ($parent-is-map and $child-is-map)) {
-      $result: map-merge($result, ( $key: $child ));
+      $result: map.merge($result, ( $key: $child ));
     } @else {
-      $result: map-merge($result, ( $key: map-deep-merge($parent-value, $child) ));
+      $result: map.merge($result, ( $key: map-deep-merge($parent-value, $child) ));
     }
   }
 

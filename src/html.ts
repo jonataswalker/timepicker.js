@@ -4,24 +4,24 @@ import style from './sass/main.module.scss'
 import { createElement, getMaxZIndex } from './helpers/dom'
 
 const themesMap = {
-    'dark': style.grey,
-    'red': style.red,
-    'pink': style.pink,
-    'purple': style.purple,
+    dark: style.grey,
+    red: style.red,
+    pink: style.pink,
+    purple: style.purple,
     'deep-purple': style['deep-purple'],
-    'indigo': style.indigo,
-    'blue': style.blue,
+    indigo: style.indigo,
+    blue: style.blue,
     'light-blue': style['light-blue'],
-    'cyan': style.cyan,
-    'teal': style.teal,
-    'green': style.green,
+    cyan: style.cyan,
+    teal: style.teal,
+    green: style.green,
     'light-green': style['light-green'],
-    'lime': style.lime,
-    'yellow': style.yellow,
-    'amber': style.amber,
-    'orange': style.orange,
+    lime: style.lime,
+    yellow: style.yellow,
+    amber: style.amber,
+    orange: style.orange,
     'deep-orange': style['deep-orange'],
-    'brown': style.brown,
+    brown: style.brown,
     'blue-grey': style['blue-grey'],
 }
 
@@ -63,7 +63,9 @@ export function createStructure(picker: Picker) {
     `
 
     const classname = [style['timepicker-container'], themesMap[picker.options.theme]].join(' ')
-    const container = createElement(['div', { classname }], structure) as HTMLDivElement
+    const container = createElement(['div', { classname }], structure)
+
+    if (!(container instanceof HTMLDivElement)) throw new Error('Picker container must be a div')
 
     container.style.zIndex = String(getMaxZIndex() + 10)
     container.style.visibility = 'hidden'

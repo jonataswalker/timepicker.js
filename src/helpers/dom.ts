@@ -5,19 +5,24 @@ export function isElement(object: string | HTMLElement | null) {
     if (!object) return false
 
     // DOM, Level2
-    if ('HTMLElement' in window) {
+    if ('HTMLElement' in globalThis) {
         return Boolean(object) && object instanceof HTMLElement
     }
 
     // Older browsers
-    return Boolean(object) && typeof object === 'object' && object.nodeType === 1 && Boolean(object.nodeName)
+    return (
+        Boolean(object)
+        && typeof object === 'object'
+        && object.nodeType === 1
+        && Boolean(object.nodeName)
+    )
 }
 
 export function getOffset(element: HTMLElement) {
     const rect = element.getBoundingClientRect()
     const { documentElement } = document
-    const left = rect.left + window.scrollX - documentElement.clientLeft
-    const top = rect.top + window.scrollY - documentElement.clientTop
+    const left = rect.left + globalThis.scrollX - documentElement.clientLeft
+    const top = rect.top + globalThis.scrollY - documentElement.clientTop
     const width = element.offsetWidth
     const height = element.offsetHeight
     const right = left + width
@@ -26,7 +31,10 @@ export function getOffset(element: HTMLElement) {
     return { width, height, top, bottom, right, left }
 }
 
-export function createElement(node: string | [tag: string, opts: { id?: string, classname: string }], html: string) {
+export function createElement(
+    node: string | [tag: string, opts: { id?: string; classname: string }],
+    html: string,
+) {
     let element
 
     if (Array.isArray(node)) {
@@ -34,8 +42,7 @@ export function createElement(node: string | [tag: string, opts: { id?: string, 
         if (node[1].id) element.id = node[1].id
 
         if (node[1].classname) element.className = node[1].classname
-    }
-    else {
+    } else {
         element = document.createElement(node)
     }
 
@@ -51,30 +58,42 @@ export function createElement(node: string | [tag: string, opts: { id?: string, 
 }
 
 export function getMaxZIndex() {
-    return Array.from(document.querySelectorAll('body *'), el =>
-        Number.parseFloat(window.getComputedStyle(el).zIndex),
+    return Array.from(document.querySelectorAll('body *'), (el) =>
+        Number.parseFloat(globalThis.getComputedStyle(el).zIndex),
     )
-        .filter(zIndex => !Number.isNaN(zIndex))
+        .filter((zIndex) => !Number.isNaN(zIndex))
         .reduce((accumulator, current) => (current > accumulator ? current : accumulator), 0)
 }
 
 export function getWindowSize() {
     return {
-        width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
-        height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
+        width:
+            window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+        height:
+            window.innerHeight
+            || document.documentElement.clientHeight
+            || document.body.clientHeight,
     }
 }
 
-export function fade(
-    { emitter, element, time = 300, action = 'in' }: { emitter: TimePicker['emitter'], element: Picker['container']['element'], time?: number, action?: string },
-) {
+export function fade({
+    emitter,
+    element,
+    time = 300,
+    action = 'in',
+}: {
+    emitter: TimePicker['emitter']
+    element: Picker['container']['element']
+    time?: number
+    action?: string
+}) {
     let start: number
     let requestId
 
-    const [evtStart, evtEnd]
-      = action === 'in'
-          ? [InternalEvents.START_FADE_IN, InternalEvents.END_FADE_IN]
-          : [InternalEvents.START_FADE_OUT, InternalEvents.END_FADE_OUT]
+    const [evtStart, evtEnd] =
+        action === 'in'
+            ? [InternalEvents.START_FADE_IN, InternalEvents.END_FADE_IN]
+            : [InternalEvents.START_FADE_OUT, InternalEvents.END_FADE_OUT]
 
     const tick = (timestamp: number) => {
         if (!start) {
@@ -82,10 +101,10 @@ export function fade(
             start = timestamp
         }
 
-        const opacity
-        = action === 'in'
-            ? Number(element.style.opacity) + (timestamp - start) / time
-            : Number(element.style.opacity) - (timestamp - start) / time
+        const opacity =
+            action === 'in'
+                ? Number(element.style.opacity) + (timestamp - start) / time
+                : Number(element.style.opacity) - (timestamp - start) / time
 
         const finished = action === 'in' ? opacity >= 1 : opacity <= 0
 
@@ -93,13 +112,12 @@ export function fade(
 
         if (finished) {
             emitter.emit(evtEnd as keyof EmitterEvents, element)
-        }
-        else {
-            requestId = window.requestAnimationFrame(tick)
+        } else {
+            requestId = globalThis.requestAnimationFrame(tick)
         }
     }
 
-    requestId = window.requestAnimationFrame(tick)
+    requestId = globalThis.requestAnimationFrame(tick)
 
     return requestId
 }

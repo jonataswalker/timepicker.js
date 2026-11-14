@@ -1,3 +1,5 @@
+import process from 'node:process'
+
 import { defineConfig, devices } from '@playwright/test'
 
 /**
@@ -10,7 +12,12 @@ export default defineConfig({
     forbidOnly: Boolean(process.env.CI),
     retries: process.env.CI ? 2 : 0,
     workers: process.env.CI ? 1 : undefined,
-    reporter: 'html',
+    reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'list',
+    webServer: {
+        command: 'npm run dev -- --strictPort',
+        url: 'http://localhost:4000',
+        reuseExistingServer: !process.env.CI,
+    },
     projects: [
         {
             name: 'chromium',
