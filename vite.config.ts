@@ -24,31 +24,43 @@ const typescript6Folder = path.dirname(typescript6Require.resolve('@typescript/o
 
 const target = 'es2022'
 
-export default defineConfig(({ command }) => {
-    if (command === 'serve') return { target }
+const IIFE_MODE = 'iife'
+
+export default defineConfig(({ command, mode }) => {
+    if (command === 'serve') return { target, optimizeDeps: { entries: ['index.html'] } }
+
+    const iife = mode === IIFE_MODE
 
     return {
         build: {
             target,
-            lib: {
-                entry: './src/main.ts',
-                name: 'TimePicker',
-                fileName: 'timepicker',
-                formats: ['es', 'iife'],
-            },
-            rolldownOptions: { output: { exports: 'named' } },
+            emptyOutDir: !iife,
+            lib: iife
+                ? {
+                      entry: './src/iife.ts',
+                      name: 'TimePicker',
+                      fileName: 'timepicker',
+                      formats: ['iife'],
+                  }
+                : {
+                      entry: './src/main.ts',
+                      fileName: 'timepicker',
+                      formats: ['es'],
+                  },
+            rolldownOptions: { output: { exports: iife ? 'default' : 'named' } },
         },
         plugins: [
             bannerPlugin(banner),
             cssInjectedByJsPlugin(),
-            dts({
-                bundleTypes: {
-                    invokeOptions: { typescriptCompilerFolder: typescript6Folder },
-                },
-                include: ['src/**/*.ts'],
-                exclude: ['src/**/*.spec.ts'],
-                outDirs: 'dist',
-            }),
+            !iife
+                && dts({
+                    bundleTypes: {
+                        invokeOptions: { typescriptCompilerFolder: typescript6Folder },
+                    },
+                    include: ['src/**/*.ts'],
+                    exclude: ['src/**/*.spec.ts', 'src/iife.ts'],
+                    outDirs: 'dist',
+                }),
         ],
         define: {
             __APP_VERSION__: JSON.stringify(version),

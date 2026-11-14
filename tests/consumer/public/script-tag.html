@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>timepicker.js script-tag consumer</title>
+    </head>
+    <body>
+        <input id="time" type="text" placeholder="Time" />
+        <input id="time-default" type="text" placeholder="Time" style="margin-top: 400px" />
+        <script src="./dist/timepicker.iife.js"></script>
+        <script>
+            const bind = (picker, input) => {
+                picker.on('change', (evt) => {
+                    input.value = `${evt.hour}:${evt.minute}`
+                })
+            }
+
+            const time = document.getElementById('time')
+            const timeDefault = document.getElementById('time-default')
+
+            bind(new TimePicker(time), time)
+            bind(new TimePicker.default(timeDefault), timeDefault)
+        </script>
+    </body>
+</html>

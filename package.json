@@ -21,7 +21,7 @@
     },
     "scripts": {
         "dev": "vite --port 4000",
-        "build": "rimraf ./dist && vite build",
+        "build": "rimraf ./dist && vite build && vite build --mode iife",
         "preview": "vite preview",
         "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit -p .",
         "lint": "oxlint",
@@ -30,7 +30,7 @@
         "format:check": "oxfmt --check .",
         "test": "playwright test",
         "test:ui": "playwright test --ui",
-        "check:package": "attw --pack . --profile esm-only && publint && node scripts/check-pack.mjs",
+        "check:package": "attw --pack . --profile esm-only && publint && node scripts/check-pack.mjs && node scripts/check-consumers.mjs",
         "verify": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run build && npm run check:package",
         "prepare": "husky",
         "release": "release-it --no-npm.publish"

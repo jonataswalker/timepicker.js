@@ -28,3 +28,6 @@ public/timepicker.js
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# packed-tarball consumer checks
+/.pack-check/
