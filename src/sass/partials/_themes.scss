@@ -1,10 +1,14 @@
-@import './colors';
+@use "sass:color";
+@use "sass:map";
+@use 'colors';
+@use "functions";
+@use "mixins";
 
 @mixin theme($name) {
-	@if map-has-key($colors, $name) {
-		$background: map-deep-get($colors, $name, "darken-4");
-		$color: map-deep-get($colors, $name, "lighten-5");
-		$lighten-background: lighten($background, 10%);
+	@if map.has-key(colors.$colors, $name) {
+		$background: functions.map-deep-get(colors.$colors, $name, "darken-4");
+		$color: functions.map-deep-get(colors.$colors, $name, "lighten-5");
+		$lighten-background: color.adjust($background, $lightness: 10%);
 
 		.#{"" + $name} {
 			color: $background;
@@ -12,16 +16,16 @@
 
 			.header {
 				color: $color;
-				@include background-linear-gradient($background, $lighten-background);
+				@include mixins.background-linear-gradient($background, $lighten-background);
 			}
 			a.selected {
 				color: $color;
-				@include background-linear-gradient($background, $lighten-background);
+				@include mixins.background-linear-gradient($background, $lighten-background);
 			}
 		}
 	}
 }
 
-@each $key, $value in $colors {
+@each $key, $value in colors.$colors {
 	@include theme($key);
 }

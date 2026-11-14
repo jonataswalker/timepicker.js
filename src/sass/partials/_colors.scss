@@ -1,5 +1,7 @@
+@use "functions";
+
 $red: () !default;
-$red: map-deep-merge(
+$red: functions.map-deep-merge(
   (
     'base': #F44336,
     'lighten-5': #FFEBEE,
@@ -20,7 +22,7 @@ $red: map-deep-merge(
 );
 
 $pink: () !default;
-$pink: map-deep-merge(
+$pink: functions.map-deep-merge(
   (
     'base': #e91e63,
     'lighten-5': #fce4ec,
@@ -41,7 +43,7 @@ $pink: map-deep-merge(
 );
 
 $purple: () !default;
-$purple: map-deep-merge(
+$purple: functions.map-deep-merge(
   (
     'base': #9c27b0,
     'lighten-5': #f3e5f5,
@@ -62,7 +64,7 @@ $purple: map-deep-merge(
 );
 
 $deep-purple: () !default;
-$deep-purple: map-deep-merge(
+$deep-purple: functions.map-deep-merge(
   (
     'base': #673ab7,
     'lighten-5': #ede7f6,
@@ -83,7 +85,7 @@ $deep-purple: map-deep-merge(
 );
 
 $indigo: () !default;
-$indigo: map-deep-merge(
+$indigo: functions.map-deep-merge(
   (
     'base': #3f51b5,
     'lighten-5': #e8eaf6,
@@ -104,7 +106,7 @@ $indigo: map-deep-merge(
 );
 
 $blue: () !default;
-$blue: map-deep-merge(
+$blue: functions.map-deep-merge(
   (
     'base': #2196F3,
     'lighten-5': #E3F2FD,
@@ -125,7 +127,7 @@ $blue: map-deep-merge(
 );
 
 $light-blue: () !default;
-$light-blue: map-deep-merge(
+$light-blue: functions.map-deep-merge(
   (
     'base': #03a9f4,
     'lighten-5': #e1f5fe,
@@ -146,7 +148,7 @@ $light-blue: map-deep-merge(
 );
 
 $cyan: () !default;
-$cyan: map-deep-merge(
+$cyan: functions.map-deep-merge(
   (
     'base': #00bcd4,
     'lighten-5': #e0f7fa,
@@ -167,7 +169,7 @@ $cyan: map-deep-merge(
 );
 
 $teal: () !default;
-$teal: map-deep-merge(
+$teal: functions.map-deep-merge(
   (
     'base': #009688,
     'lighten-5': #e0f2f1,
@@ -188,7 +190,7 @@ $teal: map-deep-merge(
 );
 
 $green: () !default;
-$green: map-deep-merge(
+$green: functions.map-deep-merge(
   (
     'base': #4CAF50,
     'lighten-5': #E8F5E9,
@@ -209,7 +211,7 @@ $green: map-deep-merge(
 );
 
 $light-green: () !default;
-$light-green: map-deep-merge(
+$light-green: functions.map-deep-merge(
   (
     'base': #8bc34a,
     'lighten-5': #f1f8e9,
@@ -230,7 +232,7 @@ $light-green: map-deep-merge(
 );
 
 $lime: () !default;
-$lime: map-deep-merge(
+$lime: functions.map-deep-merge(
   (
     'base': #cddc39,
     'lighten-5': #f9fbe7,
@@ -251,7 +253,7 @@ $lime: map-deep-merge(
 );
 
 $yellow: () !default;
-$yellow: map-deep-merge(
+$yellow: functions.map-deep-merge(
   (
     'base': #ffeb3b,
     'lighten-5': #fffde7,
@@ -272,7 +274,7 @@ $yellow: map-deep-merge(
 );
 
 $amber: () !default;
-$amber: map-deep-merge(
+$amber: functions.map-deep-merge(
   (
     'base': #ffc107,
     'lighten-5': #fff8e1,
@@ -293,7 +295,7 @@ $amber: map-deep-merge(
 );
 
 $orange: () !default;
-$orange: map-deep-merge(
+$orange: functions.map-deep-merge(
   (
     'base': #ff9800,
     'lighten-5': #fff3e0,
@@ -332,7 +334,7 @@ $deep-orange: (
 );
 
 $brown: () !default;
-$brown: map-deep-merge(
+$brown: functions.map-deep-merge(
   (
     'base': #795548,
     'lighten-5': #efebe9,
@@ -349,7 +351,7 @@ $brown: map-deep-merge(
 );
 
 $blue-grey: () !default;
-$blue-grey: map-deep-merge(
+$blue-grey: functions.map-deep-merge(
   (
     'base': #607d8b,
     'lighten-5': #eceff1,
@@ -366,7 +368,7 @@ $blue-grey: map-deep-merge(
 );
 
 $grey: () !default;
-$grey: map-deep-merge(
+$grey: functions.map-deep-merge(
   (
     'base': #9e9e9e,
     'lighten-5': #fafafa,
@@ -383,7 +385,7 @@ $grey: map-deep-merge(
 );
 
 $colors: () !default;
-$colors: map-deep-merge(
+$colors: functions.map-deep-merge(
   (
     'red': $red,
     'pink': $pink,

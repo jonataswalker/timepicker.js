@@ -1,6 +1,7 @@
 // dependencies
-@import "partials/functions";
-@import "partials/mixins";
+@use "sass:meta";
+@use "partials/functions";
+@use "partials/mixins";
 
 $container-width: 260px;
 $container-height: 150px;
@@ -125,4 +126,4 @@ $font-weight-bold: 600;
     width: 10px;
 }
 
-@import "partials/themes";
+@include meta.load-css("partials/themes");
