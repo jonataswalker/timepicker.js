@@ -11,6 +11,7 @@ triggerPicker.picker.container.element.classList.add('click-trigger-container-cl
 focusPicker.picker.container.element.classList.add('focus-trigger-container-class')
 
 const testingPurposes = {
+    TimePicker,
     picker: triggerPicker,
     eventsCalled: [] as string[],
     chosen: { hour: '', minute: '' },

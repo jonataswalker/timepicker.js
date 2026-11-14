@@ -11,6 +11,7 @@ declare global {
     }
     interface Window {
         testingPurposes: {
+            TimePicker: typeof TimePicker
             picker: TimePicker
             eventsCalled: string[]
             chosen: { hour: string; minute: string }
