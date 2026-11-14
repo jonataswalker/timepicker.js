@@ -39,11 +39,11 @@ test.describe('Events', () => {
 
         await expect(hour).toBeVisible()
 
-        await input.evaluate(element => (element as HTMLInputElement).disabled = true)
+        await input.evaluate((element) => ((element as HTMLInputElement).disabled = true))
         await hour.click()
         await expect(input).toHaveValue('12:00')
 
-        await input.evaluate(element => (element as HTMLInputElement).disabled = false)
+        await input.evaluate((element) => ((element as HTMLInputElement).disabled = false))
         await hour.click()
         await expect(input).toHaveValue('15:00')
     })

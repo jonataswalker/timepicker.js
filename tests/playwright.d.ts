@@ -13,7 +13,7 @@ declare global {
         testingPurposes: {
             picker: TimePicker
             eventsCalled: string[]
-            chosen: { hour: string, minute: string }
+            chosen: { hour: string; minute: string }
         }
     }
 }

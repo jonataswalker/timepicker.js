@@ -30,8 +30,7 @@ export default class TimePicker {
             if (!el) throw new Error(`Couldn't find target (${target}) in DOM`)
 
             targetElement = el
-        }
-        else {
+        } else {
             if (!isElement(target)) throw new Error(`Couldn't find target in DOM`)
 
             targetElement = target
@@ -86,8 +85,12 @@ export default class TimePicker {
         this.picker.container.size.width = offset.width
         this.picker.container.size.height = offset.height
         this.picker.container.dragElement = container.querySelector(`.${style.header}`)!
-        this.picker.collection.hours = container.querySelectorAll<HTMLAnchorElement>(`.${style['grid-hour']}>a`)
-        this.picker.collection.minutes = container.querySelectorAll<HTMLAnchorElement>(`.${style['grid-minute']}>a`)
+        this.picker.collection.hours = container.querySelectorAll<HTMLAnchorElement>(
+            `.${style['grid-hour']}>a`,
+        )
+        this.picker.collection.minutes = container.querySelectorAll<HTMLAnchorElement>(
+            `.${style['grid-minute']}>a`,
+        )
 
         const drag = handleDrag(this.picker)
 
@@ -129,9 +132,7 @@ export default class TimePicker {
         document.addEventListener('mousedown', this.handleClickOutside)
 
         this.picker.target.element.addEventListener(
-            this.picker.target.element instanceof HTMLInputElement
-                ? 'focus'
-                : 'click',
+            this.picker.target.element instanceof HTMLInputElement ? 'focus' : 'click',
             this.triggerShow,
         )
 
@@ -153,7 +154,8 @@ export default class TimePicker {
         // click inside Picker
         if (this.picker.container.element.contains(target)) return
 
-        const clickingTarget = this.picker.target.element === target || this.picker.target.element.contains(target)
+        const clickingTarget =
+            this.picker.target.element === target || this.picker.target.element.contains(target)
 
         !clickingTarget && this.hide()
     }
@@ -179,13 +181,11 @@ export default class TimePicker {
             this.picker.hour = this.getHour(anchor)
             this.picker.closeWhen.hour = true
             removeClass(this.picker.collection.hours, style.selected)
-        }
-        else if (Object.hasOwn(anchor.dataset, 'minute')) {
+        } else if (Object.hasOwn(anchor.dataset, 'minute')) {
             this.picker.minute = this.getMinute(anchor)
             this.picker.closeWhen.minute = true
             removeClass(this.picker.collection.minutes, style.selected)
-        }
-        else {
+        } else {
             throw new Error('Target not found!')
         }
 
@@ -259,7 +259,10 @@ export default class TimePicker {
         this.emitter.emit(Events.CLOSE, { element: this.picker.container.element })
     }
 
-    public on<Key extends keyof EmitterClientEvents>(type: Key, handler: Handler<EmitterClientEvents[Key]>) {
+    public on<Key extends keyof EmitterClientEvents>(
+        type: Key,
+        handler: Handler<EmitterClientEvents[Key]>,
+    ) {
         this.emitter.on(type, handler)
     }
 

@@ -51,7 +51,7 @@ export type EmitterClientEvents = {
     }
 }
 
-export type Language = Record<AvailableLanguages, { hour: string, minute: string }>
+export type Language = Record<AvailableLanguages, { hour: string; minute: string }>
 
 export type Options = {
     lang: AvailableLanguages
@@ -75,8 +75,8 @@ export type Picker = {
     minute: string
     opened: boolean
     requestAnimationId: number
-    closeWhen: { hour: boolean, minute: boolean }
-    collection: { hours: NodeListOf<HTMLAnchorElement>, minutes: NodeListOf<HTMLAnchorElement> }
+    closeWhen: { hour: boolean; minute: boolean }
+    collection: { hours: NodeListOf<HTMLAnchorElement>; minutes: NodeListOf<HTMLAnchorElement> }
 
     container: {
         element: HTMLDivElement
@@ -87,12 +87,12 @@ export type Picker = {
         currentY: number
         x: number
         y: number
-        size: { width: number, height: number }
+        size: { width: number; height: number }
     }
 }
 
 export type PickerDragHandler = {
     start: () => void
-    move: ({ x, y }: { x: number, y: number }) => void
-    end: ({ x, y }: { x: number, y: number }) => void
+    move: ({ x, y }: { x: number; y: number }) => void
+    end: ({ x, y }: { x: number; y: number }) => void
 }
