@@ -31,7 +31,7 @@ Installing with npm needs Node.js 22, 24 or 26 (the LTS lines) and npm 10 or hig
 Load:
 
 ```HTML
-<script src="https://cdn.jsdelivr.net/npm/timepicker.js/dist/timepicker.iife.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/timepicker.js/dist/timepicker.iife.js"></script>
 ```
 
 ##### Instantiate with some options and listen to changes
