@@ -5,7 +5,7 @@ export function isElement(object: string | HTMLElement | null) {
     if (!object) return false
 
     // DOM, Level2
-    if ('HTMLElement' in window) {
+    if ('HTMLElement' in globalThis) {
         return Boolean(object) && object instanceof HTMLElement
     }
 
@@ -16,8 +16,8 @@ export function isElement(object: string | HTMLElement | null) {
 export function getOffset(element: HTMLElement) {
     const rect = element.getBoundingClientRect()
     const { documentElement } = document
-    const left = rect.left + window.scrollX - documentElement.clientLeft
-    const top = rect.top + window.scrollY - documentElement.clientTop
+    const left = rect.left + globalThis.scrollX - documentElement.clientLeft
+    const top = rect.top + globalThis.scrollY - documentElement.clientTop
     const width = element.offsetWidth
     const height = element.offsetHeight
     const right = left + width
@@ -52,7 +52,7 @@ export function createElement(node: string | [tag: string, opts: { id?: string, 
 
 export function getMaxZIndex() {
     return Array.from(document.querySelectorAll('body *'), el =>
-        Number.parseFloat(window.getComputedStyle(el).zIndex),
+        Number.parseFloat(globalThis.getComputedStyle(el).zIndex),
     )
         .filter(zIndex => !Number.isNaN(zIndex))
         .reduce((accumulator, current) => (current > accumulator ? current : accumulator), 0)
@@ -95,11 +95,11 @@ export function fade(
             emitter.emit(evtEnd as keyof EmitterEvents, element)
         }
         else {
-            requestId = window.requestAnimationFrame(tick)
+            requestId = globalThis.requestAnimationFrame(tick)
         }
     }
 
-    requestId = window.requestAnimationFrame(tick)
+    requestId = globalThis.requestAnimationFrame(tick)
 
     return requestId
 }

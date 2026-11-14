@@ -11,7 +11,9 @@
         "isolatedModules": true,
 
         "strict": true,
-        "noFallthroughCasesInSwitch": true
+        "noFallthroughCasesInSwitch": true,
+
+        "types": ["node", "vite/client"]
     },
     "include": ["**/*.ts", "**/*.js", "**/.*.ts", "**/.*.js"]
 }

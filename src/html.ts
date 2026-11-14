@@ -63,7 +63,9 @@ export function createStructure(picker: Picker) {
     `
 
     const classname = [style['timepicker-container'], themesMap[picker.options.theme]].join(' ')
-    const container = createElement(['div', { classname }], structure) as HTMLDivElement
+    const container = createElement(['div', { classname }], structure)
+
+    if (!(container instanceof HTMLDivElement)) throw new Error('Picker container must be a div')
 
     container.style.zIndex = String(getMaxZIndex() + 10)
     container.style.visibility = 'hidden'

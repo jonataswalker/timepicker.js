@@ -24,6 +24,8 @@ A lightweight, customizable, TimePicker.
 npm i timepicker.js
 ```
 
+Installing with npm needs Node.js 22, 24 or 26 (the LTS lines) and npm 10 or higher.
+
 ##### &#8594; CDN Hosted - [jsDelivr](http://www.jsdelivr.com/projects/timepicker.js)
 
 Load:

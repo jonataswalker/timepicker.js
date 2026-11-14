@@ -146,7 +146,9 @@ export default class TimePicker {
     private handleClickOutside = (evt: MouseEvent) => {
         if (!this.picker.opened) return
 
-        const target = evt.target as HTMLElement
+        const { target } = evt
+
+        if (!(target instanceof Node)) return
 
         // click inside Picker
         if (this.picker.container.element.contains(target)) return
@@ -160,7 +162,7 @@ export default class TimePicker {
         if (this.picker.opened) return
 
         evt.preventDefault()
-        window.cancelAnimationFrame(this.picker.requestAnimationId)
+        globalThis.cancelAnimationFrame(this.picker.requestAnimationId)
         this.show()
     }
 
@@ -169,7 +171,9 @@ export default class TimePicker {
 
         if (this.picker.target.element.matches(':disabled')) return
 
-        const anchor = evt.target as HTMLAnchorElement
+        const anchor = evt.target
+
+        if (!(anchor instanceof HTMLAnchorElement)) return
 
         if (Object.hasOwn(anchor.dataset, 'hour')) {
             this.picker.hour = this.getHour(anchor)
