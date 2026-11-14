@@ -62,6 +62,10 @@ timepicker.on('change', (evt) => {
 
 `{String|Element}` String or DOM node.
 
+A picker binds to the element that exists when it is created. To use one with an input you add later, create the picker after the input is in the DOM.
+
+Replacing that input binds nothing new. `container.innerHTML += '…'` does replace it, because it rebuilds every child of `container`. The picker stays attached to the old, detached element, and the new input won't open it. Add markup with `container.insertAdjacentHTML('beforeend', '…')` or `container.append(…)` instead, which keeps the existing inputs. Or create a new picker for the new element.
+
 ###### `options` is an object with the following possible properties:
 
 -   `theme`: `'dark'`; Theme color
