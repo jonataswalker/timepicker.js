@@ -113,3 +113,7 @@ timepicker.on('change', function (evt) {});
 -   brown
 -   blue-grey
 
+
+## Sponsor
+
+If timepicker.js is useful to you, you can [sponsor its maintenance on GitHub](https://github.com/sponsors/jonataswalker).
