@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 
-import type { Options } from '../src/types'
+import type { Options } from '../src/types.ts'
 
 type PickerSnapshot = {
     options: Options
