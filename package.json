@@ -70,5 +70,6 @@
     "overrides": {
         "basic-ftp": "^6.2.6",
         "minimatch": "^11.0.8"
-    }
+    },
+    "funding": "https://github.com/sponsors/jonataswalker"
 }
