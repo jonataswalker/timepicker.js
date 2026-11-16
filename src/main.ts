@@ -36,7 +36,7 @@ export default class TimePicker {
             targetElement = target
         }
 
-        const options = Object.assign(DEFAULT_OPTIONS, opts)
+        const options = { ...DEFAULT_OPTIONS, ...opts }
 
         this.container = document.createElement('div')
 
