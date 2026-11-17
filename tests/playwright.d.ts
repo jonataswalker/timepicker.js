@@ -14,7 +14,12 @@ declare global {
             TimePicker: typeof TimePicker
             picker: TimePicker
             eventsCalled: string[]
-            chosen: { hour: string; minute: string }
+            chosen: { hour: string | null; minute: string | null }
+        }
+        destroyHarness: {
+            pickers: TimePicker[]
+            events: string[]
+            listenersAttached: () => number
         }
     }
 }

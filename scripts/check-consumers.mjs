@@ -11,6 +11,7 @@ const workDir = path.join(root, '.pack-check')
 const consumer = path.join(workDir, 'consumer')
 const site = path.join(consumer, 'site')
 const tsc = path.join(root, 'node_modules', 'typescript', 'bin', 'tsc')
+const tsrs = path.join(root, 'node_modules', 'tsrs', 'bin', 'tsrs')
 const vite = path.join(root, 'node_modules', 'vite', 'bin', 'vite.js')
 
 const expectedEvents = { OPEN: 'open', CLOSE: 'close', CHANGE: 'change' }
@@ -126,9 +127,13 @@ run(
     consumer,
 )
 
+run(process.execPath, [tsrs, '-p', 'tsconfig.json'], consumer)
+run(process.execPath, [tsrs, '-p', 'tsconfig.nodenext.json'], consumer)
 run(process.execPath, [tsc, '-p', 'tsconfig.json'], consumer)
 run(process.execPath, [tsc, '-p', 'tsconfig.nodenext.json'], consumer)
-console.log(`types: ${tarball} declarations compile under bundler and nodenext resolution`)
+console.log(
+    `types: ${tarball} declarations compile under bundler and nodenext resolution with tsrs and TypeScript 7`,
+)
 
 run(
     process.execPath,

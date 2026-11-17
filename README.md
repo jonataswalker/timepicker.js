@@ -64,7 +64,7 @@ timepicker.on('change', (evt) => {
 
 A picker binds to the element that exists when it is created. To use one with an input you add later, create the picker after the input is in the DOM.
 
-Replacing that input binds nothing new. `container.innerHTML += '…'` does replace it, because it rebuilds every child of `container`. The picker stays attached to the old, detached element, and the new input won't open it. Add markup with `container.insertAdjacentHTML('beforeend', '…')` or `container.append(…)` instead, which keeps the existing inputs. Or create a new picker for the new element.
+Replacing that input binds nothing new. `container.innerHTML += '…'` does replace it, because it rebuilds every child of `container`. The picker stays attached to the old, detached element, and the new input won't open it. Add markup with `container.insertAdjacentHTML('beforeend', '…')` or `container.append(…)` instead, which keeps the existing inputs. Or create a new picker for the new element, after calling `destroy()` on the old one.
 
 ###### `options` is an object with the following possible properties:
 
@@ -81,6 +81,10 @@ All targets passed to the constructor will be shown.
 
 #### timepicker.hide()
 
+#### timepicker.destroy()
+
+Removes the picker: its container, its listeners on the target, the document and its own elements, and every `on()` handler. After `destroy()`, `show()`, `hide()` and `on()` do nothing, and calling `destroy()` again is a no-op.
+
 ## Events
 
 ```javascript
@@ -90,6 +94,8 @@ timepicker.on('close', function (evt) {});
 
 timepicker.on('change', function (evt) {});
 ```
+
+`change` receives `{ hour, minute, element }`. `hour` and `minute` are strings such as `'9'` and `'05'`, and each stays `null` until it has been picked, so the first `change` after picking only an hour has `minute: null`.
 
 ## Themes
 

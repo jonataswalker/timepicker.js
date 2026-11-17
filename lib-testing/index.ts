@@ -10,10 +10,10 @@ triggerPicker.picker.container.element.classList.add('click-trigger-container-cl
 // @ts-ignore
 focusPicker.picker.container.element.classList.add('focus-trigger-container-class')
 
-const testingPurposes = {
+const testingPurposes: Window['testingPurposes'] = {
     TimePicker,
     picker: triggerPicker,
-    eventsCalled: [] as string[],
+    eventsCalled: [],
     chosen: { hour: '', minute: '' },
 }
 

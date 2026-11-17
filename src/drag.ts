@@ -1,10 +1,8 @@
 import type { Picker, PickerDragHandler } from './types'
 
-export function handleDrag(picker: Picker) {
+export function handleDrag(picker: Picker, handlers: PickerDragHandler) {
     let { element, dragElement, lastX, lastY, currentX, currentY, x, y } = picker.container
 
-    // @ts-expect-error will be implemented
-    const when: PickerDragHandler = {}
     const dragging = (evt: MouseEvent) => {
         evt.preventDefault()
 
@@ -13,14 +11,14 @@ export function handleDrag(picker: Picker) {
         x = currentX + (evt.clientX - lastX)
         y = currentY + (evt.clientY - lastY)
 
-        when.move.call(null, { target: element, x, y })
+        handlers.move({ x, y })
         lastX = evt.clientX
         lastY = evt.clientY
     }
     const stopDragging = () => {
         document.removeEventListener('mousemove', dragging, false)
         document.removeEventListener('mouseup', stopDragging, false)
-        when.end.call(null, { target: element, x, y })
+        handlers.end({ x, y })
     }
     const startDragging = (evt: MouseEvent) => {
         if (evt.button !== 0) return
@@ -28,18 +26,16 @@ export function handleDrag(picker: Picker) {
         lastX = evt.clientX
         lastY = evt.clientY
 
-        when.start.call({ target: element })
+        handlers.start()
         document.addEventListener('mousemove', dragging, false)
         document.addEventListener('mouseup', stopDragging, false)
     }
 
     dragElement.addEventListener('mousedown', startDragging, false)
 
-    return {
-        when: (object: PickerDragHandler) => {
-            when.start = object.start
-            when.move = object.move
-            when.end = object.end
-        },
+    return () => {
+        dragElement.removeEventListener('mousedown', startDragging, false)
+        document.removeEventListener('mousemove', dragging, false)
+        document.removeEventListener('mouseup', stopDragging, false)
     }
 }
