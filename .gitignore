@@ -31,3 +31,6 @@ public/timepicker.js
 
 # packed-tarball consumer checks
 /.pack-check/
+
+# compiler parity fixtures
+/.parity-check/
