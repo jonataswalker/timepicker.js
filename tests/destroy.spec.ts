@@ -234,4 +234,50 @@ test.describe('destroy()', () => {
         expect(result).toEqual({ listeners: 0, connected: [false, false, false] })
         expect(errors).toEqual([])
     })
+
+    test('handlers after the one that calls destroy() do not run', async ({ page }) => {
+        const errors = collectPageErrors(page)
+
+        await page.evaluate(() => {
+            const later: string[] = []
+            const pickers = ['open', 'change', 'close'].map((name) => {
+                const input = document.createElement('input')
+
+                input.id = `first-destroys-${name}`
+                document.body.append(input)
+
+                return new window.testingPurposes.TimePicker(`#first-destroys-${name}`)
+            })
+            const [onOpen, onChange, onClose] = pickers
+
+            onOpen.on('open', () => {
+                onOpen.destroy()
+            })
+            onOpen.on('open', () => later.push('open'))
+            onChange.on('change', () => {
+                onChange.destroy()
+            })
+            onChange.on('change', () => later.push('change'))
+            onClose.on('close', () => {
+                onClose.destroy()
+            })
+            onClose.on('close', () => later.push('close'))
+
+            window.destroyHarness = { pickers, events: later, listenersAttached: () => 0 }
+        })
+
+        await page.locator('#first-destroys-open').focus()
+        await page.locator('#first-destroys-change').focus()
+        await page.evaluate(() => {
+            // @ts-expect-error the picker state is protected; tests read it
+            window.destroyHarness.pickers[1].picker.collection.hours[3].click()
+        })
+        await page.locator('#first-destroys-close').focus()
+        await page.evaluate(() => {
+            window.destroyHarness.pickers[2].hide()
+        })
+
+        expect(await page.evaluate(() => window.destroyHarness.events)).toEqual([])
+        expect(errors).toEqual([])
+    })
 })
