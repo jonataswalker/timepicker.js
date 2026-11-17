@@ -79,16 +79,17 @@ export function getWindowSize() {
 export function fade({
     emitter,
     element,
+    onFrame,
     time = 300,
     action = 'in',
 }: {
     emitter: TimePicker['emitter']
     element: Picker['container']['element']
+    onFrame: (requestId: number) => void
     time?: number
     action?: string
 }) {
     let start: number
-    let requestId
 
     const [evtStart, evtEnd] =
         action === 'in'
@@ -113,13 +114,11 @@ export function fade({
         if (finished) {
             emitter.emit(evtEnd as keyof EmitterEvents, element)
         } else {
-            requestId = globalThis.requestAnimationFrame(tick)
+            onFrame(globalThis.requestAnimationFrame(tick))
         }
     }
 
-    requestId = globalThis.requestAnimationFrame(tick)
-
-    return requestId
+    onFrame(globalThis.requestAnimationFrame(tick))
 }
 
 export function removeClass(elements: NodeListOf<HTMLElement>, className: string) {

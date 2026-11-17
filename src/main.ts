@@ -184,8 +184,18 @@ export default class TimePicker {
         if (this.picker.opened) return
 
         evt.preventDefault()
-        globalThis.cancelAnimationFrame(this.picker.requestAnimationId)
         this.show()
+    }
+
+    private startFade(options: Omit<Parameters<typeof fade>[0], 'emitter' | 'onFrame'>) {
+        globalThis.cancelAnimationFrame(this.picker.requestAnimationId)
+        fade({
+            ...options,
+            emitter: this.emitter,
+            onFrame: (requestId) => {
+                this.picker.requestAnimationId = requestId
+            },
+        })
     }
 
     private handleAnchorClick = (evt: MouseEvent) => {
@@ -236,7 +246,7 @@ export default class TimePicker {
         containerElement.style.left = left
         containerElement.style.top = top
 
-        this.picker.requestAnimationId = fade({ emitter: this.emitter, element: containerElement })
+        this.startFade({ element: containerElement })
 
         removeClass(collection.hours, style.selected)
         removeClass(collection.minutes, style.selected)
@@ -272,12 +282,7 @@ export default class TimePicker {
         if (this.destroyed) return
 
         this.picker.opened = false
-        this.picker.requestAnimationId = fade({
-            emitter: this.emitter,
-            element: this.picker.container.element,
-            time: 800,
-            action: 'out',
-        })
+        this.startFade({ element: this.picker.container.element, time: 800, action: 'out' })
 
         // client events
         this.emitter.emit(Events.CLOSE, { element: this.picker.container.element })
