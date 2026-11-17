@@ -95,6 +95,8 @@ timepicker.on('close', function (evt) {});
 timepicker.on('change', function (evt) {});
 ```
 
+`change` receives `{ hour, minute, element }`. `hour` and `minute` are strings such as `'9'` and `'05'`, and each stays `null` until it has been picked, so the first `change` after picking only an hour has `minute: null`.
+
 ## Themes
 
 -   dark

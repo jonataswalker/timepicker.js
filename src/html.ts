@@ -1,5 +1,5 @@
 import { LANG } from './constants'
-import type { Picker } from './types'
+import type { Options } from './types'
 import style from './sass/main.module.scss'
 import { createElement, getMaxZIndex } from './helpers/dom'
 
@@ -50,11 +50,11 @@ const createMinutes = () => {
     return structure
 }
 
-export function createStructure(picker: Picker) {
+export function createStructure(options: Options) {
     const structure = `
         <div class="${style['grid-container']} ${style.header}">
-            <div class="${style['hour-width']}">${LANG[picker.options.lang].hour}</div>
-            <div class="${style['minute-width']}">${LANG[picker.options.lang].minute}</div>
+            <div class="${style['hour-width']}">${LANG[options.lang].hour}</div>
+            <div class="${style['minute-width']}">${LANG[options.lang].minute}</div>
         </div>
         <div class="${style['grid-container']} ${style['grid-container-without-header']}">
             ${createHours()}
@@ -62,7 +62,7 @@ export function createStructure(picker: Picker) {
         </div>
     `
 
-    const classname = [style['timepicker-container'], themesMap[picker.options.theme]].join(' ')
+    const classname = [style['timepicker-container'], themesMap[options.theme]].join(' ')
     const container = createElement(['div', { classname }], structure)
 
     if (!(container instanceof HTMLDivElement)) throw new Error('Picker container must be a div')

@@ -71,8 +71,8 @@ export type Picker = {
             left: number
         }
     }
-    hour: string
-    minute: string
+    hour: string | null
+    minute: string | null
     opened: boolean
     requestAnimationId: number
     closeWhen: { hour: boolean; minute: boolean }

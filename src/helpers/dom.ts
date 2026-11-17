@@ -1,5 +1,5 @@
 import type TimePicker from '../main'
-import { type EmitterEvents, type Picker, InternalEvents } from '../types'
+import { type Picker, InternalEvents } from '../types'
 
 export function isElement(object: string | HTMLElement | null) {
     if (!object) return false
@@ -98,7 +98,7 @@ export function fade({
 
     const tick = (timestamp: number) => {
         if (!start) {
-            emitter.emit(evtStart as keyof EmitterEvents, element)
+            emitter.emit(evtStart, element)
             start = timestamp
         }
 
@@ -112,7 +112,7 @@ export function fade({
         element.style.opacity = String(opacity)
 
         if (finished) {
-            emitter.emit(evtEnd as keyof EmitterEvents, element)
+            emitter.emit(evtEnd, element)
         } else {
             onFrame(globalThis.requestAnimationFrame(tick))
         }
