@@ -41,5 +41,10 @@ export function handleDrag(picker: Picker) {
             when.move = object.move
             when.end = object.end
         },
+        destroy: () => {
+            dragElement.removeEventListener('mousedown', startDragging, false)
+            document.removeEventListener('mousemove', dragging, false)
+            document.removeEventListener('mouseup', stopDragging, false)
+        },
     }
 }

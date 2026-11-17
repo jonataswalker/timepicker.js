@@ -21,6 +21,10 @@ export default class TimePicker {
 
     protected picker!: Picker
 
+    private destroyed = false
+
+    private releaseDrag: () => void
+
     constructor(target: string | Picker['target']['element'], opts: Partial<Options> = {}) {
         let targetElement: Picker['target']['element']
 
@@ -94,6 +98,8 @@ export default class TimePicker {
 
         const drag = handleDrag(this.picker)
 
+        this.releaseDrag = drag.destroy
+
         drag.when({
             start: () => {
                 container.classList.add(style.dragging)
@@ -128,19 +134,33 @@ export default class TimePicker {
         this.setDomListeners()
     }
 
+    private get targetEvent() {
+        return this.picker.target.element instanceof HTMLInputElement ? 'focus' : 'click'
+    }
+
     private setDomListeners() {
         document.addEventListener('mousedown', this.handleClickOutside)
 
-        this.picker.target.element.addEventListener(
-            this.picker.target.element instanceof HTMLInputElement ? 'focus' : 'click',
-            this.triggerShow,
-        )
+        this.picker.target.element.addEventListener(this.targetEvent, this.triggerShow)
 
         this.picker.collection.hours.forEach((anchor) => {
             anchor.addEventListener('click', this.handleAnchorClick)
         })
         this.picker.collection.minutes.forEach((anchor) => {
             anchor.addEventListener('click', this.handleAnchorClick)
+        })
+    }
+
+    private removeDomListeners() {
+        document.removeEventListener('mousedown', this.handleClickOutside)
+
+        this.picker.target.element.removeEventListener(this.targetEvent, this.triggerShow)
+
+        this.picker.collection.hours.forEach((anchor) => {
+            anchor.removeEventListener('click', this.handleAnchorClick)
+        })
+        this.picker.collection.minutes.forEach((anchor) => {
+            anchor.removeEventListener('click', this.handleAnchorClick)
         })
     }
 
@@ -200,6 +220,8 @@ export default class TimePicker {
     }
 
     public show() {
+        if (this.destroyed) return
+
         const { hour, minute, collection } = this.picker
         const containerElement = this.picker.container.element
         const containerSize = this.picker.container.size
@@ -247,6 +269,8 @@ export default class TimePicker {
     }
 
     public hide() {
+        if (this.destroyed) return
+
         this.picker.opened = false
         this.picker.requestAnimationId = fade({
             emitter: this.emitter,
@@ -263,7 +287,21 @@ export default class TimePicker {
         type: Key,
         handler: Handler<EmitterClientEvents[Key]>,
     ) {
+        if (this.destroyed) return
+
         this.emitter.on(type, handler)
+    }
+
+    public destroy() {
+        if (this.destroyed) return
+
+        this.destroyed = true
+        this.picker.opened = false
+        globalThis.cancelAnimationFrame(this.picker.requestAnimationId)
+        this.removeDomListeners()
+        this.releaseDrag()
+        this.emitter.all.clear()
+        this.picker.container.element.remove()
     }
 
     private getHour(element: HTMLAnchorElement) {

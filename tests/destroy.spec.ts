@@ -69,7 +69,6 @@ test.describe('destroy()', () => {
         const after = await page.evaluate(() => {
             const [picker] = window.destroyHarness.pickers
 
-            // @ts-expect-error destroy() lands in the next commit
             picker.destroy()
 
             return {
@@ -92,7 +91,6 @@ test.describe('destroy()', () => {
         await page.evaluate(() => {
             const [picker] = window.destroyHarness.pickers
 
-            // @ts-expect-error destroy() lands in the next commit
             picker.destroy()
             picker.on('open', () => window.destroyHarness.events.push('late-open'))
             picker.on('change', () => window.destroyHarness.events.push('late-change'))
@@ -130,9 +128,7 @@ test.describe('destroy()', () => {
         await page.evaluate(() => {
             const [picker] = window.destroyHarness.pickers
 
-            // @ts-expect-error destroy() lands in the next commit
             picker.destroy()
-            // @ts-expect-error destroy() lands in the next commit
             picker.destroy()
         })
 
@@ -143,21 +139,21 @@ test.describe('destroy()', () => {
     test('destroying one picker leaves another working', async ({ page }) => {
         await setUpPickers(page, 2)
         await page.evaluate(() => {
-            // @ts-expect-error destroy() lands in the next commit
             window.destroyHarness.pickers[0].destroy()
         })
 
         await page.locator('#destroy-1').focus()
 
-        const visible = await page.evaluate(() => {
-            // @ts-expect-error the picker state is protected; tests read it
-            const { element } = window.destroyHarness.pickers[1].picker.container
+        const visible = async () =>
+            page.evaluate(() => {
+                // @ts-expect-error the picker state is protected; tests read it
+                const { element } = window.destroyHarness.pickers[1].picker.container
 
-            return element.isConnected && element.style.display === 'flex'
-        })
+                return element.isConnected && element.style.display === 'flex'
+            })
 
         expect(await page.evaluate(() => window.destroyHarness.events)).toEqual(['open:1'])
-        expect(visible).toBe(true)
+        await expect.poll(visible).toBe(true)
     })
 
     test('destroy() during a drag removes the document drag listeners', async ({ page }) => {
@@ -175,7 +171,6 @@ test.describe('destroy()', () => {
 
             const whileDragging = window.destroyHarness.listenersAttached()
 
-            // @ts-expect-error destroy() lands in the next commit
             picker.destroy()
 
             const { left } = element.style
@@ -202,12 +197,15 @@ test.describe('destroy()', () => {
         await page.evaluate(() => {
             const [onOpen, onChange, onClose] = window.destroyHarness.pickers
 
-            // @ts-expect-error destroy() lands in the next commit
-            onOpen.on('open', () => onOpen.destroy())
-            // @ts-expect-error destroy() lands in the next commit
-            onChange.on('change', () => onChange.destroy())
-            // @ts-expect-error destroy() lands in the next commit
-            onClose.on('close', () => onClose.destroy())
+            onOpen.on('open', () => {
+                onOpen.destroy()
+            })
+            onChange.on('change', () => {
+                onChange.destroy()
+            })
+            onClose.on('close', () => {
+                onClose.destroy()
+            })
         })
 
         await page.locator('#destroy-0').focus()
