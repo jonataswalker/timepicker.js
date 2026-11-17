@@ -274,7 +274,9 @@ export default class TimePicker {
     ) {
         if (this.destroyed) return
 
-        this.emitter.on(type, handler)
+        this.emitter.on(type, (event) => {
+            if (!this.destroyed) handler(event)
+        })
     }
 
     public destroy() {
