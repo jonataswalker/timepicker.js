@@ -16,5 +16,10 @@ declare global {
             eventsCalled: string[]
             chosen: { hour: string; minute: string }
         }
+        destroyHarness: {
+            pickers: TimePicker[]
+            events: string[]
+            listenersAttached: () => number
+        }
     }
 }
